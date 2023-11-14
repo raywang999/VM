@@ -10,7 +10,7 @@ DEPENDS = $(OBJECTS:.o=.d)
 LDLIBS = -lncurses
 
 ${EXEC}: ${OBJECTS}
-	${CC} ${CFLAGS} ${OBJECTS} ${LDLIBS} -o ${EXEC}
+	${CXX} ${CXXFLAGS} ${CPPFLAGS} ${OBJECTS} ${LDLIBS} -o ${EXEC}
 
 -include ${DEPENDS}
 
