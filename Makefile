@@ -1,16 +1,20 @@
 EXEC = vm 
 CXX = g++ 
-CPPFLAGS = -MMD
-CXXFLAGS = -std=c++11 -g -Wall
 
-SRC = $(wildcard *.cc)
-OBJECTS= $(SRC:.cc=.o)
+SOURCES := $(shell find ./src ./lib -name "*.cc")
+OBJECTS= $(SOURCES:.cc=.o)
 DEPENDS = $(OBJECTS:.o=.d)
 
 LDLIBS = -lncurses
 
+INCLUDE=$(shell pwd)/include $(shell pwd)
+INCLUDE_PARAMS=$(INCLUDE:%=-I%)
+
+CPPFLAGS = -MMD ${INCLUDE_PARAMS}
+CXXFLAGS = -std=c++20 -g -Wall 
+
 ${EXEC}: ${OBJECTS}
-	${CXX} ${CXXFLAGS} ${CPPFLAGS} ${OBJECTS} ${LDLIBS} -o ${EXEC}
+	${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LIB_INCLUDE} ${OBJECTS} ${LDLIBS} -o ${EXEC}
 
 -include ${DEPENDS}
 
