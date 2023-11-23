@@ -6,6 +6,7 @@ template<typename State> class Subject;
 template<typename State> class Observer{
  public: 
   virtual void notify(Subject& source) =0;
+  virtual ~Observer(){}
 };
 
 #endif

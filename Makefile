@@ -23,3 +23,9 @@ ${EXEC}: ${OBJECTS}
 clean:
 	rm *.o *.d ${EXEC}
 
+.PHONY: check
+
+check: 
+	bash testall.bash
+
+
