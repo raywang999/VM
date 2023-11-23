@@ -7,7 +7,7 @@ DEPENDS = $(OBJECTS:.o=.d)
 
 LDLIBS = -lncurses
 
-INCLUDE=$(shell pwd)/include $(shell pwd)
+INCLUDE=$(shell pwd)
 INCLUDE_PARAMS=$(INCLUDE:%=-I%)
 
 CPPFLAGS = -MMD ${INCLUDE_PARAMS}

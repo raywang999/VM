@@ -1,9 +1,9 @@
+#include <include/ncursespp.h> 
 #include <cctype>
-#include <ncurses.h> 
 #include <unordered_map>
 
-#include "uwse_keyboard.h"
-#include "keystroke.h"
+#include "lib/keystroke/uwse_keyboard.h"
+#include "lib/keystroke/keystroke.h"
 
 // map of CSSE's ncurses keyboard input `int`s to corresponding `Keystroke`s
 // - excluding Plain characters (i.e. isgraph chars)

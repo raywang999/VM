@@ -4,11 +4,11 @@
 #ifndef CPP_NCURSES_H
 #define CPP_NCURSES_H
 
+#include <ncurses.h>
 namespace ncurses{
-  #include <ncurses.h>
   using Window_t = WINDOW;
-  void getmaxyx(Window_t *win, int& y, int& x){
-    getmaxyx(win, y, x);
+  void getwindowhw(Window_t *win, int& height, int& width){
+    getmaxyx(win, height, width);
   }
 }
 

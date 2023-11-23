@@ -3,7 +3,6 @@
 
 #include "lib/keystroke/keystroke_consumer.h"
 #include "lib/keystroke/keystroke.h"
-
 #include "command_source.h"
 
 class CommandParser: public KeystrokeConsumer, public CommandSource {

@@ -1,8 +1,8 @@
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
+#ifndef UWSE_KEYBOARD_H
+#define UWSE_KEYBOARD_H
 
-#include "keystroke.h"
-#include "keystroke_source.h"
+#include "lib/keystroke/keystroke.h"
+#include "lib/keystroke/keystroke_source.h"
 
 // UWSE = University of Waterloo Student Environment 
 class UWSEKeyboard: public KeystrokeSource {

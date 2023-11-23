@@ -1,8 +1,8 @@
 #ifndef KEYSTROKE_SOURCE_H
 #define KEYSTROKE_SOURCE_H
 
-#include "keystroke.h"
-#include "subject.h"
+#include "lib/keystroke/keystroke.h"
+#include "include/subject.h"
 
 class KeystrokeSource: public Subject<Keystroke>{
  public: 
