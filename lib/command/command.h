@@ -9,7 +9,6 @@
 
 #include "lib/mode/mode.h"
 
-struct Command { };
 // basic normal mode command 
 // - e.g. 5x, rx, s, i, 3u, 5a, 2p, 2yy, 3dd
 struct Normal {
@@ -93,7 +92,7 @@ using Command = std::variant<
   Replace, 
   PartialReplace, 
   SetMode, 
-  Macro,
+  Macro
 >;
 #endif
 

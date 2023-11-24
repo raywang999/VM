@@ -14,7 +14,7 @@ class CtrlParser: public CommandParser{
   // holds the currently parsed ctrl
   Ctrl theCommand;
   bool parse(const Keystroke& keystroke) override;
-  void doReset() override { theCommand = Ctrl{1,0}; parseStatus = First;}
+  void doReset() override { theCommand = Ctrl{1,0};}
  public: 
   Command getState() const override {return theCommand;};
 };

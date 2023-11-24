@@ -6,7 +6,7 @@
 #include "lib/command/movement_parser.h"
 
 // set storing which command types are terminals, i.e. don't need extra seek
-std::unordered_set<int> terminalTypes{
+std::unordered_set<int> movementTerminalTypes{
   'b', 'h', 'j', 'k', 'l', 'n', 'w', 
   'F', 'N', '^', '$', '0', '%', ';'
 };
@@ -30,7 +30,7 @@ bool MovementParser::parse(const Keystroke& keystroke) {
       notifyAll();
       return true;
     }
-    if (terminalTypes.count(keystroke.value)){
+    if (movementTerminalTypes.count(keystroke.value)){
       // don't need extra seek, i.e. we're done parsing 
       notifyAll();
       return true;

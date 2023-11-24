@@ -2,7 +2,7 @@
 #define COMMAND_SOURCE_H
 
 #include "include/subject.h"
-#include "command.h"
+#include "lib/command/command.h"
 
 class CommandSource: public Subject<Command> {};
 

@@ -6,16 +6,17 @@
 #include "lib/command/command.h"
 #include "lib/command/normal_parser.h"
 
-// set storing which command types are terminals, i.e. don't need extra data
-std::unordered_set<int> terminalTypes{
-  'a', 'i', 'o', 'p', 's', 'u', 'x', 
-  'A', 'I', 'J', 'O', 'P', 'R', 'S', 'X', '.'
-};
-
 // returns true for double operations 
 bool isNormDup(int ch){
   return ch == 'c' || ch == 'd' || ch == 'y';
 }
+
+// set storing which command types are terminals, i.e. don't need extra data
+const std::unordered_set<int> normalTerminalTypes{
+  'a', 'i', 'o', 'p', 's', 'u', 'x', 
+  'A', 'I', 'J', 'O', 'P', 'R', 'S', 'X', '.'
+};
+
 
 bool NormalParser::parse(const Keystroke& keystroke) {
   if (countedParser.parse(keystroke)) return true;
@@ -35,7 +36,7 @@ bool NormalParser::parse(const Keystroke& keystroke) {
     }
     // otherwise, we are at first part of command
     theCommand.type = keystroke.value;
-    if (terminalTypes.count(keystroke.value)){
+    if (normalTerminalTypes.count(keystroke.value)){
       // command is single char, don't need extra data, we're done parsing 
       notifyAll();
       return true;
