@@ -4,6 +4,6 @@
 #include "include/observer.h"
 #include "command.h"
 
-class CommandRunner: public Observer<Command> {};
+class CommandRunner: public Observer<Command*> {};
 
 #endif

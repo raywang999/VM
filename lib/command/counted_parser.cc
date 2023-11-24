@@ -4,20 +4,10 @@
 
 #include "lib/command/command_parser.h"
 #include "lib/command/command.h"
-#include "lib/command/normal_parser.h"
+#include "lib/command/counted_parser.h"
 
-// set storing which command types are terminals, i.e. don't need extra data
-std::unordered_set<int> terminalTypes{
-  'a', 'i', 'o', 'p', 's', 'u', 'x', 
-  'A', 'I', 'J', 'O', 'P', 'R', 'S', 'X', '.'
-};
 
-// returns true for double operations 
-bool isNormDup(int ch){
-  return ch == 'c' || ch == 'd' || ch == 'y';
-}
-
-bool NormalParser::parse(const Keystroke& keystroke) {
+bool CountedParser::parse(const Keystroke& keystroke) {
   if (keystroke.key == Key::Plain){
     if (parseStatus == First){
       // parse a possible count 

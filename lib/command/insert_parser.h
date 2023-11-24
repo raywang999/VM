@@ -17,6 +17,7 @@ class InsertParser: public CommandParser{
     }
   }
   void doReset() override { theCommand = Insert{std::string{}};}
+ public:
   Command getState() const override {return theCommand;};
 };
 

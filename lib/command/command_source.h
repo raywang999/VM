@@ -4,6 +4,6 @@
 #include "include/subject.h"
 #include "command.h"
 
-class CommandSource: public Subject<Command> {};
+class CommandSource: public Subject<Command*> {};
 
 #endif

@@ -14,6 +14,7 @@ class CommandParser: public KeystrokeConsumer, public CommandSource {
   // parser is in a valid state. I.e. can parse more keystrokes
   bool valid = true;
  public: 
+  // reset parser to starting state 
   void reset() {valid = true; doReset();}
   // consume a keystroke if parser is valid 
   // - if not, do nothing 

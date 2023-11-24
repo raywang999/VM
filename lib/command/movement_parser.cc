@@ -2,25 +2,26 @@
 #include <cctype>
 #include <unordered_set>
 
-#include "lib/command/command_parser.h"
 #include "lib/command/command.h"
-#include "lib/command/normal_parser.h"
+#include "lib/command/movement_parser.h"
 
-// set storing which command types are terminals, i.e. don't need extra data
+// set storing which command types are terminals, i.e. don't need extra seek
 std::unordered_set<int> terminalTypes{
-  'a', 'i', 'o', 'p', 's', 'u', 'x', 
-  'A', 'I', 'J', 'O', 'P', 'R', 'S', 'X', '.'
+  'b', 'h', 'j', 'k', 'l', 'n', 'w', 
+  'F', 'N', '^', '$', '0', '%', ';'
 };
 
-// returns true for double operations 
-bool isNormDup(int ch){
-  return ch == 'c' || ch == 'd' || ch == 'y';
-}
-
-bool NormalParser::parse(const Keystroke& keystroke) {
+bool MovementParser::parse(const Keystroke& keystroke) {
   if (keystroke.key == Key::Plain){
     if (parseStatus == First){
-      // parse a possible count 
+      // if 0, then this is the `0` movement, not a count
+      if (keystroke.value == '0'){
+        theCommand.count = 1; 
+        theCommand.type = '0';
+        notifyAll();
+        return true;
+      }
+      // o.w. parse a possible count 
       parseStatus = Count;
       if (isdigit(keystroke.value)){
         // start parsing a count
@@ -41,22 +42,17 @@ bool NormalParser::parse(const Keystroke& keystroke) {
       parseStatus = Type;
       theCommand.type = keystroke.value;
       if (terminalTypes.count(keystroke.value)){
-        // don't need extra data, i.e. we're done parsing 
+        // don't need extra seek, i.e. we're done parsing 
         notifyAll();
         return true;
       }
-      // if not terminal type, then must be either c,d,y
-      return isNormDup(theCommand.type);
+      return theCommand.type == 'f' || theCommand.type == 'F';
     }
     if (parseStatus == Type){
-      // parse commands like cc, dd, yy
-      // ignore d[any motion] since those are CombNM, not basic Normal 
-      theCommand.data = keystroke.value;
-      if (theCommand.type == theCommand.data){
-        // we have a dd, cc, yy
-        notifyAll();
-        return true;
-      }
+      // parse commands like f_, F_, 
+      theCommand.seek = keystroke.value;
+      notifyAll();
+      return true;
     }
   }
 
