@@ -1,4 +1,4 @@
-EXEC =  exec
+EXEC =  a.out
 CXX = g++ 
 
 SOURCES := $(shell find ./ ../../lib -name "*.cc") 
