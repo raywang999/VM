@@ -5,30 +5,29 @@
 
 #include "lib/command/command_parser.h"
 #include "lib/command/command.h"
+#include "lib/keystroke/keystroke_consumer.h"
 
-// helper class to parse optional numbers 
-class CountedParser: public CommandParser{
+// helper class to parse optional multipliers
+class CountedParser: public KeystrokeConsumer{
   // holds the currently parsed count 
   int theCount;
-  // current status of the parser in form 00000tcf
-  // f = parsing the first character 
-  // c = parsing a count 
-  // r = let subclass parse the command. I.e. call doParse() 
-  char parseStatus = First;
-  static constexpr char First = 1;
-  static constexpr char Count = 2;
-  static constexpr char Type = 4;
-  void doReset() override { theCommand = Normal{}; parseStatus = First;}
 
-  // subclasses override this to parse the non-count portion of the command
-  virtual bool doParse(const Keystroke& keystroke)=0; 
+  // whether the parser will accept numbers 
+  // i.e. we haven't parsed any non-numbers yet
+  bool valid = true;
+  // whether we are parsing our first input 
+  bool first = true;
 
-  // parses optional count. 
-  // If no count, then set count to 1, use subclass parse 
-  // if keystroke isn't a number, use subclass parse 
-  bool parse(const Keystroke& keystroke) override;
  public: 
-  Command* getState() const override {return theCommand.get();};
+  void reset() { theCount = 0; valid = first = true; }
+  int getCount() { return theCount; }
+  // parses optional count. 
+  // if keystroke is not a number, 
+  // - If `first`, then set count to 1
+  // - Set valid to false 
+  // otherwise, keystroke is a number, so parse if valid 
+  // returns true iff parse was successful
+  bool parse(const Keystroke& keystroke);
 };
 
 #endif
