@@ -1,26 +1,19 @@
 #ifndef COMMAND_STRUCT_H
 #define COMMAND_STRUCT_H
 
-// command heirarchy for vim (Ex, Normal, Replace, Insert)
+// variant used for all commands (Ex, Normal, Replace, Insert)
 // - can be extended for other uses, like extended normal commands
 
+#include <variant> 
 #include <string>
 
 #include "lib/mode/mode.h"
 
-// empty class to denote top of Command heirarchy 
-struct Command { 
-  virtual ~Command(){}
-};
-
-// command to represent optional multipliers 
-struct Counted: public Command {
-  int count;
-};
-
+struct Command { };
 // basic normal mode command 
 // - e.g. 5x, rx, s, i, 3u, 5a, 2p, 2yy, 3dd
-struct Normal: public Counted{
+struct Normal {
+  int count;
   char type;
   char data; // optional e.g. 5rx
 };
@@ -28,14 +21,16 @@ struct Normal: public Counted{
 // normal mode movement 
 // - arrow keys will get translated to corresponding hjkl
 // - e.g. 5l, 3fa, 2b, w
-struct Movement: public Counted{
+struct Movement {
+  int count;
   char type;
   // optional e.g. 'a' if the command is fa
   char seek; 
 };
 
 // ctrl commands. E.g. Ctrl+f 
-struct Ctrl: public Counted {
+struct Ctrl{
+  int count;
   char type; 
 };
 
@@ -52,39 +47,54 @@ struct Ex{
 };
 
 // Insert mode command. I.e. a chain of partial inserts
-struct Insert: public Counted{
+struct Insert{
   std::string sentence;
 };
 
 // a single modification during insert mode
-struct PartialInsert: public Counted{
+struct PartialInsert{
   char data;
 };
 
 // Replace mode command. I.e. a chain of partial replaces
-struct Replace: public Counted{
+struct Replace{
   std::string sentence;
 };
 
 // a single replace
-struct PartialReplace: public Command{
+struct PartialReplace{
   char data;
 };
 
 // tells ModeManager to switch to a mode
-struct SetMode: public Command{
+struct SetMode{
   Mode mode;
 };
 
 // Command to write/play macro at a register
-struct WriteMacro: public Counted {
+struct WriteMacro{
   // macro register (between 0-9a-zA-Z) to write
   char reg;  
 };
-struct ReadMacro: public Counted {
+struct ReadMacro{
+  int count;
   char reg;  
 };
 
 
+using Command = std::variant<
+  Normal, 
+  Movement, 
+  Ctrl, 
+  ComboNM, 
+  Ex, 
+  Insert, 
+  PartialInsert, 
+  Replace, 
+  PartialReplace, 
+  SetMode, 
+  ReadMacro,
+  WriteMacro,
+>;
 #endif
 
