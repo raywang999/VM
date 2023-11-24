@@ -5,22 +5,22 @@
 #include <cctype>
 
 #include "lib/command/command_parser.h"
+#include "lib/command/counted_parser.h"
 #include "lib/command/command.h"
 
-// parses readMacro (i.e. @) commands 
-class ReadMacroParser: public CommandParser{
+// parses read/write Macro (i.e. q,@) commands 
+class MacroParser: public CommandParser{
+  CountedParser countedParser;
   // holds the currently parsed macro 
-  ReadMacro theCommand;
-  static constexpr char First = 1;
-  static constexpr char Count = 2;
-  // current status of the parser in form 000000cf
-  // f = parsing the first character 
-  // c = parsing a count 
-  char parseStatus = First;
+  Macro theMacro;
+  bool readRegister = false;
   bool parse(const Keystroke& keystroke) override;
-  void doReset() override { theCommand = ReadMacro{}; parseStatus = First;}
+  void doReset() override { 
+    countedParser.reset();
+    readRegister = false;
+  }
  public: 
-  Command getState() const override {return theCommand;};
+  Command getState() const override {return theMacro;};
 };
 
 #endif

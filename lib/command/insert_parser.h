@@ -4,11 +4,12 @@
 #include <string>
 
 #include "lib/command/command_parser.h"
+#include "lib/command/counted_parser.h"
 #include "lib/command/command.h"
 
 class InsertParser: public CommandParser{
   // holds the currently parsed insert sequence 
-  Insert theCommand{std::string{}};
+  Insert theCommand{1,std::string{}};
   bool parse(const Keystroke& keystroke) override{
     // only Plain characters should be turned into PartialInserts
     if (keystroke.key == Key::Plain){
@@ -16,7 +17,7 @@ class InsertParser: public CommandParser{
       return true;
     }
   }
-  void doReset() override { theCommand = Insert{std::string{}};}
+  void doReset() override { theCommand = Insert{1,std::string{}};}
  public:
   Command getState() const override {return theCommand;};
 };

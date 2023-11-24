@@ -1,5 +1,5 @@
-#ifndef NORMAL_PARSER_H
-#define NORMAL_PARSER_H
+#ifndef COUNTED_PARSER_H
+#define COUNTED_PARSER_H
 
 #include <cctype>
 
@@ -8,7 +8,7 @@
 #include "lib/keystroke/keystroke_consumer.h"
 
 // helper class to parse optional multipliers
-class CountedParser: public KeystrokeConsumer{
+class CountedParser {
   // holds the currently parsed count 
   // defaults to 1 if no numeric keystrokes are passed 
   int theCount = 1;

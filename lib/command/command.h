@@ -48,6 +48,7 @@ struct Ex{
 
 // Insert mode command. I.e. a chain of partial inserts
 struct Insert{
+  int count;
   std::string sentence;
 };
 
@@ -58,6 +59,7 @@ struct PartialInsert{
 
 // Replace mode command. I.e. a chain of partial replaces
 struct Replace{
+  int count;
   std::string sentence;
 };
 
@@ -72,14 +74,11 @@ struct SetMode{
 };
 
 // Command to write/play macro at a register
-struct WriteMacro{
+struct Macro{
+  int count;
   // macro register (between 0-9a-zA-Z) to write
-  int count;
   char reg;  
-};
-struct ReadMacro{
-  int count;
-  char reg;  
+  char type; // q for write, @ for read
 };
 
 
@@ -94,8 +93,7 @@ using Command = std::variant<
   Replace, 
   PartialReplace, 
   SetMode, 
-  ReadMacro,
-  WriteMacro,
+  Macro,
 >;
 #endif
 

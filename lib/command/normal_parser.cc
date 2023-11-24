@@ -18,38 +18,12 @@ bool isNormDup(int ch){
 }
 
 bool NormalParser::parse(const Keystroke& keystroke) {
+  if (countedParser.parse(keystroke)) return true;
+  // finished with optional multipler, parse the actual command
+  theCommand.count = countedParser.getCount();
   if (keystroke.key == Key::Plain){
-    if (parseStatus == First){
-      // parse a possible count 
-      parseStatus = Count;
-      if (isdigit(keystroke.value)){
-        // start parsing a count
-        theCommand.count = keystroke.value-'0';
-        return true;
-      } 
-      // if no count, consider as if we were parsing a count 1, and continue from below
-      theCommand.count = 1;
-    } 
-    if (parseStatus == Count){
-      // we were parsing a count before now
-      if (isdigit(keystroke.value)){
-        // continue parsing a count 
-        theCommand.count = theCommand.count*10+keystroke.value-'0';
-        return true;
-      } 
-      // otherwise, finished parsing count, parse the type 
-      parseStatus = Type;
-      theCommand.type = keystroke.value;
-      if (terminalTypes.count(keystroke.value)){
-        // don't need extra data, i.e. we're done parsing 
-        notifyAll();
-        return true;
-      }
-      // if not terminal type, then must be either c,d,y
-      return isNormDup(theCommand.type);
-    }
-    if (parseStatus == Type){
-      // parse commands like cc, dd, yy
+    if (parseData){
+      // parse second part of cc, dd, yy
       // ignore d[any motion] since those are CombNM, not basic Normal 
       theCommand.data = keystroke.value;
       if (theCommand.type == theCommand.data){
@@ -57,10 +31,21 @@ bool NormalParser::parse(const Keystroke& keystroke) {
         notifyAll();
         return true;
       }
+      return false;
     }
+    // otherwise, we are at first part of command
+    theCommand.type = keystroke.value;
+    if (terminalTypes.count(keystroke.value)){
+      // command is single char, don't need extra data, we're done parsing 
+      notifyAll();
+      return true;
+    }
+    // if not terminal type, then must be either c,d,y
+    parseData = true; // wait for the second part
+    return isNormDup(theCommand.type); // check if command is cc,dd,yy
   }
-
   // parsing failed
   return false;
 }
+
 

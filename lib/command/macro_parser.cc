@@ -5,23 +5,22 @@
 
 // first read an optional count
 // then read a `q`, then read a register 
-bool ReadMacroParser::parse(const Keystroke& keystroke) {
+bool MacroParser::parse(const Keystroke& keystroke) {
+  if (countedParser.parse(keystroke)) return true;
+  theMacro.count = countedParser.getCount();
   if (keystroke.key == Key::Plain){
-    if (parseStatus == First){
-      if (isdigit(keystroke.value)){
-        theCommand.count = keystroke.value - '0';
+    if (readRegister){ // parse the second part (the register)
+      if (isalnum(keystroke.value)){
+        theMacro.reg = keystroke.value;
+        notifyAll();
         return true;
       }
-      theCommand.count = 0;
+      return false;
     }
-    if (parseStatus == Count){
-      // we were parsing a count before now
-      if (isdigit(keystroke.value)){
-        // continue parsing a count 
-        theCommand.count = theCommand.count*10+keystroke.value-'0';
-        return true;
-      } 
-    }
+    // otherwise, parse q or @
+    theMacro.type = keystroke.value;
+    readRegister = true;
+    return keystroke.value == 'q' || keystroke.value == '@';
   }
 
   // parsing failed

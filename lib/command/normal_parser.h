@@ -5,22 +5,19 @@
 #include <cctype>
 
 #include "lib/command/command_parser.h"
+#include "lib/command/counted_parser.h"
 #include "lib/command/command.h"
 
 // parses basic normal mode commands 
 class NormalParser: public CommandParser{
+  CountedParser countedParser;
   // holds the currently parsed normal command
   Normal theCommand{};
-  // current status of the parser in form 00000tcf
-  // f = parsing the first character 
-  // c = parsing a count 
-  // t = parsing the type (i.e. parse extra data)
-  static constexpr char First = 1;
-  static constexpr char Count = 2;
-  static constexpr char Type = 4;
-  char parseStatus = First;
+  // whether we need to parse another keystroke for e.g. cc, dd, yy
+  bool parseData = false;
+
   bool parse(const Keystroke& keystroke) override;
-  void doReset() override { theCommand = Normal{}; parseStatus = First;}
+  void doReset() override { theCommand = Normal{}; parseData = false; countedParser.reset();}
  public: 
   Command getState() const override {return theCommand;};
 };
