@@ -14,8 +14,7 @@ bool CountedParser::parse(const Keystroke& keystroke) {
     theCount = theCount*10+keystroke.value-'0';
     return true;
   }
-  // not a digit, so fail and set theCount to 1 if `first==true`
-  if (first){ theCount = 1; }
+  // not a digit, so fail 
   return valid = false;
 }
 

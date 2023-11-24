@@ -10,7 +10,8 @@
 // helper class to parse optional multipliers
 class CountedParser: public KeystrokeConsumer{
   // holds the currently parsed count 
-  int theCount;
+  // defaults to 1 if no numeric keystrokes are passed 
+  int theCount = 1;
 
   // whether the parser will accept numbers 
   // i.e. we haven't parsed any non-numbers yet
