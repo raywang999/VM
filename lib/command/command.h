@@ -74,6 +74,7 @@ struct SetMode{
 // Command to write/play macro at a register
 struct WriteMacro{
   // macro register (between 0-9a-zA-Z) to write
+  int count;
   char reg;  
 };
 struct ReadMacro{
