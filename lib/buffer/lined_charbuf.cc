@@ -71,6 +71,12 @@ void LinedCharbuf<char_t>::append(size_t line, std::basic_string<char_t> chars){
   curline.pop_back();
   curline += chars + "\n";
 }
+template<typename char_t>
+void LinedCharbuf<char_t>::append(size_t line, char_t ch){
+  curline.pop_back();
+  curline.push_back(ch);
+  curline.push_back('\n');
+}
 // insert `num` blank lines before line `line`
 template<typename char_t>
 void LinedCharbuf<char_t>::insert_lines(size_t line, size_t num){

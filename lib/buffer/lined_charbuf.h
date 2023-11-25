@@ -47,6 +47,8 @@ class LinedCharbuf {
     friend class LinedCharbuf;
   };
 
+  LinedCharbuf() =default;
+
   // erase `num` characters from line `line` starting at the `start` index (0 indexed)
   // - default start is 0, default num is npos (i.e. +infty)
   void erase(size_t line, size_t start=0, size_t num = std::string::npos);
@@ -54,10 +56,14 @@ class LinedCharbuf {
   void insert(size_t line, size_t start, std::basic_string<char_t> chars);
   // append all characters from `chars` into end of line `line` (0 indexed) 
   void append(size_t line, std::basic_string<char_t> chars);
+  void append(size_t line, char_t ch);
   // insert `num` blank lines before line `line`
   void insert_lines(size_t line, size_t num);
   // erase `num` blank lines starting from `line`
   void erase_lines(size_t line, size_t num);
+
+  size_t countLines() const noexcept { return lines.size(); }
+  const basic_string<char_t>& getLine(size_t line) const noexcept { return lines[line]; }
 
   // LinedFilebuf should be a bidirectional range over all characters in the file
   // LinedFilebuf should also return iterators starting from valid line,col positions
