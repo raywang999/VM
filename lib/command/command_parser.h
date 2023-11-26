@@ -5,7 +5,7 @@
 #include "lib/keystroke/keystroke.h"
 #include "command_source.h"
 
-class CommandParser: public KeystrokeConsumer, public CommandSource {
+class CommandParser: virtual public KeystrokeConsumer, virtual public CommandSource {
   // subclasses should override this to control how it parses inputs
   // - returns true if and only if the keystroke was valid 
   virtual bool parse(const Keystroke& ks) =0;
@@ -21,6 +21,7 @@ class CommandParser: public KeystrokeConsumer, public CommandSource {
   // - if fail to parse, set state to invalid 
   void consume(const Keystroke& ks) override;
   bool isValid() const {return valid; }
+  using CommandSource::attach;
 };
 
 inline void CommandParser::consume(const Keystroke& ks){

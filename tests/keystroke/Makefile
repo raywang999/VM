@@ -26,6 +26,6 @@ clean:
 .PHONY: check
 
 check: 
-	valgrind --leak-check=full ./exec < input.txt
+	valgrind --leak-check=full ./${EXEC} < input.txt 2> memtext.out 
 
 

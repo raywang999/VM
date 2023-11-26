@@ -80,12 +80,12 @@ class LinedCharbuf {
   iterator begin(size_t line = 0, size_t col = 0){
     return iterator{line,col,getPosition(line,col),this};
   }
-  iterator end(){return iterator{lines.size(),0,0,this};}
+  iterator end(){return iterator{lines.size(),0,getPosition(lines.size(),0),this};}
   const_iterator begin(size_t line = 0, size_t col = 0) const {
     return const_iterator{line,col,getPosition(line, col),this};
   }
   const_iterator end() const {
-    return const_iterator{lines.size(),0,0,this};
+    return const_iterator{lines.size(),0,getPosition(lines.size(),0),this};
   }
   virtual ~LinedCharbuf() =0;
 };

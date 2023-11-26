@@ -30,7 +30,7 @@ Keystroke UWSEKeyboard::getState() const {
   if (toKS.count(currInput)){
     return toKS[currInput];
   }
-  if (isgraph(currInput)){
+  if (isgraph(currInput) || isspace(currInput)){
     return Keystroke{Key::Plain, currInput};
   }
   // lookup not found, so return it as an Other type

@@ -6,6 +6,7 @@
 #include "include/subject.h"
 
 class KeystrokeConsumer: public Observer<Keystroke> {
+  // subclasses should override this to control behaviour
   virtual void consume(const Keystroke& keystroke) =0;
  public: 
   void notify(const Subject<Keystroke>& source) override;

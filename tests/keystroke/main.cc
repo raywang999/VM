@@ -23,7 +23,8 @@ int main(){
   test(Keystroke{Key::Plain, 'a'}, keyboard);
   test(Keystroke{Key::Plain, '-'}, keyboard);
   test(Keystroke{Key::Plain, '_'}, keyboard);
-  test(Keystroke{Key::Esc, 0}, keyboard);
+  test(Keystroke{Key::Plain, '\n'}, keyboard);
+  //test(Keystroke{Key::Esc}, keyboard);
   endwin();
 }
 

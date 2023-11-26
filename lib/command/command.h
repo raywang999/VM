@@ -7,7 +7,7 @@
 #include <variant> 
 #include <string>
 
-#include "lib/mode/mode.h"
+#include "lib/mode/modetype.h"
 
 // basic normal mode command 
 // - e.g. 5x, rx, s, i, 3u, 5a, 2p, 2yy, 3dd
@@ -69,7 +69,7 @@ struct PartialReplace{
 
 // tells ModeManager to switch to a mode
 struct SetMode{
-  Mode mode;
+  ModeType mode;
 };
 
 // Command to write/play macro at a register
