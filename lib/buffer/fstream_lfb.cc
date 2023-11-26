@@ -2,22 +2,22 @@
 
 template<typename char_t> 
 FstreamLFB<char_t>::FstreamLFB(const std::string& filename): 
-  filename{filename}, 
+  LinedFilebuf<char_t>(filename)
 {
   std::basic_fstream<char_t> theFS(filename, std::ios_base::in);
   char_t ch;
   if (theFS.get(ch)){
     // the file isn't empty
-    insert_lines(0,1);
+    LinedCharbuf<char_t>::insert_lines(0,1);
     if (ch != '\n'){
       append(0,ch);
     }
   }
   while (theFS.get(ch)){
     if (ch == '\n'){
-      insert_lines(getLines(),1);
+      insert_lines(LinedCharbuf<char_t>::countLines(),1);
     } else {
-      append(getLines()-1, ch);
+      append(LinedCharbuf<char_t>::countLines()-1, ch);
     }
   }
 }

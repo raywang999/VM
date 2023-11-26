@@ -7,8 +7,8 @@
 
 template<typename char_t> 
 class FstreamLFB: public LinedFilebuf<char_t> {
-  const std::string& filename;
  public: 
+  using LinedFilebuf<char_t>::filename;
   // initialize with a file
   FstreamLFB(const std::string& filename = ""); 
   // write the LinedCharbuf stored in memory to the underlying storage 
