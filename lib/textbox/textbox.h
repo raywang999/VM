@@ -15,9 +15,9 @@ class Textbox: public RenderableBox{
   // tabManager of the parent window. I need its currTab() for rendering
   const TabManager& tabManager;
   // the StyleManager `main` created from which I get styles to apply 
-  StyleManager& styleManager;
+  const StyleManager& styleManager;
  public:
-  Textbox(const TabManager& tabM, StyleManager& styleM):
+  Textbox(const TabManager& tabM, const StyleManager& styleM):
     tabManager{tabM}, styleManager{styleM} {}
   // print all characters from LinedFilbuf of the currently active tab
   // apply any styles 

@@ -85,7 +85,7 @@ inline void LinedCharbuf<char_t>::append(size_t line, std::basic_string<char_t> 
 }
 template<typename char_t>
 inline void LinedCharbuf<char_t>::append(size_t line, char_t ch){
-  const auto& curline = lines[line];
+  auto& curline = lines[line];
   curline.pop_back();
   curline.push_back(ch);
   curline.push_back('\n');

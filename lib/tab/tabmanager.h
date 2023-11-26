@@ -17,6 +17,12 @@ class TabManager: private Manager<Tab>{
   // precondition: items is non-empty
   Tab& curr() {return items[ind];}
   const Tab& curr() const {return items[ind];}
+
+  // add a Tab to manage
+  template<typename... Args>
+  void emplace_back(Args&&... args){
+    Manager<Tab>::items.emplace_back(std::forward<Args>(args)...);
+  }
 };
 
 #endif

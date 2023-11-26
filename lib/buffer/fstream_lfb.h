@@ -17,4 +17,6 @@ class FstreamLFB: public LinedFilebuf<char_t> {
   virtual std::filesystem::perms permissions() override;
 };
 
+#include "fstream_lfb_impl.h"
+
 #endif

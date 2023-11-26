@@ -10,14 +10,14 @@ FstreamLFB<char_t>::FstreamLFB(const std::string& filename):
     // the file isn't empty
     LinedCharbuf<char_t>::insert_lines(0,1);
     if (ch != '\n'){
-      append(0,ch);
+      LinedCharbuf<char_t>::append(0,ch);
     }
   }
   while (theFS.get(ch)){
     if (ch == '\n'){
-      insert_lines(LinedCharbuf<char_t>::countLines(),1);
+      LinedCharbuf<char_t>::insert_lines(LinedCharbuf<char_t>::countLines(),1);
     } else {
-      append(LinedCharbuf<char_t>::countLines()-1, ch);
+      LinedCharbuf<char_t>::append(LinedCharbuf<char_t>::countLines()-1, ch);
     }
   }
 }
@@ -25,7 +25,7 @@ FstreamLFB<char_t>::FstreamLFB(const std::string& filename):
 template<typename char_t>
 void FstreamLFB<char_t>::persist() {
   // clear old content
-  std::basic_ofstream theFS(filename, std::ofstream::out | std::ofstream::trunc); 
+  std::basic_ofstream<char_t> theFS(filename, std::ofstream::out | std::ofstream::trunc); 
   // write content
   for (auto ch: *this){ // iterate through our lined_charbuf
     theFS.put(ch);

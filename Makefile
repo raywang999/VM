@@ -21,7 +21,7 @@ ${EXEC}: ${OBJECTS}
 .PHONY: clean
 
 clean:
-	rm *.o *.d ${EXEC}
+	rm ${OBJECTS} ${DEPENDS} ${EXEC}
 
 .PHONY: check
 

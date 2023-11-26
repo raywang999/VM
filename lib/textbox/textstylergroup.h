@@ -38,7 +38,7 @@ class TextStylerGroup {
     size_t start, num;
     const vector_t* textstyles;
    public: 
-    range(size_t start, size_t num, const vector_t* ts):
+    range(size_t start=0, size_t num=0, const vector_t* ts = nullptr):
       start{start}, num{num}, textstyles{ts} {} 
     iterator begin() const noexcept { return iterator{start, num, textstyles}; }
     iterator end() const noexcept {return iterator{};}
