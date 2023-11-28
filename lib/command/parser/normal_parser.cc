@@ -1,6 +1,5 @@
 #include <string>
 #include <cctype>
-#include <unordered_set>
 
 #include "lib/command/parser/normal_parser.h"
 #include "lib/command/command.h"
@@ -9,12 +8,6 @@
 bool isNormDup(int ch){
   return ch == 'c' || ch == 'd' || ch == 'y';
 }
-
-// set storing which command types are terminals, i.e. don't need extra data
-const std::unordered_set<int> normalTerminalTypes{
-  'a', 'i', 'o', 'p', 's', 'u', 'x', 
-  'A', 'I', 'J', 'O', 'P', 'R', 'S', 'X', '.'
-};
 
 
 bool NormalParser::parse(const Keystroke& keystroke) {
@@ -35,7 +28,7 @@ bool NormalParser::parse(const Keystroke& keystroke) {
     }
     // otherwise, we are at first part of command
     theCommand.type = keystroke.value;
-    if (normalTerminalTypes.count(keystroke.value)){
+    if (terminalTypes.count(keystroke.value)){
       // command is single char, don't need extra data, we're done parsing 
       notifyAll();
       return true;

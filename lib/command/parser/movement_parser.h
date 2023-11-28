@@ -3,6 +3,7 @@
 
 #include <string>
 #include <cctype>
+#include <unordered_set>
 
 #include "lib/command/parser/command_parser.h"
 #include "lib/command/parser/counted_parser.h"
@@ -18,6 +19,13 @@ class MovementParser: public CommandParser{
   // whether we need to parse a second part of the movement 
   // i.e. for F_, f_
   bool parseSeek = false;
+
+  // set storing which command types are terminals, i.e. don't need extra seek
+  static inline const std::unordered_set<int> terminalTypes{
+    'b', 'h', 'j', 'k', 'l', 'n', 'w', 
+    'F', 'N', '^', '$', '0', '%', ';'
+  };
+
   bool parse(const Keystroke& keystroke) override;
   void doReset() override { 
     theCommand = Movement{}; 

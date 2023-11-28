@@ -7,6 +7,7 @@
 #include "lib/command/runner/command_runner.h"
 #include "lib/window/window.h"
 #include "lib/mode/normal_mode.h"
+#include "lib/command/parser/insert_parser.h"
 
 // takes a basic Normal mode Command and runs it
 class NormalRunner: public CommandRunner{
