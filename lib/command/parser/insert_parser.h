@@ -25,6 +25,7 @@ class InsertParser: public CommandParser{
   void doReset() override { theCommand = Insert{1,std::string{}};}
  public:
   const Insert* getCommand() const {return &theCommand;};
+  void setCount(int count) noexcept {theCommand.count = count;}
 };
 
 #endif

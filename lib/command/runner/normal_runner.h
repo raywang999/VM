@@ -13,22 +13,25 @@ class NormalRunner: public CommandRunner{
   Window*& activeWindow;
   NormalParser& theParser;
   NormalMode& theNormalMode;
+  InsertParser& insertParser;
   // we got a basic normal command parsed to run 
   // the command must be one of a,cc,dd,i,o,p,r,s,u,x,yy,A,I,J,O,P,R,S,X,.
   void notify(const Subject<Command*>&) override {
     Normal normal = *theParser.getCommand();
-    theParser.reset();
     auto& tab = activeWindow->getTabManager().curr();
     auto& filebuf = tab.getFilebuf();
     auto& cursor = tab.getCursor();
     if (normal.type == 'i') { // entery insert mode
       theNormalMode.setMode(ModeType::Insert);
-      return theNormalMode.notifyAll();
+      insertParser.setCount(normal.count);
+      theNormalMode.notifyAll();
     }
+    theParser.reset();
   }
  public:
-  NormalRunner(Window*& activeWindow, NormalParser& parser, NormalMode& normalMode): 
-    activeWindow{activeWindow}, theParser{parser}, theNormalMode{normalMode} {}
+  NormalRunner(Window*& activeWindow, NormalParser& parser, NormalMode& normalMode, InsertParser& insertParser): 
+    activeWindow{activeWindow}, theParser{parser}, 
+    theNormalMode{normalMode}, insertParser{insertParser} {}
 };
 
 #endif

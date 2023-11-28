@@ -15,15 +15,17 @@ class InsertRunner: public CommandRunner{
   InsertParser& theParser;
   void notify(const Subject<Command*>&) override {
     Insert insert = *theParser.getCommand();
-    auto& tab = activeWindow->getTabManager().curr();
-    auto& filebuf = tab.getFilebuf();
-    auto& cursor = tab.getCursor();
     std::string theInsert;
     for (int i=1; i < insert.count; ++i) {
       theInsert += insert.sentence;
     }
+    theParser.reset();
+    auto& tab = activeWindow->getTabManager().curr();
+    auto& filebuf = tab.getFilebuf();
+    auto& cursor = tab.getCursor();
     filebuf.insert(cursor.getRow(), cursor.getCol(), theInsert);
     cursor.setCol(cursor.getCol() + theInsert.size());
+    activeWindow->render();
   }
  public:
   InsertRunner(Window*& activeWindow, InsertParser& parser): 

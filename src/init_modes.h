@@ -31,7 +31,7 @@ struct ModesClosure{
   // setup Normal Mode
   NormalParser normalParser;
   NormalMode normalMode{normalParser};
-  NormalRunner normalRunner{windowsClosure.activeWindow, normalParser, normalMode};
+  NormalRunner normalRunner{windowsClosure.activeWindow, normalParser, normalMode, insertParser};
 
   // whether we have exited from the rootWindow
   bool exitedFromRoot = false;
