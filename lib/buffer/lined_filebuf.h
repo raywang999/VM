@@ -9,7 +9,7 @@
 template<typename char_t>
 class LinedFilebuf: public LinedCharbuf<char_t> {
  public: 
-  const std::string& filename;
+  std::string filename;
   LinedFilebuf(const std::string& filename): filename{filename} {}
   // write the LinedCharbuf stored in memory to the underlying storage 
   virtual void persist() =0; 

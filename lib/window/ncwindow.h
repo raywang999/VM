@@ -6,11 +6,22 @@
 #include "lib/statusbar/status_bar.h"
 
 class NCWindow: public Window {
+  const StyleManager& styleManager;
   Textbox textbox;
   StatusBar statusBar;
+  Window_p doClone(){
+    return std::make_unique<NCWindow>(getTabManager(), styleManager);
+  }
+  
  public: 
+  NCWindow(Window* parent, const TabManager& tabManager, const StyleManager& styleManager): 
+    Window(parent, tabManager), 
+    styleManager{styleManager},
+    textbox(getTabManager(), styleManager) 
+  {}
   NCWindow(const TabManager& tabManager, const StyleManager& styleManager): 
     Window(tabManager), 
+    styleManager{styleManager},
     textbox(getTabManager(), styleManager) 
   {}
   void render() override;

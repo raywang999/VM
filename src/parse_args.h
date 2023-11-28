@@ -7,12 +7,19 @@
 
 // collection of globals used by main.cc and its helpers
 
-class Main{
+class TerminalArgs {
   void parse(size_t&i);
   void parseFlag(size_t&i);
  public:
   // files passed as cmdline args
   std::vector<std::string> files, args;
+  // parse terminal args from main
+  TerminalArgs(int argc, const char* argv[]){
+    for (int i=1; i < argc; ++i){
+      args.push_back(argv[i]);
+    }
+    parseArgs();
+  }
   struct HighlightSyntax {};
   struct SplitScreen {};
   struct ShowColor{};
@@ -37,7 +44,7 @@ class Main{
     });
   }
 
-  inline bool hasOption(Main::Option option) {
+  inline bool hasOption(Option option) {
     return find(option) != options.end();
   }
   // preforms actions based on terminal supplied options

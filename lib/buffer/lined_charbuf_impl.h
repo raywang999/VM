@@ -64,7 +64,7 @@ template<typename char_t>
 // erase `num` characters from line `line` starting at the `start` index (0 indexed)
 // - default start is 0, default num is npos (i.e. +infty)
 inline void LinedCharbuf<char_t>::erase(size_t line, size_t start, size_t num){
-  const auto& curline = lines[line];
+  auto& curline = lines[line];
   if (num == std::string::npos){
     num = curline.size()-start-1;
   }
@@ -73,13 +73,13 @@ inline void LinedCharbuf<char_t>::erase(size_t line, size_t start, size_t num){
 // insert all characters from `chars` into line `line` starting at index `start` (0 indexed) 
 template<typename char_t>
 inline void LinedCharbuf<char_t>::insert(size_t line, size_t start, std::basic_string<char_t> chars){
-  const auto& curline = lines[line];
+  auto& curline = lines[line];
   curline = curline.substr(0, start) + chars + curline.substr(start);
 }
 // append all characters from `chars` into end of line `line` (0 indexed) 
 template<typename char_t>
 inline void LinedCharbuf<char_t>::append(size_t line, std::basic_string<char_t> chars){
-  const auto& curline = lines[line];
+  auto& curline = lines[line];
   curline.pop_back();
   curline += chars + "\n";
 }

@@ -5,15 +5,25 @@
 #include <cstddef>
 
 #include "include/ncursespp.h"
-#include "include/manager.h"
 #include "include/renderable_box.h"
 #include "lib/tab/tab.h"
 
-class TabManager: private Manager<Tab>{
+class TabManager{
  public: 
-  using Manager<Tab>::next;
-  using Manager<Tab>::prev;
-  using Manager<Tab>::size;
+  std::vector<Tab> items;
+  // index of current item
+  size_t ind=0;
+  // return true iff there is a next element
+  bool next() noexcept {
+    if (ind+1 >= items.size()) return false;
+    ++ind; return true;
+  }
+  // return true iff there is a prev element
+  bool prev() noexcept {
+    if (ind == 0) return false;
+    --ind; return true;
+  }
+  size_t size() const noexcept {return items.size(); }
   // precondition: items is non-empty
   Tab& curr() {return items[ind];}
   const Tab& curr() const {return items[ind];}
@@ -21,7 +31,7 @@ class TabManager: private Manager<Tab>{
   // add a Tab to manage
   template<typename... Args>
   void emplace_back(Args&&... args){
-    Manager<Tab>::items.emplace_back(std::forward<Args>(args)...);
+    items.emplace_back(std::forward<Args>(args)...);
   }
 };
 

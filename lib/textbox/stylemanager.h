@@ -7,7 +7,6 @@
 #include <string> 
 
 #include "textstylergroup.h"
-#include "include/manager.h"
 
 // manages which filebufs are associated with which `TextStyler`s
 class StyleManager {

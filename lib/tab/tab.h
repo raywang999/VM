@@ -11,12 +11,12 @@ class Tab:
   virtual public Resizeable, 
   virtual public Translateable 
 { 
-  LinedFilebuf<char>& filebuf;
+  LinedFilebuf<char>* filebuf;
   Cursor cursor;
  public:
-  Tab(LinedFilebuf<char>& filebuf): filebuf{filebuf} {}
-  const LinedFilebuf<char>& getFilebuf() const noexcept {return filebuf;}
-  LinedFilebuf<char>& getFilebuf() noexcept {return filebuf;}
+  Tab(LinedFilebuf<char>* filebuf): filebuf{filebuf} {}
+  const LinedFilebuf<char>& getFilebuf() const noexcept {return *filebuf;}
+  LinedFilebuf<char>& getFilebuf() noexcept {return *filebuf;}
   const Cursor& getCursor() const noexcept {return cursor; }
   Cursor& getCursor() noexcept {return cursor; }
   size_t getTopLine() const noexcept {

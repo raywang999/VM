@@ -1,15 +1,15 @@
-#ifndef MODE_INSERT_H
-#define MODE_INSERT_H
+#ifndef MODE_NORMAL_H
+#define MODE_NORMAL_H
 
 #include <vector>
 
 #include "mode.h"
-#include "lib/command/parser/insert_parser.h"
-#include "lib/command/runner/insert_runner.h"
+#include "lib/command/parser/normal_parser.h"
+#include "lib/command/runner/normal_runner.h"
 
 // standard Insert Mode implementation 
-class InsertMode: public Mode {
-  InsertParser& parser;
+class NormalMode: public Mode {
+  NormalParser& parser;
  public: 
   // create an InsertMode with an InsertParser that we use
   InsertMode(InsertParser& parser): Mode({&parser}), parser{parser} {}
@@ -25,7 +25,7 @@ class InsertMode: public Mode {
   void consume(const Keystroke& keystroke) override;
 };
 
-inline void InsertMode::consume(const Keystroke& keystroke){
+inline void NormalMode::consume(const Keystroke& keystroke){
   if (keystroke.key == Key::Esc) {
     parser.notifyAll();
     parser.reset();

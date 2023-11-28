@@ -2,24 +2,24 @@
 
 #include "parse_args.h"
 
-void Main::parseFlag(size_t& i){ 
-  const auto& flag = Main::args[i];
+void TerminalArgs::parseFlag(size_t& i){ 
+  const auto& flag = TerminalArgs::args[i];
   if (flag == "--highlight-syntax"){
-    Main::options.push_back(Main::HighlightSyntax{});
+    TerminalArgs::options.push_back(TerminalArgs::HighlightSyntax{});
   } else if (flag == "--enable-macros"){
-    Main::options.push_back(Main::EnableMacros{});
+    TerminalArgs::options.push_back(TerminalArgs::EnableMacros{});
   } else if (flag == "--multi-file"){
-    Main::options.push_back(Main::EnableMultifile{});
+    TerminalArgs::options.push_back(TerminalArgs::EnableMultifile{});
   } else if (flag == "--show-color"){
-    Main::options.push_back(Main::ShowColor{});
+    TerminalArgs::options.push_back(TerminalArgs::ShowColor{});
   } else if (flag == "--color-set"){
-    std::string colorset = Main::args[++i];
-    Main::options.push_back(Main::SetColorset{colorset});
+    std::string colorset = TerminalArgs::args[++i];
+    TerminalArgs::options.push_back(TerminalArgs::SetColorset{colorset});
   } 
 }
 
 
-void Main::parse(size_t& i){
+void TerminalArgs::parse(size_t& i){
   //static DfaStep next[256];
   if (args[i][0] == '-'){
     parseFlag(i);
@@ -30,7 +30,7 @@ void Main::parse(size_t& i){
 
 
 // preforms actions based on terminal supplied options
-void Main::parseArgs(){
+void TerminalArgs::parseArgs(){
   for (size_t i=0; i < args.size();++i){
     parse(i);
   }
