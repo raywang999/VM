@@ -4,6 +4,9 @@
 #include "include/subject.h"
 #include "lib/command/command.h"
 
-class CommandSource: public Subject<Command> {};
+class CommandSource: public Subject<Command*> { 
+ public: 
+  virtual const Command* getCommand() const =0;
+};
 
 #endif

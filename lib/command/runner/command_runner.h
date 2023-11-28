@@ -2,8 +2,8 @@
 #define COMMAND_RUNNER_H
 
 #include "include/observer.h"
-#include "command.h"
+#include "lib/command/command.h"
 
-class CommandRunner: public Observer<Command> { };
+using CommandRunner = Observer<Command*>;
 
 #endif
