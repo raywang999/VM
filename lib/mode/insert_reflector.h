@@ -19,11 +19,12 @@ class InsertReflector: public KeystrokeConsumer{
 
 inline void InsertReflector::consume(const Keystroke& keystroke){
   if (keystroke.key == Key::Plain) {
-    auto activeTab = activeWindow->getTabManager().curr();
+    auto& activeTab = activeWindow->getTabManager().curr();
     auto& filebuf = activeTab.getFilebuf();
-    auto cursor = activeTab.getCursor();
+    auto& cursor = activeTab.getCursor();
     filebuf.insert(cursor.getRow(), cursor.getCol(), std::string(1,keystroke.value));
     cursor.setCol(cursor.getCol()+1);
+    activeWindow->render();
   }
 }
 

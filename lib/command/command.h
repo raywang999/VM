@@ -17,7 +17,7 @@ inline Command::~Command(){}
 // - e.g. 5x, rx, s, i, 3u, 5a, 2p, 2yy, 3dd
 struct Normal: public Command {
   int count;
-  char type;
+  char type; // one of a,c,d,o,p,r,s,u,x,y,A,I,J,O,P,R,S,X,.
   char data; // optional e.g. the 'x' in rx
   Normal(int count=0, char type=0, char data=0): 
     count{count}, type{type}, data{data} {}

@@ -8,6 +8,8 @@
 
 #include "lib/mode/mode_manager.h"
 #include "lib/mode/insert_mode.h"
+#include "lib/mode/normal_mode.h"
+#include "lib/command/runner/normal_runner.h"
 #include "lib/command/parser/normal_parser.h"
 #include "lib/buffer/file_manager.h"
 #include "lib/tab/tabmanager.h"
@@ -20,9 +22,16 @@ struct ModesClosure{
 
   ModeManager rootModeManager;
   
+  // setup Insert Mode
   InsertParser insertParser;
   InsertReflector insertReflector{windowsClosure.activeWindow};
   InsertRunner insertRunner{windowsClosure.activeWindow, insertParser};
+  InsertMode insertMode{insertParser};
+
+  // setup Normal Mode
+  NormalParser normalParser;
+  NormalMode normalMode{normalParser};
+  NormalRunner normalRunner{windowsClosure.activeWindow, normalParser, normalMode};
 
   // whether we have exited from the rootWindow
   bool exitedFromRoot = false;
@@ -32,14 +41,12 @@ struct ModesClosure{
     windowsClosure{windows}
   {
     // setup Insert Mode
-    InsertMode insertMode(insertParser);
     insertMode.attach_consumer(&insertReflector);
     insertParser.attach(&insertRunner);
     rootModeManager.attach(ModeType::Insert, &insertMode);
     
     // setup Normal Mode
-    NormalParser normalParser;
-    Mode normalMode({&normalParser});
+    normalParser.attach(&normalRunner);
     rootModeManager.attach(ModeType::Normal, &normalMode);
 
     keyboard.attach(&rootModeManager);

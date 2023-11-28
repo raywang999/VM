@@ -18,7 +18,6 @@ class Mode:
   SetMode theMode;
   std::vector<KeystrokeConsumer*> consumers;
  protected: 
-  void setMode(ModeType mode) noexcept {theMode.mode = mode;}
  public: 
   Mode() =default;
   // construct a Mode with a collection of KeystrokeConsumers
@@ -34,6 +33,9 @@ class Mode:
   void consume(const Keystroke& keystroke); 
 
   const SetMode* getCommand() const override {return &theMode; }
+
+  // forward a SetMode command to the parent ModeManager
+  void setMode(ModeType mode) noexcept {theMode.mode = mode;}
 };
 
 Mode::Mode(const std::initializer_list<KeystrokeConsumer*>& consumers): 

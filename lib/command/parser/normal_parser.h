@@ -1,5 +1,5 @@
-#ifndef BASIC_NORMAL_PARSER_H
-#define BASIC_NORMAL_PARSER_H
+#ifndef NORMAL_PARSER_H
+#define NORMAL_PARSER_H
 
 #include <string>
 #include <cctype>
@@ -9,7 +9,7 @@
 #include "lib/command/command.h"
 
 // parses basic normal mode commands 
-class BasicNormalParser: public CommandParser{
+class NormalParser: public CommandParser{
   CountedParser countedParser;
   // holds the currently parsed normal command
   Normal theCommand{};
