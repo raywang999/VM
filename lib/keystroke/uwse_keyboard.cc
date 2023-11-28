@@ -16,7 +16,7 @@ static std::unordered_map<int, Keystroke> toKS{
   // not sure what ncurses maps these to 
   // so just used integers given in student environment 
   {330, Keystroke{Key::Del}},
-  {96, Keystroke{Key::Esc}},
+  {27, Keystroke{Key::Esc}},
   {2, Keystroke{Key::Ctrl, 'b'}},
   {4, Keystroke{Key::Ctrl, 'd'}},
   {6, Keystroke{Key::Ctrl, 'f'}},

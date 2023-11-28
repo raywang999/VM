@@ -17,6 +17,7 @@ class NormalRunner: public CommandRunner{
   // the command must be one of a,cc,dd,i,o,p,r,s,u,x,yy,A,I,J,O,P,R,S,X,.
   void notify(const Subject<Command*>&) override {
     Normal normal = *theParser.getCommand();
+    theParser.reset();
     auto& tab = activeWindow->getTabManager().curr();
     auto& filebuf = tab.getFilebuf();
     auto& cursor = tab.getCursor();

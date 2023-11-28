@@ -13,7 +13,7 @@ struct NcursesClosure{
     initscr();
     cbreak();
     noecho();
-    keypad(stdscr, true);
+    keypad(stdscr, TRUE);
     int screenHeight, screenWidth;
     ncurses::getwindowhw(screenHeight, screenWidth);
 
