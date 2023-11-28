@@ -12,8 +12,6 @@ template<typename State> class Subject{
   void attach(Observer<State>* ob) {attachedObservers.push_back(ob); }
   // iterate through attachedObservers, calling their notify()
   void notifyAll();
-  // subclasses override this function 
-  virtual State getState() const =0;
   virtual ~Subject(){}
 };
 

@@ -6,9 +6,9 @@
 
 class KeystrokeSource: public Subject<Keystroke>{
  public: 
-  // get the next keystroke 
+  // get the next keystroke. Don't notify  
   virtual void getNext() =0;
-  // getState() will get the Current keystroke
+  virtual Keystroke getKeystroke() const =0; 
 };
 
 #endif

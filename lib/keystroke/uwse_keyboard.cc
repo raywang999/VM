@@ -25,7 +25,7 @@ static std::unordered_map<int, Keystroke> toKS{
   {23, Keystroke{Key::Ctrl, 'w'}}
 };
 
-Keystroke UWSEKeyboard::getState() const {
+Keystroke UWSEKeyboard::getKeystroke() const {
   // lookup the type in toKS
   if (toKS.count(currInput)){
     return toKS[currInput];

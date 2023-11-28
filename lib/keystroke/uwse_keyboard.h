@@ -9,7 +9,7 @@ class UWSEKeyboard: public KeystrokeSource {
   int currInput;
  public:
   // converts currInput from ncurses keystroke into Keystroke
-  Keystroke getState() const override; 
+  Keystroke getKeystroke() const override; 
   void getNext() override;
 };
 
