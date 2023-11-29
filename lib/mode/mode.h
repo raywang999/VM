@@ -30,7 +30,9 @@ class Mode:
   void attach_consumer(KeystrokeConsumer* consumer){consumers.push_back(consumer);}
   
   // add a CommandRunner to listen to our emmitted setMode events
-  void attach_runner(CommandRunner<SetMode>* runner) {CommandSource::attach(runner);};
+  void attach_runner(CommandRunner<SetMode>* runner) {
+    CommandSource<SetMode>::attach(runner);
+  }
 
   void consume(const Keystroke& keystroke); 
 
