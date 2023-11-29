@@ -66,9 +66,9 @@ class LinedCharbuf {
   void append(size_t line, std::basic_string<char_t> chars);
   void append(size_t line, char_t ch);
   // insert `num` blank lines before line `line`
-  void insert_lines(size_t line, size_t num);
+  void insertLines(size_t line, size_t num);
   // erase `num` blank lines starting from `line`
-  void erase_lines(size_t line, size_t num);
+  void eraseLines(size_t line, size_t num);
 
   size_t countLines() const noexcept { return lines.size(); }
   const std::basic_string<char_t>& getLine(size_t line) const noexcept { return lines[line]; }

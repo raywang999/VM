@@ -9,10 +9,6 @@ void MovementRunner::run(const Movement* movement){
   auto& cursor = tab.getCursor();
   auto col = cursor.getCol();
   auto row = cursor.getRow();
-  if (filebuf.countLines() == 0) {
-    // empty file, no movements are valid
-    return;
-  }
   // if don't use prev, the reset cursor col 
   if (!usePrev){ 
     usePrev = true; 

@@ -91,12 +91,12 @@ inline void LinedCharbuf<char_t>::append(size_t line, char_t ch){
 }
 // insert `num` blank lines before line `line`
 template<typename char_t>
-inline void LinedCharbuf<char_t>::insert_lines(size_t line, size_t num){
+inline void LinedCharbuf<char_t>::insertLines(size_t line, size_t num){
   lines.insert(lines.begin()+line, num, "\n");
 }
 // erase `num` blank lines starting from `line`
 template<typename char_t>
-inline void LinedCharbuf<char_t>::erase_lines(size_t line, size_t num){
+inline void LinedCharbuf<char_t>::eraseLines(size_t line, size_t num){
   lines.erase(lines.begin()+line, lines.begin()+line+num);
 }
 

@@ -4,21 +4,20 @@ template<typename char_t>
 FstreamLFB<char_t>::FstreamLFB(const std::string& filename): 
   LinedFilebuf<char_t>(filename)
 {
+  using Base = LinedCharbuf<char_t>;
   std::basic_fstream<char_t> theFS(filename, std::ios_base::in);
   char_t ch;
-  if (theFS.get(ch)){
-    // the file isn't empty
-    LinedCharbuf<char_t>::insert_lines(0,1);
-    if (ch != '\n'){
-      LinedCharbuf<char_t>::append(0,ch);
-    }
-  }
+  Base::insertLines(0,1);
   while (theFS.get(ch)){
     if (ch == '\n'){
-      LinedCharbuf<char_t>::insert_lines(LinedCharbuf<char_t>::countLines(),1);
+      Base::insertLines(Base::countLines(),1);
     } else {
-      LinedCharbuf<char_t>::append(LinedCharbuf<char_t>::countLines()-1, ch);
+      Base::append(Base::countLines()-1, ch);
     }
+  }
+  if (Base::countLines() > 1) {
+    // not an empty file, so last line was extraneous 
+    Base::eraseLines(Base::countLines()-1,1);
   }
 }
 

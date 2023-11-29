@@ -6,6 +6,8 @@
 
 #include "lined_charbuf.h"
 
+// represents the underlying file inside a buffer 
+// if the file is empty, provides a single empty line
 template<typename char_t>
 class LinedFilebuf: public LinedCharbuf<char_t> {
  public: 
