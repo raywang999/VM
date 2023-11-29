@@ -10,7 +10,7 @@
 #include "lib/command/command.h"
 
 // parses basic normal mode commands 
-class NormalParser: public CommandParser{
+class NormalParser: public CommandParser<Normal>{
   CountedParser countedParser;
   // holds the currently parsed normal command
   Normal theCommand{};

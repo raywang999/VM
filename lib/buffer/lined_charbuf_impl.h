@@ -63,11 +63,10 @@ LinedCharbuf<char_t>::const_iterator::operator--() noexcept{
 template<typename char_t> 
 // erase `num` characters from line `line` starting at the `start` index (0 indexed)
 // - default start is 0, default num is npos (i.e. +infty)
+// - erasing more than number of chars available does nothing
 inline void LinedCharbuf<char_t>::erase(size_t line, size_t start, size_t num){
   auto& curline = lines[line];
-  if (num == std::string::npos){
-    num = curline.size()-start-1;
-  }
+  num = min(num, curline.size()-start-1);
   curline = curline.substr(0,start) + curline.substr(start+num);
 }
 // insert all characters from `chars` into line `line` starting at index `start` (0 indexed) 

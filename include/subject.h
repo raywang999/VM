@@ -3,25 +3,22 @@
 
 #include <vector>
 
-template<typename State> class Observer;
+template<typename T> class Observer;
 
-template<typename State> class Subject{
-  std::vector<Observer<State>*> attachedObservers;
+// Apply CRTP
+template<typename State, typename S> class Subject{
+  std::vector<Observer<S>*> attachedObservers;
  public: 
   Subject() = default;
-  void attach(Observer<State>* ob) {attachedObservers.push_back(ob); }
+  void attach(Observer<S>* ob) {attachedObservers.push_back(ob); }
   // iterate through attachedObservers, calling their notify()
-  void notifyAll();
-  virtual ~Subject(){}
-};
-
-template<typename State> 
-inline void Subject<State>::notifyAll(){
-  for (auto obp: attachedObservers){
-    obp->notify(*this);
+  // the private subclasses should pass this
+  void notifyAll(S* sub) {
+    for (auto obp: attachedObservers){
+      obp->notify(*sub);
+    }
   }
-}
-
+};
 
 #endif
 

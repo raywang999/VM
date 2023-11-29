@@ -8,26 +8,19 @@
 #include "lib/window/window.h"
 
 // takes a completed Insert command and 
-// - saves it to history 
-// - applies multiplier n-1 times by repeatedly inserting text into the buffer
-class InsertRunner: public CommandRunner{
+// - applies multiplier by repeatedly inserting text into the buffer
+class InsertRunner: public CommandRunner<Insert>{
   Window*& activeWindow;
   InsertParser& theParser;
-  void notify(const Subject<Command*>&) override {
-    Insert insert = *theParser.getCommand();
-    std::string theInsert;
-    for (int i=1; i < insert.count; ++i) {
-      theInsert += insert.sentence;
-    }
-    theParser.reset();
-    auto& tab = activeWindow->getTabManager().curr();
-    auto& filebuf = tab.getFilebuf();
-    auto& cursor = tab.getCursor();
-    filebuf.insert(cursor.getRow(), cursor.getCol(), theInsert);
-    cursor.setCol(cursor.getCol() + theInsert.size());
-    activeWindow->render();
-  }
  public:
+  // handle insert command from user typing
+  void notify(const CommandSource<Insert>&) override {
+    auto command = Insert{*theParser.getCommand()};
+    // the user already typed a copy of the insert, so only need to run count-1
+    --command.count;
+    run(&command);
+  }
+  void run(const Insert*) override;
   InsertRunner(Window*& activeWindow, InsertParser& parser): 
     activeWindow{activeWindow}, theParser{parser} {}
 };

@@ -20,7 +20,7 @@ class CountedParser {
   bool first = true;
 
  public: 
-  void reset() { theCount = 0; valid = first = true; }
+  void reset() { theCount = 1; valid = first = true; }
   int getCount() { return theCount; }
   // parses optional count. 
   // if keystroke is not a number, 

@@ -5,23 +5,26 @@
 
 #include "mode.h"
 #include "lib/command/parser/normal_parser.h"
+#include "lib/command/parser/movement_parser.h"
 
-// standard Insert Mode implementation 
+// standard Normal Mode implementation 
 class NormalMode: public Mode {
-  NormalParser& parser;
+  NormalParser& normalParser;
+  MovementParser& movementParser;
  public: 
-  NormalMode(NormalParser& parser): Mode({&parser}), parser{parser} {}
-  // if `Esc` is pressed, reset all parsers
+  NormalMode(NormalParser& normalParser, MovementParser& movementParser): 
+    Mode({&normalParser, &movementParser}), normalParser{normalParser}, movementParser{movementParser} {}
+  // if `Esc` is pressed, reset all normalParsers
   void consume(const Keystroke& keystroke) override;
+  void reset() { normalParser.reset(); movementParser.reset(); }
 };
 
 inline void NormalMode::consume(const Keystroke& keystroke){
   if (keystroke.key == Key::Esc) {
-    parser.reset();
-    setMode(ModeType::Normal);
-    CommandSource::notifyAll();
+    reset(); // reset all parsers
+  } else {
+    Mode::consume(keystroke); // forward the keystroke to the parsers and consumers
   }
-  Mode::consume(keystroke); // forward the keystroke to the parsers and consumers
 }
 
 #endif

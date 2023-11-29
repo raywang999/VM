@@ -8,7 +8,7 @@
 #include "lib/command/command.h"
 
 // parses read/write Macro (i.e. q,@) commands 
-class MacroParser: public CommandParser{
+class MacroParser: public CommandParser<Macro>{
   CountedParser countedParser;
   // holds the currently parsed macro 
   Macro theMacro;

@@ -23,6 +23,8 @@ bool MovementParser::parse(const Keystroke& keystroke) {
       notifyAll();
       return true;
     }
+    // otherwise, we are in the first part 
+    theCommand.type = keystroke.value;
     if (terminalTypes.count(keystroke.value)){
       // don't need extra seek, i.e. we're done parsing 
       notifyAll();

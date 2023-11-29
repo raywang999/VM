@@ -5,7 +5,6 @@
 
 #include "mode.h"
 #include "lib/command/parser/insert_parser.h"
-#include "lib/command/runner/insert_runner.h"
 
 // standard Insert Mode implementation 
 class InsertMode: public Mode {

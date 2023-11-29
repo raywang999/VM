@@ -5,6 +5,8 @@
 
 #include "modetype.h"
 #include "include/subject.h"
+#include "include/observer.h"
+#include "lib/command/command_source.h"
 #include "lib/command/runner/command_runner.h"
 #include "lib/command/parser/command_parser.h"
 
@@ -12,7 +14,7 @@
 // - forwards keystrokes from the attached source to the keystroke consumers
 class Mode: 
   virtual public KeystrokeConsumer,
-  virtual public CommandSource
+  virtual public CommandSource<SetMode>
 {
   // a changeMode command for our parent ModeManager to run
   SetMode theMode;
@@ -28,7 +30,7 @@ class Mode:
   void attach_consumer(KeystrokeConsumer* consumer){consumers.push_back(consumer);}
   
   // add a CommandRunner to listen to our emmitted setMode events
-  void attach_runner(CommandRunner* runner) {CommandSource::attach(runner);};
+  void attach_runner(CommandRunner<SetMode>* runner) {CommandSource::attach(runner);};
 
   void consume(const Keystroke& keystroke); 
 
@@ -38,10 +40,10 @@ class Mode:
   void setMode(ModeType mode) noexcept {theMode.mode = mode;}
 };
 
-Mode::Mode(const std::initializer_list<KeystrokeConsumer*>& consumers): 
+inline Mode::Mode(const std::initializer_list<KeystrokeConsumer*>& consumers): 
   consumers{consumers.begin(), consumers.end()} {}
 
-void Mode::consume(const Keystroke& keystroke){
+inline void Mode::consume(const Keystroke& keystroke){
   for (auto consumer: consumers){
     consumer->consume(keystroke);
   }

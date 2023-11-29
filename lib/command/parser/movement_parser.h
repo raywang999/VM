@@ -10,7 +10,7 @@
 #include "lib/command/command.h"
 
 // parses basic normal mode commands 
-class MovementParser: public CommandParser{
+class MovementParser: public CommandParser<Movement>{
   CountedParser countedParser;
   // holds the currently parsed movement 
   Movement theCommand{};

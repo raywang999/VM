@@ -4,9 +4,14 @@
 #include "include/subject.h"
 #include "lib/command/command.h"
 
-class CommandSource: public Subject<Command*> { 
+// parameterize Command Sources by the Type of command they release
+template<typename CommandType>
+  requires std::derived_from<CommandType, Command>
+class CommandSource: Subject<CommandType, CommandSource<CommandType>> { 
  public: 
-  virtual const Command* getCommand() const =0;
+  virtual const CommandType* getCommand() const =0;
+  using Subject<CommandType, CommandSource<CommandType>>::attach;
+  void notifyAll(){ Subject<CommandType, CommandSource<CommandType>>::notifyAll(this);};
 };
 
 #endif

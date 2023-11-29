@@ -1,20 +1,20 @@
 #ifndef KEYSTROKE_CONSUMER_H
 #define KEYSTROKE_CONSUMER_H
 
-#include "lib/keystroke/keystroke.h"
-#include "lib/keystroke/keystroke_source.h"
 #include "include/observer.h"
-#include "include/subject.h"
+#include "keystroke_source.h"
 
 // KeystrokeConsumers really do listen for keystrokes from an abstract source of keystroke
 // contrary to normal Observer, Subject pattern
-class KeystrokeConsumer: public Observer<Keystroke>{
+template<>
+class Observer<KeystrokeSource>{
  public: 
+  // consume the keystroke
   virtual void consume(const Keystroke& keystroke) =0;
-  void notify(const Subject<Keystroke>& source){
-    consume(static_cast<const KeystrokeSource&>(source).getKeystroke());
-  }
+  void notify(const KeystrokeSource& source){ consume(source.getKeystroke()); }
 };
+
+using KeystrokeConsumer = Observer<KeystrokeSource>;
 
 #endif
 

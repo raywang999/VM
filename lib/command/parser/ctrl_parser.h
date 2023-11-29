@@ -9,7 +9,7 @@
 #include "lib/command/command.h"
 
 // parses ctrl commands 
-class CtrlParser: public CommandParser{
+class CtrlParser: public CommandParser<Ctrl>{
   CountedParser countedParser{};
   // holds the currently parsed ctrl
   Ctrl theCommand;

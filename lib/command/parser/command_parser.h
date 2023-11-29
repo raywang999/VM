@@ -5,7 +5,9 @@
 #include "lib/keystroke/keystroke.h"
 #include "lib/command/command_source.h"
 
-class CommandParser: virtual public KeystrokeConsumer, virtual public CommandSource {
+template<typename CommandType>
+  requires std::derived_from<CommandType, Command>
+class CommandParser: virtual public KeystrokeConsumer, virtual public CommandSource<CommandType> {
   // subclasses should override this to control how it parses inputs
   // - returns true if and only if the keystroke was valid 
   virtual bool parse(const Keystroke& ks) =0;
@@ -21,10 +23,11 @@ class CommandParser: virtual public KeystrokeConsumer, virtual public CommandSou
   // - if fail to parse, set state to invalid 
   void consume(const Keystroke& ks) override;
   bool isValid() const {return valid; }
-  using CommandSource::attach;
+  using CommandSource<CommandType>::attach;
 };
 
-inline void CommandParser::consume(const Keystroke& ks){
+template<typename CommandType>
+inline void CommandParser<CommandType>::consume(const Keystroke& ks){
   if (valid){
     valid = parse(ks);
   }

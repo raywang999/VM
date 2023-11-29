@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "mode.h"
+#include "lib/window/window.h"
 #include "lib/keystroke/keystroke_consumer.h"
 #include "lib/buffer/file_manager.h"
 #include "lib/tab/tab.h"

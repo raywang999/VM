@@ -10,12 +10,15 @@
 #include "lib/keystroke/keystroke_consumer.h"
 
 // manages currently active `Mode`
-class ModeManager: virtual public KeystrokeConsumer, virtual public CommandRunner {
+class ModeManager: virtual public KeystrokeConsumer, virtual public CommandRunner<SetMode> {
   ModeType currentMode{ModeType::Normal};
   std::unordered_map<ModeType, Mode*> modeMap;
   // watch for `SwitchMode` commands
-  void notify(const Subject<Command*>& ) override; 
+  void run(const SetMode* command) override {
+    currentMode = command->mode;
+  }
  public: 
+  ModeType getMode() const noexcept { return currentMode; }
   // forward the keystroke to the currently active mode 
   // listens for this Mode's setMode commands
   void consume(const Keystroke& keystroke) override;
@@ -24,11 +27,6 @@ class ModeManager: virtual public KeystrokeConsumer, virtual public CommandRunne
     mode->attach_runner(this);
   }
 };
-
-inline void ModeManager::notify(const Subject<Command*>&) {
-  const SetMode mode = *modeMap[currentMode]->getCommand();
-  currentMode = mode.mode;
-}
 
 inline void ModeManager::consume(const Keystroke& keystroke) {
   modeMap[currentMode]->consume(keystroke);

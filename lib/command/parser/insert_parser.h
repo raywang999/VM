@@ -7,7 +7,7 @@
 #include "lib/command/parser/counted_parser.h"
 #include "lib/command/command.h"
 
-class InsertParser: public CommandParser{
+class InsertParser: public CommandParser<Insert>{
   // holds the currently parsed insert sequence 
   Insert theCommand{1,std::string{}};
   bool parse(const Keystroke& keystroke) override{

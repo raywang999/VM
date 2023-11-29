@@ -5,6 +5,7 @@
 
 #include <variant> 
 #include <string>
+#include <vector>
 
 #include "lib/mode/modetype.h"
 
@@ -85,6 +86,12 @@ struct Macro: public Command {
   char type; 
   Macro(int count = 0, char reg =0, char type=0): 
     count{count}, reg{reg}, type{type} {}
+};
+
+// a sequence of commands
+struct Sequence: public Command {
+  // the sequence of commands in chronological order
+  std::vector<Command*> theSequence;
 };
 
 #endif
