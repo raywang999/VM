@@ -7,7 +7,6 @@ void InsertRunner::run(const Insert* insert){
   for (int i=0; i < insert->count; ++i) {
     theInsert += insert->sentence;
   }
-  theParser.reset();
   auto& tab = activeWindow->getTabManager().curr();
   auto& filebuf = tab.getFilebuf();
   auto& cursor = tab.getCursor();

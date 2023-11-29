@@ -7,6 +7,7 @@
 bool MovementParser::parse(const Keystroke& keystroke) {
   if (keystroke.key == Key::Plain){
     if (first){ // if first is 0, then this is the `0` movement, not a count
+      first = false;
       if (keystroke.value == '0'){
         theCommand.count = 1; 
         theCommand.type = '0';

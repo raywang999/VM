@@ -2,13 +2,11 @@
 #define MOVEMENT_RUNNER_H
 
 #include "lib/command/runner/command_runner.h"
-#include "lib/mode/normal_mode.h"
 #include "lib/window/window.h"
 
 // takes a basic Movement mode Command and runs it
 class MovementRunner: public CommandRunner<Movement>{
   Window*& activeWindow;
-  NormalMode& normalMode;
   // the previous position of the cursor's column 
   // used when jumping lines with different column sizes
   // only changed when a non-Ctrl command, and non j,k command is run 
@@ -20,8 +18,8 @@ class MovementRunner: public CommandRunner<Movement>{
   void unsetPrev() noexcept {usePrev = false;}
   // the movement must be one of bfhjklnwFN^$0%;
   void run(const Movement* movement); 
-  MovementRunner(Window*& activeWindow, NormalMode& normalMode): 
-    activeWindow{activeWindow}, normalMode{normalMode} {}
+  MovementRunner(Window*& activeWindow): 
+    activeWindow{activeWindow}{}
 };
 
 #endif

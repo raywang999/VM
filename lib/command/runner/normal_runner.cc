@@ -9,5 +9,4 @@ void NormalRunner::run(const Normal* normal){
     insertParser.setCount(normal->count);
     theNormalMode.notifyAll();
   }
-  theNormalMode.reset();
 }

@@ -14,9 +14,7 @@ class ModeManager: virtual public KeystrokeConsumer, virtual public CommandRunne
   ModeType currentMode{ModeType::Normal};
   std::unordered_map<ModeType, Mode*> modeMap;
   // watch for `SwitchMode` commands
-  void run(const SetMode* command) override {
-    currentMode = command->mode;
-  }
+  void run(const SetMode* command) override { currentMode = command->mode; }
  public: 
   ModeType getMode() const noexcept { return currentMode; }
   // forward the keystroke to the currently active mode 

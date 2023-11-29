@@ -13,11 +13,12 @@ template<typename State, typename S> class Subject{
   void attach(Observer<S>* ob) {attachedObservers.push_back(ob); }
   // iterate through attachedObservers, calling their notify()
   // the private subclasses should pass this
-  void notifyAll(S* sub) {
+  void notifyAll() {
     for (auto obp: attachedObservers){
-      obp->notify(*sub);
+      obp->notify(static_cast<S&>(*this));
     }
   }
+  virtual ~Subject(){}
 };
 
 #endif

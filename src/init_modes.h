@@ -6,6 +6,8 @@
 #include "parse_args.h"
 #include "init_windows.h"
 
+#include "lib/command/command_source.h"
+
 #include "lib/mode/mode_manager.h"
 #include "lib/mode/insert_mode.h"
 #include "lib/mode/normal_mode.h"
@@ -16,6 +18,7 @@
 #include "lib/command/runner/movement_runner.h"
 #include "lib/command/runner/ctrl_runner.h"
 #include "lib/command/runner/macro_runner.h"
+#include "lib/command/runner/parser_group.h"
 
 #include "lib/command/parser/normal_parser.h"
 #include "lib/command/parser/movement_parser.h"
@@ -32,21 +35,24 @@ struct ModesClosure{
   ModeManager rootModeManager;
   
   // setup Insert Mode
+  ParserGroup insertGroup;
   InsertParser insertParser;
   InsertReflector insertReflector{windowsClosure.activeWindow};
-  InsertRunner insertRunner{windowsClosure.activeWindow, insertParser};
+  InsertRunner insertRunner{windowsClosure.activeWindow};
   InsertMode insertMode{insertParser};
 
   // setup Normal Mode
+  ParserGroup normalGroup;
   NormalParser normalParser;
   MovementParser movementParser;
   CtrlParser ctrlParser;
   MacroParser macroParser;
-  NormalMode normalMode{normalParser, movementParser};
-  MovementRunner movementRunner{windowsClosure.activeWindow, normalMode};
+  NormalMode normalMode{normalGroup};
+  MovementRunner movementRunner{windowsClosure.activeWindow};
   CtrlRunner ctrlRunner{windowsClosure.activeWindow, movementRunner};
   MacroRunner macroRunner{windowsClosure.activeWindow};
   NormalRunner normalRunner{windowsClosure.activeWindow, normalMode, insertParser};
+
 
   // whether we have exited from the rootWindow
   bool exitedFromRoot = false;
@@ -65,9 +71,25 @@ struct ModesClosure{
     normalParser.attach(&normalRunner);
     ctrlParser.attach(&ctrlRunner);
     macroParser.attach(&macroRunner);
+    normalMode.attach_consumer(&movementParser);
+    normalMode.attach_consumer(&macroParser);
+    normalMode.attach_consumer(&normalParser);
+    normalMode.attach_consumer(&ctrlParser);
     rootModeManager.attach(ModeType::Normal, &normalMode);
 
     keyboard.attach(&rootModeManager);
+
+    // attach ParserGroup last since they will reset the parser
+    macroParser.attach(&normalGroup);
+    movementParser.attach(&normalGroup);
+    normalParser.attach(&normalGroup);
+    ctrlParser.attach(&normalGroup);
+    insertParser.attach(&insertGroup);
+    normalGroup.add(&macroParser);
+    normalGroup.add(&normalParser);
+    normalGroup.add(&ctrlParser);
+    normalGroup.add(&movementParser);
+    insertGroup.add(&insertParser);
   }
 };
 

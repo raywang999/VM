@@ -16,12 +16,12 @@ class ParserGroup:
   std::vector<Resetable*> resetables;
  public: 
   // reset all resetables
-  void run(const Command*){
-    for (auto resetable: resetables){ resetable->reset(); }
-  };
+  void run(const Command*){ reset(); };
 
   // add a resetable to the group
   void add(Resetable* resetable){resetables.push_back(resetable);}
+  void reset() { for (auto resetable: resetables){ resetable->reset(); }
+  }
 };
 
 #endif

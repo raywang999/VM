@@ -29,28 +29,24 @@ void MovementRunner::run(const Movement* movement){
     newrow = min(newrow,filebuf.countLines()-1);
     newrow = max(newrow,0);
     // ensure 0 <= newcol < # of characters in the file
-    int newcol = min(prevCursorCol, static_cast<int>(filebuf.getLine(newrow).size())-1);
+    int newcol = min(prevCursorCol, filebuf.getLine(newrow).size()-2);
     newcol = max(newcol, 0);
     if (newrow == row){ movementSuccess = false; } // failed to move
     else {
       cursor.setCol(newcol);
       cursor.setRow(newrow);
     }
-  } else if(movement->type == 'h'){
-    const auto newcol = col - movement->count;
-    if (newcol < 0){ movementSuccess = false; }
-    else {
-      prevCursorCol = newcol;
-      cursor.setCol(newcol);
-    }
-  } else if(movement->type == 'l'){
-    const auto newcol = col + movement->count;
-    if (newcol >= filebuf.getLine(row).size()){ movementSuccess = false; }
+  } else if(movement->type == 'l' || movement->type == 'h'){
+    int dc = movement->count;
+    if (movement->type == 'h') dc *= -1;
+    auto newcol =  col + dc;
+    newcol = min(newcol, filebuf.getLine(row).size()-2);
+    newcol = max(0,newcol); 
+    if (newcol == col){ movementSuccess = false; }
     else {
       prevCursorCol = newcol;
       cursor.setCol(newcol);
     }
   }
   if (movementSuccess){ activeWindow->render(); }
-  normalMode.reset();
 }

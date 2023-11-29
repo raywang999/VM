@@ -12,6 +12,7 @@ class Observer<KeystrokeSource>{
   // consume the keystroke
   virtual void consume(const Keystroke& keystroke) =0;
   void notify(const KeystrokeSource& source){ consume(source.getKeystroke()); }
+  virtual ~Observer(){}
 };
 
 using KeystrokeConsumer = Observer<KeystrokeSource>;

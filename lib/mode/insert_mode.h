@@ -27,7 +27,6 @@ class InsertMode: public Mode {
 inline void InsertMode::consume(const Keystroke& keystroke){
   if (keystroke.key == Key::Esc) {
     parser.notifyAll();
-    parser.reset();
     setMode(ModeType::Normal);
     CommandSource::notifyAll();
   }
