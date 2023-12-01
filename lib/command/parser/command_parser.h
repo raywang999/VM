@@ -6,12 +6,14 @@
 #include "lib/keystroke/keystroke.h"
 #include "lib/command/command_source.h"
 
+class CommandParserBase:
+  virtual public KeystrokeConsumer, 
+  virtual public Resetable {};
 template<typename CommandType>
   requires std::derived_from<CommandType, Command>
 class CommandParser: 
-  virtual public KeystrokeConsumer, 
-  virtual public CommandSource<CommandType>, 
-  virtual public Resetable
+  virtual public CommandParserBase,
+  virtual public CommandSource<CommandType>
 {
   // subclasses should override this to control how it parses inputs
   // - returns true if and only if the keystroke was valid 

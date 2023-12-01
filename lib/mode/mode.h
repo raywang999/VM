@@ -12,12 +12,7 @@
 
 // Groups together the keystroke consumers, CommandParsers, and CommandRunners for a Mode
 // - forwards keystrokes from the attached source to the keystroke consumers
-class Mode: 
-  virtual public KeystrokeConsumer,
-  virtual public CommandSource<SetMode>
-{
-  // a changeMode command for our parent ModeManager to run
-  SetMode theMode;
+class Mode: public KeystrokeConsumer {
   std::vector<KeystrokeConsumer*> consumers;
  protected: 
  public: 
@@ -29,17 +24,8 @@ class Mode:
   // once attached, any incoming keystrokes will be forwarded to them
   void attach_consumer(KeystrokeConsumer* consumer){consumers.push_back(consumer);}
   
-  // add a CommandRunner to listen to our emmitted setMode events
-  void attach_runner(CommandRunner<SetMode>* runner) {
-    CommandSource<SetMode>::attach(runner);
-  }
-
+  // forwards keystroke to consumers
   void consume(const Keystroke& keystroke); 
-
-  const SetMode* getCommand() const override {return &theMode; }
-
-  // forward a SetMode command to the parent ModeManager
-  void setMode(ModeType mode) noexcept {theMode.mode = mode;}
 };
 
 inline Mode::Mode(const std::initializer_list<KeystrokeConsumer*>& consumers): 

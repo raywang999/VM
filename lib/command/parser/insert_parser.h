@@ -4,7 +4,6 @@
 #include <string>
 
 #include "lib/command/parser/command_parser.h"
-#include "lib/command/parser/counted_parser.h"
 #include "lib/command/command.h"
 
 class InsertParser: public CommandParser<Insert>{
@@ -26,6 +25,7 @@ class InsertParser: public CommandParser<Insert>{
  public:
   const Insert* getCommand() const {return &theCommand;};
   void setCount(int count) noexcept {theCommand.count = count;}
+  void setMode(char mode) noexcept {theCommand.mode = mode;}
 };
 
 #endif

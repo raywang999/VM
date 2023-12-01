@@ -8,9 +8,10 @@
 class UWSEKeyboard: public KeystrokeSource {
   int currInput;
  public:
+  // get the next keystroke. Don't notify  
+  void getNext();
   // converts currInput from ncurses keystroke into Keystroke
   Keystroke getKeystroke() const override; 
-  void getNext() override;
 };
 
 #endif

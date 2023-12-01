@@ -16,6 +16,9 @@ class Textbox: public RenderableBox{
   const TabManager& tabManager;
   // the StyleManager `main` created from which I get styles to apply 
   const StyleManager& styleManager;
+  // helper methods 
+  void printEmptylineStart(int row, int col);
+  void fillRestLine(int row, int col);
  public:
   Textbox(const TabManager& tabM, const StyleManager& styleM):
     tabManager{tabM}, styleManager{styleM} {}

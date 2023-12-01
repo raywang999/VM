@@ -9,28 +9,25 @@
 // standard Insert Mode implementation 
 class InsertMode: public Mode {
   InsertParser& parser;
+  ModeManager& modeManager;
  public: 
   // create an InsertMode with an InsertParser that we use
-  InsertMode(InsertParser& parser): Mode({&parser}), parser{parser} {}
-  // create an InsertMode with an InsertParser that we use
-  InsertMode(InsertParser& parser, const std::initializer_list<KeystrokeConsumer*>& consumers): 
-    Mode(consumers), parser{parser}
-  {
-    Mode::attach_consumer(&parser);
-  }
+  InsertMode(InsertParser& parser, ModeManager& manager): 
+    Mode({&parser}), parser{parser}, modeManager{manager} {}
   // if `Esc` is pressed, emit 
   // - the child InsertParser's `Insert` command
-  // - a `SetMode` command to set to Normal 
+  // - reset the parser
   void consume(const Keystroke& keystroke) override;
 };
 
 inline void InsertMode::consume(const Keystroke& keystroke){
   if (keystroke.key == Key::Esc) {
     parser.notifyAll();
-    setMode(ModeType::Normal);
-    CommandSource::notifyAll();
+    parser.reset();
+    modeManager.setMode(ModeType::Normal);
+  } else {
+    Mode::consume(keystroke); // forward the keystroke to the parsers and consumers
   }
-  Mode::consume(keystroke); // forward the keystroke to the parsers and consumers
 }
 
 #endif

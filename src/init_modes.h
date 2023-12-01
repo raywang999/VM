@@ -13,7 +13,6 @@
 #include "lib/mode/normal_mode.h"
 
 #include "lib/command/runner/insert_reflector.h"
-#include "lib/command/runner/insert_runner.h"
 #include "lib/command/runner/normal_runner.h"
 #include "lib/command/runner/movement_runner.h"
 #include "lib/command/runner/ctrl_runner.h"
@@ -35,11 +34,9 @@ struct ModesClosure{
   ModeManager rootModeManager;
   
   // setup Insert Mode
-  ParserGroup insertGroup;
   InsertParser insertParser;
   InsertReflector insertReflector{windowsClosure.activeWindow};
-  InsertRunner insertRunner{windowsClosure.activeWindow};
-  InsertMode insertMode{insertParser};
+  InsertMode insertMode{insertParser, rootModeManager};
 
   // setup Normal Mode
   ParserGroup normalGroup;
@@ -51,7 +48,7 @@ struct ModesClosure{
   MovementRunner movementRunner{windowsClosure.activeWindow};
   CtrlRunner ctrlRunner{windowsClosure.activeWindow, movementRunner};
   MacroRunner macroRunner{windowsClosure.activeWindow};
-  NormalRunner normalRunner{windowsClosure.activeWindow, normalMode, insertParser};
+  NormalRunner normalRunner{windowsClosure.activeWindow, rootModeManager, insertParser};
 
 
   // whether we have exited from the rootWindow
@@ -63,7 +60,6 @@ struct ModesClosure{
   {
     // setup Insert Mode
     insertMode.attach_consumer(&insertReflector);
-    insertParser.attach(&insertRunner);
     rootModeManager.attach(ModeType::Insert, &insertMode);
     
     // setup Normal Mode
@@ -71,25 +67,20 @@ struct ModesClosure{
     normalParser.attach(&normalRunner);
     ctrlParser.attach(&ctrlRunner);
     macroParser.attach(&macroRunner);
-    normalMode.attach_consumer(&movementParser);
-    normalMode.attach_consumer(&macroParser);
-    normalMode.attach_consumer(&normalParser);
-    normalMode.attach_consumer(&ctrlParser);
     rootModeManager.attach(ModeType::Normal, &normalMode);
 
     keyboard.attach(&rootModeManager);
 
-    // attach ParserGroup last since they will reset the parser
+    // attach ParserGroup last since they will reset the parsers
+    normalMode.attach_consumer(&normalGroup);
     macroParser.attach(&normalGroup);
     movementParser.attach(&normalGroup);
     normalParser.attach(&normalGroup);
     ctrlParser.attach(&normalGroup);
-    insertParser.attach(&insertGroup);
     normalGroup.add(&macroParser);
     normalGroup.add(&normalParser);
     normalGroup.add(&ctrlParser);
     normalGroup.add(&movementParser);
-    insertGroup.add(&insertParser);
   }
 };
 

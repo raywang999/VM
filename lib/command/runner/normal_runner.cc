@@ -4,9 +4,12 @@ void NormalRunner::run(const Normal* normal){
   auto& tab = activeWindow->getTabManager().curr();
   auto& filebuf = tab.getFilebuf();
   auto& cursor = tab.getCursor();
-  if (normal->type == 'i') { // enter insert mode
-    theNormalMode.setMode(ModeType::Insert);
+  if (insertDispatch.count(normal->type)){ 
+    // switch to insert mode
+    insertDispatch.at(normal->type)(this); 
     insertParser.setCount(normal->count);
-    theNormalMode.notifyAll();
+    insertParser.setMode(normal->type);
+    modeManager.setMode(ModeType::Insert);
+    activeWindow->render();
   }
 }

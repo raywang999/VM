@@ -58,22 +58,17 @@ struct Ex: public Command {
 
 // Insert mode command. I.e. a chain of partial inserts
 struct Insert: public Command {
-  int count;
   std::string sentence;
-  Insert(int count = 0, const std::string& sentence = ""): 
-    count{count}, sentence{sentence} {}
+  int count;
+  char mode; // mode. I.e. for o, O, i
+  Insert(int count = 0, const std::string& sentence = "", char mode = 'i'): 
+    sentence{sentence}, count{count}, mode{mode} {}
 };
 
 // Replace mode command. I.e. a chain of partial replaces
 struct Replace: public Command {
   int count;
   std::string sentence;
-};
-
-// tells ModeManager to switch to a mode
-struct SetMode: public Command {
-  ModeType mode;
-  SetMode(ModeType mode = ModeType::Normal): mode{mode} {}
 };
 
 // Command to write/play macro at a register

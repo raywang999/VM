@@ -1,11 +1,17 @@
+#include <string>
+
 #include "textbox.h"
 #include "include/ncolors.h"
 #include "include/ncursespp.h"
 
-void printEmptylineStart(int row, int col){
+void Textbox::printEmptylineStart(int row, int col){
   attron(ncurses::attribute::ColorPair(ncurses::colorset::PairLineStart));
   ncurses::print(row, col, '~');
   attroff(ncurses::attribute::ColorPair(ncurses::colorset::PairLineStart));
+}
+void Textbox::fillRestLine(int row, int col){
+  std::string rest(getWidth() - col, ' ');
+  ncurses::print(row,col,rest);
 }
 
 void Textbox::render() {
@@ -26,10 +32,12 @@ void Textbox::render() {
     const auto printRow = anchorRow + i;
     const auto printCol = anchorCol + j;
     if (iter == currFilebuf.end()){ // emptyline
-      printEmptylineStart(printRow, anchorCol);
+      printEmptylineStart(printRow, printCol);
+      fillRestLine(printRow, printCol+1);
       ++i;
     } else {
       if (*iter == '\n'){
+        fillRestLine(printRow, printCol);
         ++iter; ++i; j=0;
       } else {
         ncurses::print(printRow, printCol, *iter);
