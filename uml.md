@@ -25,18 +25,18 @@ class Replace{
   +count: Integer
   +sentence: String
 }
-Command <-- Normal
-Command <-- Movement
-Command <-- ComboNM
-Ex --> Command 
-Insert --> Command 
-Replace --> Command 
+Command <|-- Normal
+Command <|-- Movement
+Command <|-- ComboNM
+Ex --|> Command 
+Insert --|> Command 
+Replace --|> Command 
 ```
 ```plantuml 
 abstract Window
 class Keyboard{
   +next(): void
-  +getKeystroke()
+  +getKeystroke(): Keystroke
 }
 left to right direction
 enum KeyType {
@@ -47,18 +47,18 @@ class Keystroke {
   +data: Character
 }
 abstract KeystrokeSource{
-  +attach(KeystrokeConsumer): void
+  +attach(consumer: KeystrokeConsumer*): void
   {abstract}+getKeystroke(): Keystroke
   +notifyAll(): void
 }
-Keystroke "1" *--> KeyType
-Keyboard "1" *--> Keystroke
-Keyboard -> KeystrokeSource 
+Keystroke "1" *-- KeyType
+Keyboard "1" *-- Keystroke
+Keyboard -|> KeystrokeSource 
 abstract KeystrokeConsumer{
-  {abstract}+consume(Keystroke): void
-  {abstract}+notify(KeystrokeSource&): void
+  {abstract}+consume(key: Keystroke): void
+  {abstract}+notify(source: KeystrokeSource*): void
 }
-KeystrokeSource "0..*" o---> KeystrokeConsumer
+KeystrokeSource "0..*" o---|> KeystrokeConsumer
 abstract Mode{}
 abstract CommandParser{
   {abstract}-doReset(): void
@@ -73,112 +73,110 @@ class MovementParser {
   +getMovement(): Movement
 }
 class ModeManager{
-  +consume(Keystroke): void
-  +notify(KeystrokeSource&)
+  +consume(key: Keystroke): void
+  +notify(source: KeystrokeSource*): void
 }
 enum ModeType{
   Normal, Insert, Replace, Ex
 }
-ModeType "1" <-* ModeManager
+ModeType "1" -* ModeManager
 class Mode {
-  +forward(Keystroke): void
+  +consume(key: Keystroke): void
 }
-KeystrokeConsumer <- CommandParser 
-ModeManager "0..*" o-> Mode 
-KeystrokeConsumer <-- ModeManager
+KeystrokeConsumer <|- CommandParser 
+ModeManager "0..*" o- Mode 
+KeystrokeConsumer <|-- ModeManager
 abstract CommandSource{
   +notifyAll(): void
-  +attach(CommandRunner&): void
+  +attach(runner: CommandRunner*): void
 }
-KeystrokeConsumer <--o "0..*" Mode 
-CommandParser -> CommandSource 
+KeystrokeConsumer --o "0..*" Mode 
+CommandParser -|> CommandSource 
 abstract CommandRunner{
-  {abstract}+run(Command): void
-  {abstract}+notify(CommandSource&): void
+  {abstract}+run(command: Command*): void
+  +notify(source: CommandSource*): void
 }
-CommandSource "0..*" o-> CommandRunner
-MovementParser --> CommandParser
-CommandRunner <- NormalRunner 
-MovementRunner --> CommandRunner 
-MovementRunner "1" o-> Window
-Window <--o "1" NormalRunner 
-MovementParser <--o "1" MovementRunner 
+CommandSource "0..*" o- CommandRunner
+MovementParser --|> CommandParser
+CommandRunner <|- NormalRunner 
+MovementRunner --|> CommandRunner 
+MovementRunner "1" o- Window
+Window --o "1" NormalRunner 
+MovementParser --o "1" MovementRunner 
 class InsertReflector {
-  +consume(Keystroke): void
+  +consume(key: Keystroke): void
 }
-KeystrokeConsumer <-- InsertReflector 
-CommandParser <-- NormalParser
-NormalRunner "1" o--> NormalParser 
+KeystrokeConsumer <|-- InsertReflector 
+CommandParser <|-- NormalParser
+NormalRunner "1" o-- NormalParser 
 ```
 ```plantuml 
 left to right direction
 abstract Window{}
 abstract CommandParser{
   {abstract}-doReset(): void
-  {abstract}-parse(Keystroke): Boolean
+  {abstract}-parse(key: Keystroke): Boolean
   +reset(): void
-  +consume(Keystroke): void
+  +consume(key: Keystroke): void
 }
 abstract CommandRunner {
-  +{abstract}run(Command): void
+  +{abstract}run(command: Command*): void
+  +notify(source: CommandSource*): void
 }
-CommandParser "0..*" o--> CommandRunner
+CommandParser "0..*" o-- CommandRunner
 class NormalParser {
+  -doReset(): void
+  -parse(key: Keystroke): Boolean
   +getNormal(): Normal
 }
 class MacroParser {
+  -doReset(): void
+  -parse(key: Keystroke): Boolean
   +getMacro(): Macro
 }
 class MacroRunner {
   -registers: map<Character, CommandChain>
-  +run(Command): void
+  +run(command: Command*): void
 }
 class NormalRunner {
-  +run(Command): void
+  +run(command: Command*): void
 }
-MacroRunner -> CommandRunner
-CommandRunner <- NormalRunner 
-CommandParser <- NormalParser
-MacroParser -> CommandParser 
-NormalParser <--o "1" NormalRunner
-MacroParser <--o "1" MacroRunner 
+MacroRunner -|> CommandRunner
+CommandRunner <|- NormalRunner 
+CommandParser <|- NormalParser
+MacroParser -|> CommandParser 
+NormalParser --o "1" NormalRunner
+MacroParser --o "1" MacroRunner 
 class CommandChain{
-  +run(Command): void 
+  +run(command: Command*): void 
   +runChain(): void
 }
 abstract Command{}
-Command "0..*" <-* CommandChain 
-CommandRunner <-- CommandChain
-MacroRunner "0..*" *--> CommandChain
-NormalRunner "read/write" --> Window
-CommandChain"read/write" -> Window 
+Command "0..*" -* CommandChain 
+CommandRunner <|-- CommandChain
+NormalRunner "1" o- Window
+CommandChain "1" o- Window 
 ```
 ```plantuml
 left to right direction
 abstract LinedFilebuf{}
-class Cursor{
-  -line: Integer
-  -col: Integer
-}
 class TabManager {
   +nextTab(): void
-  +currTab(): Tab&
+  +currTab(): Tab
   +prevTab(): void
 }
-Window --> TabManager
+Window "1" *--> TabManager
 abstract Window{
   -parent: Window*
   -children: Window*[0..*]
   +splitVert(): Boolean
   +splitHori(): Boolean
-  +delete(Window* child)
+  +delete(child: Window*)
 }
 enum WindowType{
   VertSplit, HoriSplit, NoSplit
 }
 class Tab{
-  +setLine(line: Integer, anchor: Anchor) 
-  +setCursor(line: Integer, col: Integer)
   +getTopLine(): Integer
 }
 Tab "1" o-- LinedFilebuf
@@ -188,20 +186,20 @@ Window "1" *- WindowType
 class NCWindow{
   +render(): void
 }
-NCWindow -> Window
-NCWindow "1" *--> Textbox
-Textbox "1" o--> StyleManager
+NCWindow -|> Window
+NCWindow "1" *-- Textbox
+Textbox "1" o-- StyleManager
 class Textbox{
   +render(): void
 }
 abstract TextStyler{
   {abstract}+getStyles(first: Integer, last: Integer): Style[0..*]
 }
-abstract StyleManager{
-  {abstract}+getStylers(string filename): TextStyler[0..*]
+class StyleManager{
+  +getStylers(filename: String): TextStyler[0..*]
 }
-StyleManager "0..*" *--> TextStyler
-NCWindow "1" *--> StatusBar
+StyleManager "0..*" *-- TextStyler
+NCWindow "1" *-- StatusBar
 class StatusBar{
   +render(): void
 }
@@ -211,28 +209,28 @@ struct Style{
   attribute: Integer
 }
 class RainbowBrackets {
-  +getStyles(...)...
+  +getStyles(first: Integer, last: Integer): Style[0..*]
 }
 class CppHighlight {
-  +getStyles(...)...
+  +getStyles(first: Integer, last: Integer): Style[0..*]
 }
-CppHighlight --> TextStyler 
+CppHighlight --|> TextStyler 
 RainbowBrackets "reads" -> LinedFilebuf
 CppHighlight "reads" -> LinedFilebuf
-TextStyler <- RainbowBrackets 
-Style "0..*"<-* TextStyler 
+TextStyler <|- RainbowBrackets 
+Style "0..*"-* TextStyler 
 abstract class LinedFilebuf{
   {abstract}+erase(line: Integer, start: Integer, len: Integer): void
-  {abstract}+insert(Integer line, Integer start, String): void
-  {abstract}+erase_lines(Integer line, Integer len): void
-  {abstract}+insert_lines(Integer line, Integer len): void
-  {abstract}+begin(): iterator
-  {abstract}+end(): iterator
+  {abstract}+insert(line: Integer, start: Integer, chars: String): void
+  {abstract}+eraseLines(line: Integer, len: Integer): void
+  {abstract}+insertLines(line: Integer, len: Integer): void
+  {abstract}+begin(): Iterator
+  {abstract}+end(): Iterator
 }
 StatusBar "reads" --> ModeManager
 StatusBar "reads" -> TabManager
 class FileManager{
-  +open(String filename): LinedFilebuf* 
+  +open(filename: String): LinedFilebuf* 
 }
 LinedFilebuf "0..*" -* FileManager 
 ```
@@ -240,8 +238,6 @@ LinedFilebuf "0..*" -* FileManager
 left to right direction
 abstract Window{ }
 class Tab{
-  +setLine(line: Integer, anchor: Anchor) 
-  +setCursor(line: Integer, col: Integer)
   +getTopLine(): Integer
 }
 abstract Renderable{
@@ -250,11 +246,11 @@ abstract Renderable{
 class NCWindow{
   +render(): void
 }
-Translateable <-- Cursor
-NCWindow "1" *-> Textbox
-RenderableBox <-- StatusBar 
-RenderableBox <-- Textbox
-StatusBar "1" <-* NCWindow
+Translateable <|-- Cursor
+NCWindow "1" *- Textbox
+RenderableBox <|-- StatusBar 
+RenderableBox <|-- Textbox
+StatusBar "1" -* NCWindow
 class StatusBar{}
 abstract Resizeable{
   -height: Integer 
@@ -273,14 +269,14 @@ class Textbox{
   +render(): void
 }
 abstract Box{}
-Box --> Resizeable 
-Translateable <- Box
+Box --|> Resizeable 
+Translateable <|- Box
 abstract RenderableBox {}
-Box -> RenderableBox 
-RenderableBox <- Renderable
-Window <-- NCWindow 
-RenderableBox <-- Window 
-Resizeable <-- Tab
+Box <|- RenderableBox 
+RenderableBox -|> Renderable
+Window <|-- NCWindow 
+RenderableBox <|-- Window 
+Resizeable <|-- Tab
 ```
 # Plan of Attack 
 ## Get something showing 
@@ -323,7 +319,7 @@ Resizeable <-- Tab
 ## Add basic VM commands
 - Implement a proper `LinedFileBuf`
   - manages a `fstream` 
-  - maintains `vector<string> lines` 
+  - maintains `vector<string|> lines` 
   - syncs `fstream` with `lines`
   - give returns of begin and end efficient `random_access_iterator`
 - implement `NormalParser`, `NormalMode`
