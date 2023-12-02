@@ -1,8 +1,6 @@
 #ifndef INSERT_PARSER_H
 #define INSERT_PARSER_H
 
-#include <string>
-
 #include "lib/command/parser/command_parser.h"
 #include "lib/command/command.h"
 
@@ -14,8 +12,7 @@ class InsertParser: public CommandParser<Insert>{
     if (keystroke.key == Key::Plain){
       theCommand.sentence.push_back(keystroke.value);
       return true;
-    }
-    if (keystroke.key == Key::Esc){
+    } else if (keystroke.key == Key::Esc){
       notifyAll();
       return true;
     }

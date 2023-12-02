@@ -9,10 +9,11 @@
 #include "lib/command/command_source.h"
 
 #include "lib/mode/mode_manager.h"
-#include "lib/mode/insert_mode.h"
 #include "lib/mode/normal_mode.h"
+#include "lib/mode/esc_normal.h"
 
 #include "lib/command/runner/insert_reflector.h"
+#include "lib/command/runner/insert_runner.h"
 #include "lib/command/runner/normal_runner.h"
 #include "lib/command/runner/movement_runner.h"
 #include "lib/command/runner/ctrl_runner.h"
@@ -23,6 +24,7 @@
 #include "lib/command/parser/movement_parser.h"
 #include "lib/command/parser/ctrl_parser.h"
 #include "lib/command/parser/macro_parser.h"
+#include "lib/command/parser/ex_parser.h"
 
 #include "lib/buffer/file_manager.h"
 #include "lib/tab/tabmanager.h"
@@ -33,10 +35,13 @@ struct ModesClosure{
 
   ModeManager rootModeManager;
   
+  EscNormal escNormal{rootModeManager};
+
   // setup Insert Mode
   InsertParser insertParser;
+  InsertRunner insertRunner{windowsClosure.activeWindow};
   InsertReflector insertReflector{windowsClosure.activeWindow};
-  InsertMode insertMode{insertParser, rootModeManager};
+  Mode insertMode{&insertParser, &insertReflector, &escNormal};
 
   // setup Normal Mode
   ParserGroup normalGroup;
@@ -50,6 +55,9 @@ struct ModesClosure{
   MacroRunner macroRunner{windowsClosure.activeWindow};
   NormalRunner normalRunner{windowsClosure.activeWindow, rootModeManager, insertParser};
 
+  // setup Ex Mode 
+  ExParser exParser;
+  Mode exMode{&exParser, &escNormal};
 
   // whether we have exited from the rootWindow
   bool exitedFromRoot = false;
@@ -59,7 +67,7 @@ struct ModesClosure{
     windowsClosure{windows}
   {
     // setup Insert Mode
-    insertMode.attach_consumer(&insertReflector);
+    insertParser.attach(&insertRunner);
     rootModeManager.attach(ModeType::Insert, &insertMode);
     
     // setup Normal Mode

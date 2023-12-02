@@ -6,7 +6,7 @@ void MovementRunner::run(const Movement* movement){
   using std::max;
   auto& tab = activeWindow->getTabManager().curr();
   const auto& filebuf = tab.getFilebuf();
-  auto& cursor = tab.getCursor();
+  auto cursor = tab.getCursor();
   auto col = cursor.getCol();
   auto row = cursor.getRow();
   // if don't use prev, the reset cursor col 
@@ -20,17 +20,14 @@ void MovementRunner::run(const Movement* movement){
     if (movement->type == 'k') {
       dr *= -1;
     }
-    int newrow = row + dr;
     // ensure 0 <= newrow < # of lines in file
-    newrow = min(newrow,filebuf.countLines()-1);
-    newrow = max(newrow,0);
+    int newrow = fit(0, filebuf.countLines()-1, row + dr);
     // ensure 0 <= newcol < # of characters in the file
     int newcol = min(prevCursorCol, filebuf.getLine(newrow).size()-2);
     newcol = max(newcol, 0);
     if (newrow == row){ movementSuccess = false; } // failed to move
     else {
-      cursor.setCol(newcol);
-      cursor.setRow(newrow);
+      cursor.translate(newrow, newcol);
     }
   } else if(movement->type == 'l' || movement->type == 'h'){
     int dc = movement->count;
@@ -44,5 +41,8 @@ void MovementRunner::run(const Movement* movement){
       cursor.setCol(newcol);
     }
   }
-  if (movementSuccess){ activeWindow->render(); }
+  if (movementSuccess){ 
+    tab.setCursor(cursor);
+    activeWindow->render(); 
+  }
 }

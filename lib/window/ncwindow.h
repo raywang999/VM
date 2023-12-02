@@ -17,12 +17,12 @@ class NCWindow: public Window {
   NCWindow(Window* parent, const TabManager& tabManager, const StyleManager& styleManager): 
     Window(parent, tabManager), 
     styleManager{styleManager},
-    textbox(getTabManager(), styleManager) 
+    textbox(this, styleManager) 
   {}
   NCWindow(const TabManager& tabManager, const StyleManager& styleManager): 
     Window(tabManager), 
     styleManager{styleManager},
-    textbox(getTabManager(), styleManager) 
+    textbox(this, styleManager) 
   {}
   void render() override;
 };
@@ -36,9 +36,8 @@ inline void NCWindow::render(){
   textbox.translate(row,col);
   statusBar.resize(1, width);
   statusBar.translate(row+height-1,col);
-  textbox.render(); statusBar.render();
-  const auto& cursor = getTabManager().curr().getCursor();
-  ncurses::moveCursor(cursor.getRow(), cursor.getCol());
+  statusBar.render();
+  textbox.render(); 
 }
 
 #endif

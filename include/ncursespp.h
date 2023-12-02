@@ -58,6 +58,12 @@ inline int moveCursor(int row, int col){
   return move(row,col);
 }
 
+// clears a line on row, setting all beg <= i < end to ' '
+inline void clearLine(int row, int beg, int end){
+  std::string rest(end - beg, ' ');
+  ncurses::print(row,beg,rest);
+}
+
 }
 
 #endif

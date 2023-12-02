@@ -3,12 +3,14 @@
 #include "include/ncolors.h"
 
 void StatusBar::render(){
-  ncurses::setAttributes(ncurses::attribute::ColorPair(ncurses::colorset::PairStatusBar));
   // row and col to print the statusbar on
   const auto printRow = getRow();
   const auto printCol = getCol();
   // width of statusbar
   const auto width = getWidth();
+  ncurses::clearLine(printRow, printCol, width);
+
+  // rightmost Column
   const auto rightCol = printCol + width;
 
   // offset calculations for mid and right
@@ -19,6 +21,7 @@ void StatusBar::render(){
 
   // print left
   ncurses::print(printRow, printCol, left);
+  // clear the rest of the line
   if (showerror){  // highlight error 
     ncurses::setAttributes(printRow, printCol, left.size(), 
     ncurses::attribute::Void, 

@@ -54,6 +54,7 @@ struct ComboNM: public Command {
 // Ex mode commands. I.e. :w, :wq
 struct Ex: public Command {
   std::string sentence;
+  Ex(const std::string& sentence = ""): sentence{sentence} {};
 };
 
 // Insert mode command. I.e. a chain of partial inserts

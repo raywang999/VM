@@ -5,7 +5,7 @@
 
 class Cursor: public Translateable {
  public: 
-  Cursor(): Translateable(0,0) {}
+  Cursor(int row=0, int col=0): Translateable(row,col) {}
   void setLine(int line) noexcept { setRow(line); }
   int getLine() const noexcept { return getRow(); }
 };

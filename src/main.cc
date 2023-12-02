@@ -1,14 +1,15 @@
 #include "main.h"
 
 int Main::main(){
-  auto& rootWindow = windowsClosure.rootWindow;
-  rootWindow.render();
   // loop while we haven't exited from rootWindow
   while (!modesClosure.exitedFromRoot){
+    windowsClosure.activeWindow->render();
+    statusBarClosure.renderStatusBar();
+    cursorClosure.renderCursor();
+    refresh();
     // read char and re-render
     keyboard.getNext();
     keyboard.notifyAll();
-    refresh();
   }
   return 0;
 }

@@ -1,9 +1,6 @@
 #ifndef MACRO_PARSER_H
 #define MACRO_PARSER_H
 
-#include <string>
-#include <cctype>
-
 #include "lib/command/parser/counted_parser.h"
 #include "lib/command/command.h"
 

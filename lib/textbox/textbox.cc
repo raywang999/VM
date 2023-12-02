@@ -9,13 +9,12 @@ void Textbox::printEmptylineStart(int row, int col){
   ncurses::print(row, col, '~');
   attroff(ncurses::attribute::ColorPair(ncurses::colorset::PairLineStart));
 }
-void Textbox::fillRestLine(int row, int col){
-  std::string rest(getWidth() - col, ' ');
-  ncurses::print(row,col,rest);
-}
 
 void Textbox::render() {
-  const auto& currTab = tabManager.curr();
+  Tab& currTab = window->getTabManager().curr();
+  if (currTab.getWidth() != getWidth() || currTab.getHeight() != getHeight()){
+    currTab.resize(getHeight(), getWidth());
+  }
   const auto& currFilebuf = currTab.getFilebuf();
   const auto topLine = currTab.getTopLine();
   const auto height = getHeight();
@@ -33,11 +32,11 @@ void Textbox::render() {
     const auto printCol = anchorCol + j;
     if (iter == currFilebuf.end()){ // emptyline
       printEmptylineStart(printRow, printCol);
-      fillRestLine(printRow, printCol+1);
+      ncurses::clearLine(printRow, printCol+1, getWidth());
       ++i;
     } else {
       if (*iter == '\n'){
-        fillRestLine(printRow, printCol);
+        ncurses::clearLine(printRow, printCol, getWidth());
         ++iter; ++i; j=0;
       } else {
         ncurses::print(printRow, printCol, *iter);

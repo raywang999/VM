@@ -8,6 +8,8 @@
 #include "init_tabs.h"
 #include "init_modes.h"
 #include "init_windows.h"
+#include "init_cursor.h"
+#include "init_statusbar.h"
 
 #include "lib/keystroke/uwse_keyboard.h"
 #include "lib/buffer/file_manager.h"
@@ -36,6 +38,10 @@ struct Main{
   
   // initialize Modes
   ModesClosure modesClosure{windowsClosure, keyboard};
+
+  // initialize the screen's cursor and statusbar
+  CursorClosure cursorClosure{windowsClosure, modesClosure}; 
+  StatusBarClosure statusBarClosure{windowsClosure, modesClosure}; 
   
   
   Main(int argc, const char *argv[]): 

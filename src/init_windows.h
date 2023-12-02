@@ -6,6 +6,7 @@
 #include "include/ncursespp.h"
 #include "init_tabs.h"
 #include "lib/window/ncwindow.h"
+#include "lib/statusbar/status_bar.h"
 
 struct WindowsClosure{
   // root window that is displayed initially
@@ -13,13 +14,18 @@ struct WindowsClosure{
   // currently active unsplit Window
   Window* activeWindow = &rootWindow;
 
+  // status bar at the bottom of the screen
+  StatusBar rootStatusBar{};
+
   WindowsClosure(TabsClosure& tabs, StyleManager& styler): 
     rootWindow{tabs.rootTabManager,styler}
   { 
     int screenHeight, screenWidth;
     ncurses::getwindowhw(screenHeight, screenWidth);
-    rootWindow.resize(screenHeight, screenWidth);
+    rootWindow.resize(screenHeight-1, screenWidth);
     rootWindow.translate(0,0);
+    rootStatusBar.translate(screenHeight-1,0);
+    rootStatusBar.resize(1, screenWidth);
   }
 };
 

@@ -3,12 +3,7 @@
 
 #include <vector>
 
-#include "modetype.h"
-#include "include/subject.h"
-#include "include/observer.h"
-#include "lib/command/command_source.h"
-#include "lib/command/runner/command_runner.h"
-#include "lib/command/parser/command_parser.h"
+#include "lib/keystroke/keystroke_consumer.h"
 
 // Groups together the keystroke consumers, CommandParsers, and CommandRunners for a Mode
 // - forwards keystrokes from the attached source to the keystroke consumers
@@ -34,6 +29,9 @@ inline Mode::Mode(const std::initializer_list<KeystrokeConsumer*>& consumers):
 inline void Mode::consume(const Keystroke& keystroke){
   for (auto consumer: consumers){
     consumer->consume(keystroke);
+  }
+  if (keystroke.key == Key::Esc){
+
   }
 }
 
