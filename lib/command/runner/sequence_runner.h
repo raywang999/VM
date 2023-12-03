@@ -1,19 +1,23 @@
 #ifndef SEQUENCE_RUNNER_H
 #define SEQUENCE_RUNNER_H
 
-#include "lib/command/runner/general_runner.h"
+#include "lib/command/runner/single_runner.h"
 
-// runs a sequence of Commands using runners provided in construction
+// runs a sequence of Commands using SingleRunner provided in construction
 class SequenceRunner: CommandRunner<Sequence> {
-  GeneralRunner& generalRunner;
+  SingleRunner& singleRunner;
   
  public:
   void run(const Sequence* sequence){ 
-    for (auto command: sequence->theSequence){
-      generalRunner.run(command);
+    for (const auto& command: sequence->theSequence){
+      if (auto seq = dynamic_cast<const Sequence*>(sequence)){
+        run(seq);
+      } else {
+        singleRunner.run(seq);
+      }
     }
   }
-  SequenceRunner( GeneralRunner& generalRunner): generalRunner{generalRunner} {}
+  SequenceRunner(SingleRunner& singleRunner): singleRunner{singleRunner} {}
 };
 
 #endif

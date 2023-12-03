@@ -6,7 +6,7 @@
  * Plain        Any alphanumeric, punctuation, space character. I.e. normal char
  * Ctrl         Ctrl character. value should be set to the (lowercase) ? in ctrl+?
  *              where ctrl+? is the corresponding ctrl sequence
- * {Up Left Right Down}       Up, Left, Right, Down arrow keys, respectvely
+ * Arrow        Any arrow key. Value will be the direction (udlr) for up, down, left, right
  * Esc          Escape key
  * Backspace    Backspace key
  * Del          Del key
@@ -14,7 +14,7 @@
  */
 
 enum class Key: char{
-  Plain, Ctrl, Up, Left, Down, Right, Esc, Backspace, Del, Other
+  Plain, Ctrl, Arrow, Esc, Backspace, Del, Other
 };
 
 struct Keystroke {

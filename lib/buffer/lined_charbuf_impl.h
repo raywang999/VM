@@ -61,40 +61,44 @@ LinedCharbuf<char_t>::const_iterator::operator--() noexcept{
 }
 
 template<typename char_t> 
-// erase `num` characters from line `line` starting at the `start` index (0 indexed)
-// - default start is 0, default num is npos (i.e. +infty)
-// - erasing more than number of chars available does nothing
 inline void LinedCharbuf<char_t>::erase(size_t line, size_t start, size_t num){
   auto& curline = lines[line];
   num = min(num, curline.size()-start-1);
   curline = curline.substr(0,start) + curline.substr(start+num);
 }
-// insert all characters from `chars` into line `line` starting at index `start` (0 indexed) 
 template<typename char_t>
 inline void LinedCharbuf<char_t>::insert(size_t line, size_t start, std::basic_string<char_t> chars){
-  auto& curline = lines[line];
-  curline = curline.substr(0, start) + chars + curline.substr(start);
+  auto& startline = lines[line];
+  auto endstr = startline.substr(start);
+  startline = startline.substr(0,start);
+  int linei = line;
+  for (auto ch: chars){
+    lines[linei].push_back(ch);
+    if (ch == '\n'){
+      ++linei; insertLines(linei,1);
+    } 
+  }
+  lines[linei] += endstr;
 }
-// append all characters from `chars` into end of line `line` (0 indexed) 
 template<typename char_t>
-inline void LinedCharbuf<char_t>::append(size_t line, std::basic_string<char_t> chars){
+inline void LinedCharbuf<char_t>::insert(size_t line, size_t start, char_t ch){
   auto& curline = lines[line];
-  curline.pop_back();
-  curline += chars + "\n";
+  if (ch == '\n'){
+    insertLines(line+1,1);
+    lines[line+1] = curline.substr(start);
+    curline = curline.substr(0,start)+"\n";
+  } else {
+    curline.insert(curline.begin()+start,ch);
+  }
 }
 template<typename char_t>
 inline void LinedCharbuf<char_t>::append(size_t line, char_t ch){
-  auto& curline = lines[line];
-  curline.pop_back();
-  curline.push_back(ch);
-  curline.push_back('\n');
+  insert(line,lines[line].size()-1,ch);
 }
-// insert `num` blank lines before line `line`
 template<typename char_t>
 inline void LinedCharbuf<char_t>::insertLines(size_t line, size_t num){
   lines.insert(lines.begin()+line, num, "\n");
 }
-// erase `num` blank lines starting from `line`
 template<typename char_t>
 inline void LinedCharbuf<char_t>::eraseLines(size_t line, size_t num){
   lines.erase(lines.begin()+line, lines.begin()+line+num);

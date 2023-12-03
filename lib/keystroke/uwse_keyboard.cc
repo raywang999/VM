@@ -8,10 +8,10 @@
 // map of CSSE's ncurses keyboard input `int`s to corresponding `Keystroke`s
 // - excluding Plain characters (i.e. isgraph chars)
 static std::unordered_map<int, Keystroke> toKS{
-  {KEY_DOWN, Keystroke{Key::Down}},
-  {KEY_UP, Keystroke{Key::Up}},
-  {KEY_LEFT, Keystroke{Key::Left}},
-  {KEY_RIGHT, Keystroke{Key::Right}},
+  {KEY_DOWN, Keystroke{Key::Arrow, 'd'}},
+  {KEY_UP, Keystroke{Key::Arrow, 'u'}},
+  {KEY_LEFT, Keystroke{Key::Arrow,'l'}},
+  {KEY_RIGHT, Keystroke{Key::Arrow,'r'}},
   {KEY_BACKSPACE, Keystroke{Key::Backspace}},
   // not sure what ncurses maps these to 
   // so just used integers given in student environment 

@@ -4,6 +4,11 @@
 #include "normal_runner.h"
 
 void NormalRunner::run(const Normal* normal){
+  auto& tab = activeWindow->getTabManager().curr();
+  auto& filebuf = tab.getFilebuf();
+  auto cursor = tab.getCursor();
+  auto curRow = cursor.getRow();
+  auto curCol = cursor.getCol();
   // runner functions 
   using Func = std::function<void(NormalRunner*)>;
 
@@ -35,12 +40,27 @@ void NormalRunner::run(const Normal* normal){
       tab.setCursor(cursor);
     }},
     {'A', [](NormalRunner* obj){ // turns into running a $ movement, then a
+      Movement toEnd{1,'$'};
+      obj->movementRunner.run(&toEnd);
       auto& tab = obj->activeWindow->getTabManager().curr();
       auto cursor = tab.getCursor();
       cursor.setCol(tab.getFilebuf().getLine(cursor.getRow()).size()-1);
       tab.setCursor(cursor);
-    }} 
+    }}, 
+    {'c', [](NormalRunner* obj){ // 
+      auto& tab = obj->activeWindow->getTabManager().curr();
+      auto cursor = tab.getCursor();
+      cursor.setCol(tab.getFilebuf().getLine(cursor.getRow()).size()-1);
+      tab.setCursor(cursor);
+    }}, 
+    {'S', [](NormalRunner* obj){ // same as cc
+      auto& tab = obj->activeWindow->getTabManager().curr();
+      auto cursor = tab.getCursor();
+      cursor.setCol(tab.getFilebuf().getLine(cursor.getRow()).size()-1);
+      tab.setCursor(cursor);
+    }}
   };
+
   if (insertDispatch.count(normal->type)){ 
     // switch to insert mode
     insertDispatch.at(normal->type)(this); 
@@ -49,8 +69,19 @@ void NormalRunner::run(const Normal* normal){
     insertParser.setMode(normal->type);
     modeManager.setMode(ModeType::Insert);
     activeWindow->render();
+  } else if (normal->type == ':'){
+    exParser.reset();
+    modeManager.setMode(ModeType::Ex);
+  } else if (normal->type == 'x'){
+    filebuf.erase(curRow,curCol,normal->count);
+    tab.fixCursor();
+  } else if (normal->type == 'X'){
+    auto delCnt = min(normal->count,curCol);
+    filebuf.erase(curRow,curCol - delCnt, delCnt);
+    cursor.setCol(curCol-delCnt);
+    tab.setCursor(cursor);
+  } else if (normal->type == 'd'){
+
+  } else if (normal->type == 'c' || normal->type == 'S') {
   }
-  auto& tab = activeWindow->getTabManager().curr();
-  auto& filebuf = tab.getFilebuf();
-  auto cursor = tab.getCursor();
 }

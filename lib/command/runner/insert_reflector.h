@@ -18,15 +18,24 @@ class InsertReflector: public KeystrokeConsumer{
 };
 
 inline void InsertReflector::consume(const Keystroke& keystroke){
+  auto& activeTab = activeWindow->getTabManager().curr();
+  auto& filebuf = activeTab.getFilebuf();
+  auto cursor = activeTab.getCursor();
   if (keystroke.key == Key::Plain) {
-    auto& activeTab = activeWindow->getTabManager().curr();
-    auto& filebuf = activeTab.getFilebuf();
-    auto cursor = activeTab.getCursor();
-    filebuf.insert(cursor.getRow(), cursor.getCol(), std::string(1,keystroke.value));
+    filebuf.insert(cursor.getRow(), cursor.getCol(), keystroke.value);
     cursor.setCol(cursor.getCol()+1);
-    activeTab.setCursor(cursor);
-    activeWindow->render();
+    if (keystroke.value == '\n') {
+      cursor.translate(cursor.getRow()+1,0);
+    }
+  } else if (keystroke.key == Key::Arrow){
+    int dr=0,dc=0;
+    if (keystroke.value == 'l'){--dc;}
+    else if (keystroke.value == 'r'){++dc;}
+    else if (keystroke.value == 'u'){++dr;}
+    else {--dr;}
+    cursor.translate(cursor.getRow()+dr, cursor.getCol()+dc);
   }
+  activeTab.setCursor(cursor);
 }
 
 #endif

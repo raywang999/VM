@@ -26,6 +26,8 @@
 #include "lib/command/parser/macro_parser.h"
 #include "lib/command/parser/ex_parser.h"
 
+#include "lib/command/history_manager.h"
+
 #include "lib/buffer/file_manager.h"
 #include "lib/tab/tabmanager.h"
 #include "lib/keystroke/keystroke_source.h"
@@ -35,13 +37,19 @@ struct ModesClosure{
 
   ModeManager rootModeManager;
   
+  // esc keys will set the rootModeManager to normal mode
   EscNormal escNormal{rootModeManager};
+
+  // setup CommandRecorder for history and macros
+  CommandRecorder historyRecorder;
+  CommandRecorder macroRecorder;
 
   // setup Insert Mode
   InsertParser insertParser;
   InsertRunner insertRunner{windowsClosure.activeWindow};
   InsertReflector insertReflector{windowsClosure.activeWindow};
   Mode insertMode{&insertParser, &insertReflector, &escNormal};
+
 
   // setup Normal Mode
   ParserGroup normalGroup;
@@ -52,12 +60,22 @@ struct ModesClosure{
   NormalMode normalMode{normalGroup};
   MovementRunner movementRunner{windowsClosure.activeWindow};
   CtrlRunner ctrlRunner{windowsClosure.activeWindow, movementRunner};
-  MacroRunner macroRunner{windowsClosure.activeWindow};
-  NormalRunner normalRunner{windowsClosure.activeWindow, rootModeManager, insertParser};
+
+  // general runner for all users
+  SingleRunner singleRunner{normalRunner, insertRunner, movementRunner};
+  SequenceRunner sequenceRunner{singleRunner};
+  GeneralRunner generalRunner{singleRunner, sequenceRunner};
+  // setup history manager
+  HistoryManager manager{historyRecorder, generalRunner};
+
+  NormalRunner normalRunner{windowsClosure.activeWindow, rootModeManager, insertParser, exParser};
+  MacrosRegister macrosRegister;
+  MacroRunner macroRunner{sequenceRunner, macrosRegister, macroRecorder};
 
   // setup Ex Mode 
   ExParser exParser;
   Mode exMode{&exParser, &escNormal};
+
 
   // whether we have exited from the rootWindow
   bool exitedFromRoot = false;
@@ -77,6 +95,15 @@ struct ModesClosure{
     macroParser.attach(&macroRunner);
     rootModeManager.attach(ModeType::Normal, &normalMode);
 
+    // setup history 
+    normalParser.attach(&historyRecorder);
+    insertParser.attach(&historyRecorder);
+    movementParser.attach(&historyRecorder);
+
+    // setup Ex mode 
+    rootModeManager.attach(ModeType::Ex, &exMode);
+
+    // attach the root mode manager to the keyboard
     keyboard.attach(&rootModeManager);
 
     // attach ParserGroup last since they will reset the parsers
@@ -90,6 +117,7 @@ struct ModesClosure{
     normalGroup.add(&ctrlParser);
     normalGroup.add(&movementParser);
   }
+
 };
 
 #endif

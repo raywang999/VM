@@ -11,12 +11,14 @@ class InsertParser: public CommandParser<Insert>{
     // only Plain characters should be turned into PartialInserts
     if (keystroke.key == Key::Plain){
       theCommand.sentence.push_back(keystroke.value);
-      return true;
+    } else if (keystroke.key == Key::Arrow){
+      doReset();
     } else if (keystroke.key == Key::Esc){
       notifyAll();
-      return true;
+    } else {
+      return false;
     }
-    return false;
+    return true;
   }
   void doReset() override { theCommand = Insert{1,std::string{}};}
  public:

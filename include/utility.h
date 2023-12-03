@@ -1,14 +1,16 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
+#include <cstddef>
+
 inline int min(int a, size_t b){
   return a < static_cast<int>(b) ? a : b;
 }
 
-inline int fit(int l, auto r, auto i) {
-  auto sl = static_cast<size_t>(l);
-  auto sr = static_cast<size_t>(r);
-  auto si = static_cast<size_t>(i);
+inline int fit(auto l, auto r, auto i) {
+  auto sl = static_cast<int>(l);
+  auto sr = static_cast<int>(r);
+  auto si = static_cast<int>(i);
   if (si > sr) return r;
   if (si < sl) return l;
   return i;

@@ -21,7 +21,7 @@ void MovementRunner::run(const Movement* movement){
       dr *= -1;
     }
     // ensure 0 <= newrow < # of lines in file
-    int newrow = fit(0, filebuf.countLines()-1, row + dr);
+    int newrow = fit(0, static_cast<int>(filebuf.countLines())-1, row + dr);
     // ensure 0 <= newcol < # of characters in the file
     int newcol = min(prevCursorCol, filebuf.getLine(newrow).size()-2);
     newcol = max(newcol, 0);

@@ -59,11 +59,13 @@ class LinedCharbuf {
 
   // erase `num` characters from line `line` starting at the `start` index (0 indexed)
   // - default start is 0, default num is npos (i.e. +infty)
+  // - erasing more than number of chars available does nothing
   void erase(size_t line, size_t start=0, size_t num = std::string::npos);
   // insert all characters from `chars` into line `line` starting at index `start` (0 indexed) 
+  // - adds newlines wherever newline characters occur in chars
   void insert(size_t line, size_t start, std::basic_string<char_t> chars);
+  void insert(size_t line, size_t start, char_t ch);
   // append all characters from `chars` into end of line `line` (0 indexed) 
-  void append(size_t line, std::basic_string<char_t> chars);
   void append(size_t line, char_t ch);
   // insert `num` blank lines before line `line`
   void insertLines(size_t line, size_t num);

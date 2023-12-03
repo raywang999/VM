@@ -15,6 +15,8 @@ int Main::main(){
 }
 
 int main(int argc, const char* argv[]){
+    // Main mainData(argc,argv);
+    // return mainData.main();
   try {
     Main mainData(argc,argv);
     return mainData.main();

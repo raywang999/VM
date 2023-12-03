@@ -19,12 +19,16 @@ class ExParser: public CommandParser<Ex>{
         sentence.insert(sentence.begin() + cursorCol, keystroke.value);
         ++cursorCol;
       }
-    } else if (keystroke.key == Key::Left){
-      cursorCol = fit(0,sentence.size(), cursorCol-1);
-    } else if (keystroke.key == Key::Right){
-      cursorCol = fit(0,sentence.size(), cursorCol+1);
+    } else if (keystroke.key == Key::Arrow){
+      if (keystroke.value == 'l')
+        cursorCol = fit(0,sentence.size(), cursorCol-1);
+      else if (keystroke.value == 'r')
+        cursorCol = fit(0,sentence.size(), cursorCol+1);
     } else if (keystroke.key == Key::Backspace){
-      sentence.erase(sentence.begin()+cursorCol);
+      if (cursorCol){
+        sentence.erase(sentence.begin()+cursorCol-1);
+        --cursorCol;
+      }
     } else if (keystroke.key == Key::Esc){
       reset();
     } else {
