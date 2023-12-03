@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include "lib/command/parser/insert_parser.h"
 #include "lib/command/runner/command_runner.h"
 #include "lib/window/window.h"
 

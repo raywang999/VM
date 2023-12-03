@@ -3,13 +3,17 @@
 
 #include <string>
 
-// status bar on bottom of the screen
-// stores the information 
-class RootStatusBar {
- public:
-  std::string left, mid, right;
-  bool showerror = false;
-  //void render() override;
+enum class ErrorCode {
+  nothing = 0,
+  noWriteSinceLastChange = 37
+};
+
+// status bar on bottom left of the screen
+// stores general information like ExLine message, error-codes
+struct RootStatusBar{
+  ErrorCode errorCode{ErrorCode::nothing};
+  std::string message;
+  bool recordingMacro = false;
 };
 
 #endif

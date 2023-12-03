@@ -27,6 +27,7 @@
 #include "lib/command/parser/ex_parser.h"
 
 #include "lib/command/history_manager.h"
+#include "lib/keystroke/keystroke_recorder.h"
 
 #include "lib/buffer/file_manager.h"
 #include "lib/tab/tabmanager.h"
@@ -41,8 +42,7 @@ struct ModesClosure{
   EscNormal escNormal{rootModeManager};
 
   // setup CommandRecorder for history and macros
-  CommandRecorder historyRecorder;
-  CommandRecorder macroRecorder;
+  KeystrokeRecorder macroRecorder;
 
   // setup Insert Mode
   InsertParser insertParser;
@@ -66,11 +66,10 @@ struct ModesClosure{
   SequenceRunner sequenceRunner{singleRunner};
   GeneralRunner generalRunner{singleRunner, sequenceRunner};
   // setup history manager
-  HistoryManager manager{historyRecorder, generalRunner};
 
   NormalRunner normalRunner{windowsClosure.activeWindow, rootModeManager, insertParser, exParser};
   MacrosRegister macrosRegister;
-  MacroRunner macroRunner{sequenceRunner, macrosRegister, macroRecorder};
+  MacroRunner macroRunner{macrosRegister, macroRecorder, rootModeManager};
 
   // setup Ex Mode 
   ExParser exParser;
@@ -96,9 +95,6 @@ struct ModesClosure{
     rootModeManager.attach(ModeType::Normal, &normalMode);
 
     // setup history 
-    normalParser.attach(&historyRecorder);
-    insertParser.attach(&historyRecorder);
-    movementParser.attach(&historyRecorder);
 
     // setup Ex mode 
     rootModeManager.attach(ModeType::Ex, &exMode);

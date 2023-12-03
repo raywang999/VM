@@ -42,6 +42,7 @@ class CommandRecorder:
   void run(const Normal* normal) override {add(normal);}
   const Sequence* getCommand() const override {return &theSequence;}
   void setActive(bool type) noexcept {active = type;}
+  bool isActive() const noexcept {return active;}
 };
 
 void inline CommandRecorder::run(const Insert* insert) {

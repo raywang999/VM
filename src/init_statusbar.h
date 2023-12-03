@@ -25,6 +25,11 @@ struct StatusBarClosure {
     } else {
       message = "";
     }
+    if (modesClosure.macroRecorder.isActive()){
+      // are in macro mode
+      message.append("recording @");
+      message.push_back(modesClosure.macroRecorder.getCurrReg());
+    }
     windowsClosure.rootStatusBar.render();
   }
 };

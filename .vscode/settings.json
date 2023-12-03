@@ -1,5 +1,5 @@
 {
-    "plantuml.server": "http://0.0.0.0:8080",
+    "plantuml.server": "http://www.plantuml.com/plantuml/",
     "files.associations": {
         "system_error": "cpp",
         "array": "cpp",
