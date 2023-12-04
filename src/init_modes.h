@@ -21,6 +21,7 @@
 #include "lib/command/runner/macro_runner.h"
 #include "lib/command/runner/parser_group.h"
 #include "lib/command/runner/ex_runner.h"
+#include "lib/command/runner/dot_repeater.h"
 
 #include "lib/command/parser/normal_parser.h"
 #include "lib/command/parser/movement_parser.h"
@@ -49,7 +50,7 @@ struct ModesClosure{
 
   // setup Insert Mode
   InsertParser insertParser;
-  InsertRunner insertRunner{windowsClosure.activeWindow};
+  InsertRunner insertRunner{windowsClosure.activeWindow, rootModeManager};
   InsertReflector insertReflector{windowsClosure.activeWindow};
   Mode insertMode{&insertParser, &insertReflector, &escNormal};
 
@@ -67,7 +68,14 @@ struct ModesClosure{
   // setup history manager
   HistoryManager historyManager{windowsClosure.activeWindow, windowsClosure.rootStatus};
 
-  NormalRunner normalRunner{windowsClosure.activeWindow, rootModeManager, insertParser, exParser};
+  NormalRunner normalRunner{
+    windowsClosure.activeWindow, 
+    rootModeManager, 
+    insertParser, 
+    exParser, 
+    windowsClosure.rootStatus
+  };
+
   MacrosRegister macrosRegister;
   MacroRunner macroRunner{macrosRegister, macroRecorder, rootModeManager};
 
@@ -78,6 +86,9 @@ struct ModesClosure{
     windowsClosure.rootStatus, tabsClosure.fileManager, historyManager,
   };
   Mode exMode{&exParser, &escNormal};
+
+  // setup DotRepeater for '.' normal commands
+  DotRepeater dotRepeater{insertRunner, normalRunner, macroRunner};
 
 
   // creates a Mode manager, Modes, and links between parsers and runners
@@ -102,6 +113,9 @@ struct ModesClosure{
     ctrlParser.attach(&ctrlRunner);
     macroParser.attach(&macroRunner);
     rootModeManager.attach(ModeType::Normal, &normalMode);
+    normalParser.attach(&dotRepeater);
+    insertParser.attach(&dotRepeater);
+    macroParser.attach(&dotRepeater);
 
     // setup history 
     macroParser.attach(&historyManager);

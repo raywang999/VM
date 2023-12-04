@@ -77,7 +77,8 @@ struct Ex: public Command {
 struct Insert: public Command {
   std::string sentence;
   int count;
-  char mode; // mode. I.e. for o, O, i
+  // type of the command that was used to enter insert mode. note 'cc' is equivalent to S
+  char mode; 
   Insert(int count = 0, const std::string& sentence = "", char mode = 'i'): 
     sentence{sentence}, count{count}, mode{mode} {}
 };

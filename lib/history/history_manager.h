@@ -17,14 +17,13 @@ class HistoryManager:
   public CommandRunner<Normal>
 {
   Window*& activeWindow;
-  RootStatus& rootStatus;
   std::unordered_map<std::string, HistoryTree> trees;
   // number of modifications from last persist
   std::unordered_map<std::string, int> diffCnt; 
 
  public:
   HistoryManager(Window*& activeWindow, RootStatus& rootStatus): 
-    activeWindow{activeWindow}, rootStatus{rootStatus} {}
+    activeWindow{activeWindow}{}
   // save changes into the tree of the currently active file
   void save() {
     auto& tab = activeWindow->getTabManager().curr();
@@ -34,6 +33,7 @@ class HistoryManager:
       ++diffCnt[filename];
     } else {
       trees.insert({filename, HistoryTree{tab}});
+      diffCnt[filename] = 1;
     }
   }
   void run(const Insert* cmd) override { save(); }
@@ -60,25 +60,27 @@ class HistoryManager:
   }
 
   // redo in currently active window
-  void redo() {
+  bool redo() {
     auto& tab = activeWindow->getTabManager().curr();
     const auto& filename = tab.getFilebuf().getFilename();
     auto& tree = trees.at(filename);
     ++diffCnt[filename];
     if (tree.redo()){
-      tree.sync(tab);
+      return true;
     }
+    return false;
   }
   
   // undo last change in currently active window
-  void undo() {
+  bool undo() {
     auto& tab = activeWindow->getTabManager().curr();
     const auto& filename = tab.getFilebuf().getFilename();
     auto& tree = trees.at(filename);
     --diffCnt[filename];
     if (tree.undo()){
-      tree.sync(tab);
+      return true;
     }
+    return false;
   }
 
   // copies history from source file to `to` file, assuming `to` isn't opened 

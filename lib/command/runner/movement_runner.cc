@@ -3,6 +3,7 @@
 
 // the movement must be one of bfhjklnwFN^$0%;
 void MovementRunner::run(const Movement* movement){
+  int count = normalizeCount(movement->count);
   using std::max;
   auto& tab = activeWindow->getTabManager().curr();
   const auto& filebuf = tab.getFilebuf();
@@ -16,7 +17,7 @@ void MovementRunner::run(const Movement* movement){
   }
   bool movementSuccess = true;
   if (movement->type == 'j' || movement->type == 'k'){
-    int dr = movement->count; // delta row
+    int dr = count; // delta row
     if (movement->type == 'k') {
       dr *= -1;
     }
@@ -30,7 +31,7 @@ void MovementRunner::run(const Movement* movement){
       cursor.translate(newrow, newcol);
     }
   } else if(movement->type == 'l' || movement->type == 'h'){
-    int dc = movement->count;
+    int dc = count;
     if (movement->type == 'h') dc *= -1;
     auto newcol =  col + dc;
     newcol = min(newcol, filebuf.getLine(row).size()-2);

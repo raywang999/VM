@@ -21,5 +21,10 @@ inline int cielDiv(int i, int d){
   return (i+d-1)/d;
 }
 
+// returns default if prev == -1, prev otherwise
+inline int normalizeCount(int prev, int def = 1){
+  return prev == -1 ? def : prev;
+}
+
 
 #endif

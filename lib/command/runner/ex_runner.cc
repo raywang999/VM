@@ -1,14 +1,17 @@
+#include <ranges>
+
 #include "ex_runner.h"
-#include <sstream>
 
 bool ExRunner::write(const std::vector<std::string>& args){
   auto* filebuf = &activeWindow->getTabManager().curr().getFilebuf();
   std::string filename;
+  bool isNewFile = false;
   if (args.size() == 1){  // use filebuf's filename
     filename = filebuf->getFilename();
   } else {
     // user did supply a filename
     filename = args[1];
+    isNewFile = !fileManager.isOpen(args[1]);
     filebuf = fileManager.open(args[1]).get();
     historyManager.copy(filebuf->getFilename(), filename);
   }
@@ -20,6 +23,13 @@ bool ExRunner::write(const std::vector<std::string>& args){
     filebuf->persist();
     historyManager.setDiffCnt(filename);
   }
+  rootStatus.setMessage(
+    "\"" + filename + "\" " + 
+    (isNewFile ? " [New]" : "") + 
+    std::to_string(filebuf->countLines()) + "L, " + 
+    std::to_string(filebuf->countBytes()) + "B " + 
+    "written"
+  );
   return true;
 }
 

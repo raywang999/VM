@@ -5,13 +5,11 @@
 #include <memory>
 
 #include "include/resetable.h"
-#include "lib/command/command_recorder.h"
 #include "lib/tab/tab.h"
 
 // stores undo branches as a history tree
 // each node in the tree stores a deep-copy of the charbuf, and the cursor position
 class HistoryTree: public Resetable {
-  int edit = 0;
   struct Node {
     int edit;
     const decltype(std::chrono::system_clock::now()) timestamp
@@ -24,6 +22,7 @@ class HistoryTree: public Resetable {
       cursor{tab.getCursor()} 
     {}
   };
+  int edit = 0;
   Node root;
   Node* curr;
   std::vector<Node*> future; // stack of redo futures
@@ -31,11 +30,6 @@ class HistoryTree: public Resetable {
   std::vector<Node> store;
  public:
   HistoryTree(const Tab& tab): root{tab}, curr{&root} {}
-  // syncs tab to reflect the state of curr
-  void sync(Tab& tab) {
-    tab.setCursor(curr->cursor);
-    static_cast<LinedCharbuf<char>&>(tab.getFilebuf()) = curr->file;
-  }
   // undo most recent command. REturns true if successfully undo 
   bool undo() { 
     if (curr->parent) {

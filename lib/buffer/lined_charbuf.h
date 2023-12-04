@@ -73,6 +73,11 @@ class LinedCharbuf {
   void eraseLines(size_t line, size_t num);
 
   size_t countLines() const noexcept { return lines.size(); }
+  size_t countBytes() const noexcept { 
+    size_t res = 0;
+    for (auto line: lines){ res += line.size(); }
+    return res*sizeof(char_t);
+  }
   const std::basic_string<char_t>& getLine(size_t line) const noexcept { return lines[line]; }
 
   size_t getPosition(size_t line, size_t num) const noexcept; 

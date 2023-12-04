@@ -1,14 +1,10 @@
 #include <unordered_map>
 #include <functional>
 
+#include "include/utility.h"
 #include "normal_runner.h"
 
-void NormalRunner::run(const Normal* normal){
-  auto& tab = activeWindow->getTabManager().curr();
-  auto& filebuf = tab.getFilebuf();
-  auto cursor = tab.getCursor();
-  auto curRow = cursor.getRow();
-  auto curCol = cursor.getCol();
+void NormalRunner::run(const Normal* cmd){
   // runner functions 
   using Func = std::function<void(NormalRunner*)>;
 
@@ -47,12 +43,6 @@ void NormalRunner::run(const Normal* normal){
       cursor.setCol(tab.getFilebuf().getLine(cursor.getRow()).size()-1);
       tab.setCursor(cursor);
     }}, 
-    {'c', [](NormalRunner* obj){ // 
-      auto& tab = obj->activeWindow->getTabManager().curr();
-      auto cursor = tab.getCursor();
-      cursor.setCol(tab.getFilebuf().getLine(cursor.getRow()).size()-1);
-      tab.setCursor(cursor);
-    }}, 
     {'S', [](NormalRunner* obj){ // same as cc
       auto& tab = obj->activeWindow->getTabManager().curr();
       auto cursor = tab.getCursor();
@@ -60,28 +50,36 @@ void NormalRunner::run(const Normal* normal){
       tab.setCursor(cursor);
     }}
   };
+  auto& tab = activeWindow->getTabManager().curr();
+  auto& filebuf = tab.getFilebuf();
+  auto cursor = tab.getCursor();
+  auto curRow = cursor.getRow();
+  auto curCol = cursor.getCol();
+  int count = normalizeCount(cmd->count);
 
-  if (insertDispatch.count(normal->type)){ 
+  if (insertDispatch.count(cmd->type)){ 
     // switch to insert mode
-    insertDispatch.at(normal->type)(this); 
+    insertDispatch.at(cmd->type)(this); 
     insertParser.reset();
-    insertParser.setCount(normal->count);
-    insertParser.setMode(normal->type);
+    insertParser.setCount(count);
+    insertParser.setMode(cmd->type);
     modeManager.setMode(ModeType::Insert);
     activeWindow->render();
-  } else if (normal->type == ':'){
+    rootStatus.reset();
+  } else if (cmd->type == ':'){
     exParser.reset();
     modeManager.setMode(ModeType::Ex);
-  } else if (normal->type == 'x'){
-    filebuf.erase(curRow,curCol,normal->count);
+  } else if (cmd->type == 'x'){
+    filebuf.erase(curRow,curCol,count);
     tab.fixCursor();
-  } else if (normal->type == 'X'){
-    auto delCnt = min(normal->count,curCol);
+  } else if (cmd->type == 'X'){
+    auto delCnt = min(count,curCol);
     filebuf.erase(curRow,curCol - delCnt, delCnt);
     cursor.setCol(curCol-delCnt);
     tab.setCursor(cursor);
-  } else if (normal->type == 'd'){
+  } else if (cmd->type == 'd'){
+    // run dd command
+  } else {
 
-  } else if (normal->type == 'c' || normal->type == 'S') {
   }
 }

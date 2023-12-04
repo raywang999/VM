@@ -19,8 +19,11 @@ bool NormalParser::parse(const Keystroke& keystroke) {
       // parse second part of cc, dd, yy
       // ignore d[any motion] since those are CombNM, not basic Normal 
       theCommand.data = keystroke.value;
-      if (theCommand.type == theCommand.data){
-        // we have a dd, cc, yy
+      if (theCommand.type == theCommand.data){ // we have a dd, cc, yy
+        if (theCommand.type == 'c') {
+          // turn "cc" into "S"
+          theCommand.type = 'S';
+        }
         notifyAll();
         return true;
       }

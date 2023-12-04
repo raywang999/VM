@@ -31,9 +31,12 @@ class MacroRunner: public CommandRunner<Macro>{
         currReg = macro->reg;
       }
     } else {
-      // replay the macro
-      for (auto key: reg[macro->reg]){
-        modeManager.consume(key);
+      int count = normalizeCount(macro->count);
+      // replay the macro count times
+      for (int i=0;i < count; ++i){
+        for (auto key: reg[macro->reg]){
+          modeManager.consume(key);
+        }
       }
     }
   }

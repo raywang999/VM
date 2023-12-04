@@ -10,8 +10,8 @@
 // helper class to parse optional multipliers
 class CountedParser {
   // holds the currently parsed count 
-  // defaults to 1 if no numeric keystrokes are passed 
-  int theCount = 1;
+  // defaults to -1 if no numeric keystrokes are passed 
+  int theCount = -1;
 
   // whether the parser will accept numbers 
   // i.e. we haven't parsed any non-numbers yet
@@ -20,7 +20,7 @@ class CountedParser {
   bool first = true;
 
  public: 
-  void reset() { theCount = 1; valid = first = true; }
+  void reset() { theCount = -1; valid = first = true; }
   int getCount() { return theCount; }
   // parses optional count. 
   // if keystroke is not a number, 

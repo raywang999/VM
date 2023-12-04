@@ -9,6 +9,7 @@
 #include "lib/mode/mode_manager.h"
 #include "lib/command/runner/movement_runner.h"
 #include "lib/command/parser/ex_parser.h"
+#include "lib/statusbar/root_status.h"
 
 // takes a basic Normal mode Command and runs it
 class NormalRunner: public CommandRunner<Normal>{
@@ -17,6 +18,7 @@ class NormalRunner: public CommandRunner<Normal>{
   InsertParser& insertParser;
   ExParser& exParser;
   MovementRunner movementRunner{activeWindow};
+  RootStatus& rootStatus;
 
  public:
   // the command must be one of a,cc,dd,i,o,p,r,s,u,x,yy,A,I,J,O,P,R,S,X,.
@@ -25,12 +27,14 @@ class NormalRunner: public CommandRunner<Normal>{
     Window*& activeWindow, 
     ModeManager& modeManager, 
     InsertParser& insertParser,
-    ExParser& exParser
+    ExParser& exParser,
+    RootStatus& rootStatus
   ): 
     activeWindow{activeWindow}, 
     modeManager{modeManager}, 
     insertParser{insertParser}, 
-    exParser{exParser} 
+    exParser{exParser},
+    rootStatus{rootStatus}
   {}
 };
 

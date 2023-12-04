@@ -13,21 +13,18 @@ enum class ErrorCode {
 // stores general information like ExLine message, error-codes
 class RootStatus{
   ErrorCode errorCode{ErrorCode::nothing};
-  std::string message;
-  bool recordingMacro = false;
+  std::string exMessage; // overrides normal mode/insert mode
  public: 
   void setError(ErrorCode error) noexcept {
     errorCode = error;
-    message.clear();
   }
   void setMessage(const std::string& msg) noexcept {
-    message = msg;
+    exMessage = msg;
     errorCode = ErrorCode::nothing;
   }
-  void setRecording(bool rec) noexcept {recordingMacro = rec;}
+  void reset() noexcept {exMessage.clear(); errorCode = ErrorCode::nothing;}
   ErrorCode getError() const noexcept {return errorCode;}
-  const std::string& getMessage() const noexcept {return message;}
-  bool getRecording() const noexcept {return recordingMacro;}
+  const std::string& getMessage() const noexcept {return exMessage;}
 };
 
 #endif

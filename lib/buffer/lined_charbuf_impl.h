@@ -76,19 +76,21 @@ inline void LinedCharbuf<char_t>::insert(size_t line, size_t start, std::basic_s
   for (auto ch: chars){
     lines[linei].push_back(ch);
     if (ch == '\n'){
-      ++linei; insertLines(linei,1);
+      ++linei; insertLines(linei,1); 
+      lines[linei].pop_back();
     } 
   }
   lines[linei] += endstr;
 }
 template<typename char_t>
 inline void LinedCharbuf<char_t>::insert(size_t line, size_t start, char_t ch){
-  auto& curline = lines[line];
   if (ch == '\n'){
     insertLines(line+1,1);
+    auto& curline = lines[line];
     lines[line+1] = curline.substr(start);
     curline = curline.substr(0,start)+"\n";
   } else {
+    auto& curline = lines[line];
     curline.insert(curline.begin()+start,ch);
   }
 }
