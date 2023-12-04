@@ -1,5 +1,6 @@
 #include "lined_charbuf.h"
 
+#include "include/utility.h"
 #include <cstddef> 
 #include <string_view>
 #include <string>

@@ -5,6 +5,7 @@
 
 #include "parse_args.h"
 #include "init_windows.h"
+#include "init_tabs.h"
 
 #include "lib/command/command_source.h"
 
@@ -19,6 +20,7 @@
 #include "lib/command/runner/ctrl_runner.h"
 #include "lib/command/runner/macro_runner.h"
 #include "lib/command/runner/parser_group.h"
+#include "lib/command/runner/ex_runner.h"
 
 #include "lib/command/parser/normal_parser.h"
 #include "lib/command/parser/movement_parser.h"
@@ -26,7 +28,7 @@
 #include "lib/command/parser/macro_parser.h"
 #include "lib/command/parser/ex_parser.h"
 
-#include "lib/command/history_manager.h"
+#include "lib/history/history_manager.h"
 #include "lib/keystroke/keystroke_recorder.h"
 
 #include "lib/buffer/file_manager.h"
@@ -35,6 +37,7 @@
 
 struct ModesClosure{
   WindowsClosure& windowsClosure;
+  TabsClosure& tabsClosure;
 
   ModeManager rootModeManager;
   
@@ -61,11 +64,8 @@ struct ModesClosure{
   MovementRunner movementRunner{windowsClosure.activeWindow};
   CtrlRunner ctrlRunner{windowsClosure.activeWindow, movementRunner};
 
-  // general runner for all users
-  SingleRunner singleRunner{normalRunner, insertRunner, movementRunner};
-  SequenceRunner sequenceRunner{singleRunner};
-  GeneralRunner generalRunner{singleRunner, sequenceRunner};
   // setup history manager
+  HistoryManager historyManager{windowsClosure.activeWindow, windowsClosure.rootStatus};
 
   NormalRunner normalRunner{windowsClosure.activeWindow, rootModeManager, insertParser, exParser};
   MacrosRegister macrosRegister;
@@ -73,19 +73,28 @@ struct ModesClosure{
 
   // setup Ex Mode 
   ExParser exParser;
+  ExRunner exRunner{
+    windowsClosure.activeWindow, rootModeManager,
+    windowsClosure.rootStatus, tabsClosure.fileManager, historyManager,
+  };
   Mode exMode{&exParser, &escNormal};
 
 
-  // whether we have exited from the rootWindow
-  bool exitedFromRoot = false;
-
   // creates a Mode manager, Modes, and links between parsers and runners
-  ModesClosure(WindowsClosure& windows, KeystrokeSource& keyboard): 
-    windowsClosure{windows}
+  ModesClosure(
+    WindowsClosure& windows, 
+    KeystrokeSource& keyboard, 
+    TabsClosure& tabsClosure
+  ): 
+    windowsClosure{windows}, 
+    tabsClosure{tabsClosure}
   {
     // setup Insert Mode
     insertParser.attach(&insertRunner);
     rootModeManager.attach(ModeType::Insert, &insertMode);
+    
+    // ex mode
+    exParser.attach(&exRunner);
     
     // setup Normal Mode
     movementParser.attach(&movementRunner);
@@ -95,6 +104,10 @@ struct ModesClosure{
     rootModeManager.attach(ModeType::Normal, &normalMode);
 
     // setup history 
+    macroParser.attach(&historyManager);
+    insertParser.attach(&historyManager);
+    exParser.attach(&historyManager);
+    normalParser.attach(&historyManager);
 
     // setup Ex mode 
     rootModeManager.attach(ModeType::Ex, &exMode);

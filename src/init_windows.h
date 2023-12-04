@@ -7,6 +7,7 @@
 #include "init_tabs.h"
 #include "lib/window/ncwindow.h"
 #include "lib/statusbar/status_bar.h"
+#include "lib/statusbar/root_status.h"
 
 struct WindowsClosure{
   // root window that is displayed initially
@@ -16,6 +17,9 @@ struct WindowsClosure{
 
   // status bar at the bottom of the screen
   StatusBar rootStatusBar{};
+  
+  // data stored in rootStatusBar
+  RootStatus rootStatus{};
 
   WindowsClosure(TabsClosure& tabs, StyleManager& styler): 
     rootWindow{tabs.rootTabManager,styler}

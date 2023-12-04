@@ -21,14 +21,14 @@ struct StatusBarClosure {
     } else if (mode == ModeType::Replace){
       message = "-- REPLACE --";
     } else if (mode == ModeType::Ex){
-      message = ":" + modesClosure.exParser.getCommand()->sentence;
+      message = ":" + modesClosure.exParser.getSentence();
     } else {
       message = "";
     }
     if (modesClosure.macroRecorder.isActive()){
       // are in macro mode
       message.append("recording @");
-      message.push_back(modesClosure.macroRecorder.getCurrReg());
+      message.push_back(modesClosure.macroRunner.getCurrReg());
     }
     windowsClosure.rootStatusBar.render();
   }

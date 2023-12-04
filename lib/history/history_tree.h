@@ -5,42 +5,63 @@
 #include <memory>
 
 #include "include/resetable.h"
-#include "lib/tab/tab.h"
 #include "lib/command/command_recorder.h"
-#include "lib/command/runner/general_runner.h"
+#include "lib/tab/tab.h"
 
 // stores undo branches as a history tree
-// each node in the tree stores a deep-copy of the Tab right after changes complete
+// each node in the tree stores a deep-copy of the charbuf, and the cursor position
 class HistoryTree: public Resetable {
+  int edit = 0;
   struct Node {
+    int edit;
     const decltype(std::chrono::system_clock::now()) timestamp
       = std::chrono::system_clock::now();
-    std::unique_ptr<LinedFilebuf<char>> file;
-    Tab tab{file.get()};
-    std::vector<Node*> children;
+    LinedCharbuf<char> file;
+    Cursor cursor;
     Node* parent = nullptr;
-    Node(const Tab& tab): file{std::make_unique<LinedFilebuf<char>>(tab.getFilebuf())} {
-      this->tab.setCursor(tab.getCursor());
-    }
+    Node(const Tab& tab): 
+      file{tab.getFilebuf()}, // slice the charbuf part of the filebuf
+      cursor{tab.getCursor()} 
+    {}
   };
   Node root;
   Node* curr;
-  // all nodes we have created
+  std::vector<Node*> future; // stack of redo futures
+  // all non-root nodes we have created
   std::vector<Node> store;
  public:
-  // undo most recent command 
-  void undo() { 
-    const auto& seq = past.getCommand()->theSequence;
-    if (undos >= seq.size()) return; // do nothing if nothing to undo
-    runner.run(seq[undos]);
+  HistoryTree(const Tab& tab): root{tab}, curr{&root} {}
+  // syncs tab to reflect the state of curr
+  void sync(Tab& tab) {
+    tab.setCursor(curr->cursor);
+    static_cast<LinedCharbuf<char>&>(tab.getFilebuf()) = curr->file;
   }
-  // redo most recent command
-  void redo() { 
-    if (undos > 0 ) {
-      --undos; 
-      runner.run(past.getCommand()->theSequence[undos]);
+  // undo most recent command. REturns true if successfully undo 
+  bool undo() { 
+    if (curr->parent) {
+      curr = curr->parent;
+      return true;
     }
+    return false;
   }
+  // redo most recent command. return true iff successful
+  bool redo() { 
+    if (future.empty()) return false;
+    curr = future.back();
+    future.pop_back();
+    return true;
+  }
+  // pushes an new Tab onto the tree. Clears the future
+  void push(const Tab& tab) {
+    auto& newNode = store.emplace_back(tab);
+    newNode.edit = ++edit;
+    future.clear();
+    newNode.parent = curr;
+    curr = &newNode;
+  }
+
+  const Node* getCurr() const noexcept {return curr; }
+
 };
 
 #endif

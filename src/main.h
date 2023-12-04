@@ -24,20 +24,19 @@ struct Main{
   // ncurses initialization
   NcursesClosure ncursesClosure{terminalArgs};
 
-  FileManager fileManager;
   StyleManager styleManager;
 
   // CS Student Environment Keyboard
   UWSEKeyboard keyboard;
 
   // initialize Tabs, root TabManager, activeTab with terminal supplied args
-  TabsClosure tabsClosure{terminalArgs, fileManager};
+  TabsClosure tabsClosure{terminalArgs};
 
   // initialize root `Window`
   WindowsClosure windowsClosure{tabsClosure, styleManager};
   
   // initialize Modes
-  ModesClosure modesClosure{windowsClosure, keyboard};
+  ModesClosure modesClosure{windowsClosure, keyboard, tabsClosure};
 
   // initialize the screen's cursor and statusbar
   CursorClosure cursorClosure{windowsClosure, modesClosure}; 

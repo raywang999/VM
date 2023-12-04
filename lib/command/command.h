@@ -4,6 +4,8 @@
 // Command Hierarchy
 
 #include <string>
+#include <cctype>
+#include <cstddef>
 #include <vector>
 
 #include "lib/mode/modetype.h"
@@ -52,8 +54,23 @@ struct ComboNM: public Command {
 
 // Ex mode commands. I.e. :w, :wq
 struct Ex: public Command {
-  std::string sentence;
-  Ex(const std::string& sentence = ""): sentence{sentence} {};
+  std::vector<std::string> args;
+  // split sentence into args
+  Ex(const std::string& sentence = ""){
+    for (size_t i = 0; i < sentence.size(); ++i){
+      if (std::isspace(sentence[i])) {
+        while (i < sentence.size() && std::isspace(sentence[i])){++i;}
+        if (i >= sentence.size()) { 
+          break;
+        }
+      }
+      if (i < sentence.size()){
+        args.emplace_back();
+        while (i<sentence.size() && !isspace(sentence[i]))
+          args.back().push_back(sentence[i++]);
+      }
+    }
+  }
 };
 
 // Insert mode command. I.e. a chain of partial inserts

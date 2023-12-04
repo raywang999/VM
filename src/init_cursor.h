@@ -17,7 +17,7 @@ struct CursorClosure {
     const auto& filebuf = tab.getFilebuf();
     // calculate which row on the screen our cursor corresponds to
     auto printRow = tab.getRow();
-    for (auto i = tab.getTopLine(); i < cursor.getRow(); ++i){
+    for (int i = tab.getTopLine(); i < cursor.getRow(); ++i){
       printRow += tab.lineSize(i);
     }
     printRow += cursor.getCol()/tab.getWidth();
