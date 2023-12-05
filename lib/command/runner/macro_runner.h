@@ -25,6 +25,7 @@ class MacroRunner: public CommandRunner<Macro>{
       if (currReg != 0) {  // finish recording
         reg[currReg] = recorder.getKeystrokes();
         recorder.reset();
+        currReg = 0;
       } else {
         // start recording 
         recorder.setActive(true);

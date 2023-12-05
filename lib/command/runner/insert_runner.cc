@@ -29,12 +29,12 @@ void InsertRunner::run(const Insert* insert){
       }
       filebuf.insert(cursor.getRow(), cursor.getCol(), theInsert);
     } 
+    // calculate final cursor position
+    cursor.setRow(cursor.getRow()+count*std::ranges::count(theInsert,'\n'));
+    cursor.setCol(fit(0,filebuf.getLine(cursor.getRow()).size()-1,
+      cursor.getCol()+theInsert.size()));
   }
-  // calculate final cursor position
-  cursor.setRow(cursor.getRow()+count*std::ranges::count(theInsert,'\n'));
-  // move cursor to correct col 
-  cursor.setCol(fit(0,filebuf.getLine(cursor.getRow()).size()-1,
-    cursor.getCol()+theInsert.size()));
+  // move cursor left one col 
   cursor.setCol(std::max(0,cursor.getCol()-1));
   tab.setCursor(cursor);
   modeManager.setMode(ModeType::Normal);
