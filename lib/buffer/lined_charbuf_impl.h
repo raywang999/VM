@@ -104,6 +104,7 @@ inline void LinedCharbuf<char_t>::insertLines(size_t line, size_t num){
 }
 template<typename char_t>
 inline void LinedCharbuf<char_t>::eraseLines(size_t line, size_t num){
+  num = std::min(num, countLines()-line);
   lines.erase(lines.begin()+line, lines.begin()+line+num);
 }
 

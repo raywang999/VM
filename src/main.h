@@ -10,6 +10,7 @@
 #include "init_windows.h"
 #include "init_cursor.h"
 #include "init_statusbar.h"
+#include "init_history.h"
 
 #include "lib/keystroke/uwse_keyboard.h"
 #include "lib/buffer/file_manager.h"
@@ -34,9 +35,12 @@ struct Main{
 
   // initialize root `Window`
   WindowsClosure windowsClosure{tabsClosure, styleManager};
+
+  // history 
+  HistoryClosure historyClosure{tabsClosure, windowsClosure};
   
   // initialize Modes
-  ModesClosure modesClosure{windowsClosure, keyboard, tabsClosure};
+  ModesClosure modesClosure{windowsClosure, keyboard, tabsClosure, historyClosure};
 
   // initialize the screen's cursor and statusbar
   CursorClosure cursorClosure{windowsClosure, modesClosure}; 

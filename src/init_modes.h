@@ -6,6 +6,7 @@
 #include "parse_args.h"
 #include "init_windows.h"
 #include "init_tabs.h"
+#include "init_history.h"
 
 #include "lib/command/command_source.h"
 
@@ -22,6 +23,8 @@
 #include "lib/command/runner/parser_group.h"
 #include "lib/command/runner/ex_runner.h"
 #include "lib/command/runner/dot_repeater.h"
+#include "lib/command/runner/undo_runner.h"
+#include "lib/command/runner/jk_recorder.h"
 
 #include "lib/command/parser/normal_parser.h"
 #include "lib/command/parser/movement_parser.h"
@@ -38,7 +41,11 @@
 
 struct ModesClosure{
   WindowsClosure& windowsClosure;
+  Window*& activeWindow{windowsClosure.activeWindow};
   TabsClosure& tabsClosure;
+  HistoryClosure& historyClosure;
+  HistoryRecorder& historyRecorder = historyClosure.historyRecorder;
+  HistoryManager& historyManager = historyClosure.historyManager;
 
   ModeManager rootModeManager;
   
@@ -50,8 +57,8 @@ struct ModesClosure{
 
   // setup Insert Mode
   InsertParser insertParser;
-  InsertRunner insertRunner{windowsClosure.activeWindow, rootModeManager};
-  InsertReflector insertReflector{windowsClosure.activeWindow};
+  InsertRunner insertRunner{activeWindow, rootModeManager};
+  InsertReflector insertReflector{activeWindow};
   Mode insertMode{&insertParser, &insertReflector, &escNormal};
 
 
@@ -62,14 +69,12 @@ struct ModesClosure{
   CtrlParser ctrlParser;
   MacroParser macroParser;
   NormalMode normalMode{normalGroup};
-  MovementRunner movementRunner{windowsClosure.activeWindow};
-  CtrlRunner ctrlRunner{windowsClosure.activeWindow, movementRunner};
-
-  // setup history manager
-  HistoryManager historyManager{windowsClosure.activeWindow, windowsClosure.rootStatus};
+  MovementRunner movementRunner{activeWindow};
+  JKRecorder jkRecorder{movementRunner};
+  CtrlRunner ctrlRunner{activeWindow, movementRunner};
 
   NormalRunner normalRunner{
-    windowsClosure.activeWindow, 
+    activeWindow, 
     rootModeManager, 
     insertParser, 
     exParser, 
@@ -82,7 +87,7 @@ struct ModesClosure{
   // setup Ex Mode 
   ExParser exParser;
   ExRunner exRunner{
-    windowsClosure.activeWindow, rootModeManager,
+    activeWindow, rootModeManager,
     windowsClosure.rootStatus, tabsClosure.fileManager, historyManager,
   };
   Mode exMode{&exParser, &escNormal};
@@ -90,16 +95,30 @@ struct ModesClosure{
   // setup DotRepeater for '.' normal commands
   DotRepeater dotRepeater{insertRunner, normalRunner, macroRunner};
 
+  UndoRunner undoRunner{
+    activeWindow, rootModeManager, historyManager, windowsClosure.rootStatus};
+
 
   // creates a Mode manager, Modes, and links between parsers and runners
   ModesClosure(
     WindowsClosure& windows, 
     KeystrokeSource& keyboard, 
-    TabsClosure& tabsClosure
+    TabsClosure& tabsClosure, 
+    HistoryClosure& historyClosure
   ): 
     windowsClosure{windows}, 
-    tabsClosure{tabsClosure}
+    tabsClosure{tabsClosure}, 
+    historyClosure{historyClosure}
   {
+    // setup cursorRecorder to save cursor state before each command
+    macroParser.attach(&historyClosure.cursorRecorder);
+    insertParser.attach(
+      static_cast<CommandRunner<Insert>*>(&historyClosure.cursorRecorder));
+    exParser.attach(&historyClosure.cursorRecorder);
+    normalParser.attach(
+      static_cast<CommandRunner<Normal>*>(&historyClosure.cursorRecorder));
+    movementParser.attach(&historyClosure.cursorRecorder);
+
     // setup Insert Mode
     insertParser.attach(&insertRunner);
     rootModeManager.attach(ModeType::Insert, &insertMode);
@@ -112,16 +131,22 @@ struct ModesClosure{
     normalParser.attach(&normalRunner);
     ctrlParser.attach(&ctrlRunner);
     macroParser.attach(&macroRunner);
+    movementParser.attach(static_cast<CommandRunner<Movement>*>(&jkRecorder));
+    normalParser.attach(&jkRecorder);
+    insertParser.attach(&jkRecorder);
     rootModeManager.attach(ModeType::Normal, &normalMode);
     normalParser.attach(&dotRepeater);
     insertParser.attach(&dotRepeater);
     macroParser.attach(&dotRepeater);
 
     // setup history 
-    macroParser.attach(&historyManager);
-    insertParser.attach(&historyManager);
-    exParser.attach(&historyManager);
-    normalParser.attach(&historyManager);
+    macroParser.attach(&historyRecorder);
+    insertParser.attach(&historyRecorder);
+    exParser.attach(&historyRecorder);
+    normalParser.attach(&historyRecorder);
+    normalParser.attach(&undoRunner);
+    ctrlParser.attach(&undoRunner);
+
 
     // setup Ex mode 
     rootModeManager.attach(ModeType::Ex, &exMode);

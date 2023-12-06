@@ -4,79 +4,38 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "lib/statusbar/root_status.h"
 #include "history_tree.h"
-#include "lib/command/runner/command_runner.h"
 
 // pushes commands onto the history tree of the currently edited file
-class HistoryManager: 
-  public CommandRunner<Ex>,
-  public CommandRunner<Insert>,
-  public CommandRunner<Replace>,
-  public CommandRunner<Macro>,
-  public CommandRunner<Normal>
-{
-  Window*& activeWindow;
+class HistoryManager{
   std::unordered_map<std::string, HistoryTree> trees;
-  // number of modifications from last persist
-  std::unordered_map<std::string, int> diffCnt; 
+  // number of the edit which was last written 
+  std::unordered_map<std::string, int> savedEdit; 
 
  public:
-  HistoryManager(Window*& activeWindow, RootStatus& rootStatus): 
-    activeWindow{activeWindow}{}
-  // save changes into the tree of the currently active file
-  void save() {
-    auto& tab = activeWindow->getTabManager().curr();
+  // save changes into the tree of the given tab
+  void save(const Tab& tab, const Cursor& beg) {
     const auto& filename = tab.getFilebuf().filename;
     if (trees.count(filename)){
-      trees.at(filename).push(tab);
-      ++diffCnt[filename];
+      trees.at(filename).push(tab, beg);
     } else {
       trees.insert({filename, HistoryTree{tab}});
-      diffCnt[filename] = 1;
+      savedEdit[filename] = 0;
     }
   }
-  void run(const Insert* cmd) override { save(); }
-  void run(const Replace* cmd) override { save(); }
-  void run(const Macro* cmd) override { 
-    if (cmd->type == '@') save();
-  }
-  void run(const Normal* cmd) override { 
-    // note, we don't consider undo and redo as modifications 
-    // since nromalRunner should handle them
-    static const std::unordered_set<char> modifiers{'x','X','d','.','J','p','P'};
-    if (modifiers.count(cmd->type)) save();
-  }
-  void run(const Ex* ex) override { 
-    if (ex->args[0] == "r") {save();}
-  }
-  // get the diff cnt of a file from its last persist
-  void setDiffCnt(const std::string& filename, int cnt=0) { 
-    diffCnt[filename] = cnt; 
-  }
-  // get the diff cnt of a file from its last persist
-  int getDiffCnt(const std::string& filename) { 
-    return diffCnt[filename];
-  }
 
-  // redo in currently active window
-  bool redo() {
-    auto& tab = activeWindow->getTabManager().curr();
-    const auto& filename = tab.getFilebuf().getFilename();
+  // redo in a file. Returns true iff successful
+  bool redo(const std::string& filename) {
     auto& tree = trees.at(filename);
-    ++diffCnt[filename];
     if (tree.redo()){
       return true;
     }
     return false;
   }
   
-  // undo last change in currently active window
-  bool undo() {
-    auto& tab = activeWindow->getTabManager().curr();
-    const auto& filename = tab.getFilebuf().getFilename();
+  // undo in a file. Returns true iff successful
+  bool undo(const std::string& filename) {
     auto& tree = trees.at(filename);
-    --diffCnt[filename];
     if (tree.undo()){
       return true;
     }
@@ -86,8 +45,15 @@ class HistoryManager:
   // copies history from source file to `to` file, assuming `to` isn't opened 
   void copy(const std::string& from, const std::string& to) {
     trees.insert({to,trees.at(from)});
-    diffCnt[to]=diffCnt[from];
+    savedEdit[from] = savedEdit[to];
   }
+
+  const HistoryTree& getTree(const std::string& file) const {
+    return trees.at(file);
+  }
+
+  int getSavedEdit(const std::string& file) {return savedEdit[file];}
+  void persist(const std::string& file) {savedEdit[file] = trees.at(file).getCurr();}
 
 };
 

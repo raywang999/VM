@@ -1,8 +1,6 @@
 #ifndef INIT_TABS_H
 #define INIT_TABS_H
 
-#include <string>
-
 #include "parse_args.h"
 
 #include "lib/buffer/file_manager.h"

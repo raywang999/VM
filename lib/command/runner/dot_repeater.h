@@ -74,9 +74,11 @@ inline void DotRepeater::run(const Normal* cmd){
       insertRunner.run(&tmp);
     }
   } else {
-    // otherwise, record the command
-    prevNormal = *cmd;
-    type = Type::Normal;
+    // otherwise, record the command if it should redone
+    if (cmd->type != 'u'){
+      prevNormal = *cmd;
+      type = Type::Normal;
+    }
   }
 }
 

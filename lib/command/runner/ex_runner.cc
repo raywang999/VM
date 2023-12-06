@@ -21,7 +21,7 @@ bool ExRunner::write(const std::vector<std::string>& args){
   }  else {
     // save file and udpate history 
     filebuf->persist();
-    historyManager.setDiffCnt(filename);
+    historyManager.persist(filename);
   }
   rootStatus.setMessage(
     "\"" + filename + "\" " + 
@@ -40,7 +40,7 @@ void ExRunner::run(const Ex* insert){
     write(args);
   } else if (args[0] == "q"){
     auto& filebuf = activeWindow->getTabManager().curr().getFilebuf();
-    if (historyManager.getDiffCnt(filebuf.getFilename())){
+    if (historyManager.getSavedEdit(filebuf.getFilename())){
       // warn unsaved changes
       rootStatus.setError(ErrorCode::noWriteSinceLastChange);
     } else {

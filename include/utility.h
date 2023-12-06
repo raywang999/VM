@@ -26,5 +26,4 @@ inline int normalizeCount(int prev, int def = 1){
   return prev == -1 ? def : prev;
 }
 
-
 #endif

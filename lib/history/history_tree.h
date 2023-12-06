@@ -3,37 +3,53 @@
 
 #include <chrono>
 #include <memory>
+#include <string>
 
-#include "include/resetable.h"
 #include "lib/tab/tab.h"
 
 // stores undo branches as a history tree
 // each node in the tree stores a deep-copy of the charbuf, and the cursor position
-class HistoryTree: public Resetable {
-  struct Node {
-    int edit;
-    const decltype(std::chrono::system_clock::now()) timestamp
-      = std::chrono::system_clock::now();
-    LinedCharbuf<char> file;
-    Cursor cursor;
-    Node* parent = nullptr;
-    Node(const Tab& tab): 
-      file{tab.getFilebuf()}, // slice the charbuf part of the filebuf
-      cursor{tab.getCursor()} 
-    {}
-  };
-  int edit = 0;
-  Node root;
-  Node* curr;
-  std::vector<Node*> future; // stack of redo futures
-  // all non-root nodes we have created
-  std::vector<Node> store;
+class HistoryTree {
  public:
-  HistoryTree(const Tab& tab): root{tab}, curr{&root} {}
+  struct Node {
+    using timestamp_t = decltype(std::chrono::system_clock::now());
+    int edit;
+    const timestamp_t timestamp = std::chrono::system_clock::now();
+    std::string contents;
+    Cursor beg; // cursor location before the change
+    Cursor end; // cursor location after the change
+    int parent;
+    Node(int edit, const Tab& tab): edit{edit}, beg{tab.getCursor()} {
+      for (auto ch: tab.getFilebuf()){ // write all chars into contents
+        contents.push_back(ch);
+      }
+    }
+  };
+ private:
+  int edit = 0;
+  std::vector<int> future; // stack of redo futures
+  // all non-root nodes we have created
+  // root is stored at store[0]
+  std::vector<Node> store;
+  // currently active edit number
+  int curr = 0;
+  // check if filecontents and the string have same contents
+  bool same(const std::string& str, const LinedFilebuf<char>& file){
+    if (file.countBytes() != store[curr].contents.size()) return false;
+    size_t i = 0;
+    for (auto ch: file){  
+      if (store[curr].contents[i] != ch) return false;
+      ++i;
+    }
+    return true;
+  }
+ public:
+  HistoryTree(const Tab& tab): store{Node{0,tab}}{}
   // undo most recent command. REturns true if successfully undo 
   bool undo() { 
-    if (curr->parent) {
-      curr = curr->parent;
+    if (curr) { // not the 0th change (i.e. root), so valid
+      future.push_back(curr);
+      curr = store[curr].parent;
       return true;
     }
     return false;
@@ -45,16 +61,24 @@ class HistoryTree: public Resetable {
     future.pop_back();
     return true;
   }
-  // pushes an new Tab onto the tree. Clears the future
-  void push(const Tab& tab) {
-    auto& newNode = store.emplace_back(tab);
-    newNode.edit = ++edit;
-    future.clear();
+  // if tab's file contents changed, create a new edit
+  // with cursor's beginnning poosition set to beg
+  void push(const Tab& tab, const Cursor& beg) {
+    if (same(store[curr].contents, tab.getFilebuf())){
+      return; // do nothing if no change was made
+    }
+    // create a copy
+    auto& newNode = store.emplace_back(++edit, tab);
+    future.clear(); // clear redo chain
     newNode.parent = curr;
-    curr = &newNode;
+    newNode.beg = beg;
+    curr = edit;
   }
 
-  const Node* getCurr() const noexcept {return curr; }
+
+  // get current edit 
+  const int getCurr() const noexcept {return curr; }
+  const Node& getCurrNode() const noexcept {return store[curr]; }
 
 };
 
