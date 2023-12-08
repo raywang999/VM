@@ -18,9 +18,8 @@ class NormalParser: public CommandParser<Normal>{
   bool parseData = false;
 
   // set storing which command types are terminals, i.e. don't need extra data
-  inline static const std::unordered_set<int> terminalTypes{
-    'a', 'i', 'o', 'p', 's', 'u', 'x', 
-    'A', 'I', 'J', 'O', 'P', 'R', 'S', 'X', '.', ':'
+  inline static const std::unordered_set<char> terminalTypes{
+    'p', 'u', 'x', 'J', 'P', 'X', '.'
   };
 
   bool parse(const Keystroke& keystroke) override;

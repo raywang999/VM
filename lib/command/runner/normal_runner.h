@@ -9,32 +9,21 @@
 #include "lib/mode/mode_manager.h"
 #include "lib/command/runner/movement_runner.h"
 #include "lib/command/parser/ex_parser.h"
-#include "lib/statusbar/root_status.h"
 
 // takes a basic Normal mode Command and runs it
 class NormalRunner: public CommandRunner<Normal>{
   Window*& activeWindow;
-  ModeManager& modeManager;
-  InsertParser& insertParser;
-  ExParser& exParser;
-  MovementRunner movementRunner{activeWindow};
-  RootStatus& rootStatus;
+  // helps with e.g. 
+  //MovementRunner movementRunner{activeWindow};
 
  public:
-  // the command must be one of a,cc,dd,i,o,p,r,s,u,x,yy,A,I,J,O,P,R,S,X,.
+  // the command must be one of dd,p,r,x,yy,J,P,X
+  // note: '.' is handled by DotRepeater
   void run(const Normal* normal); 
   NormalRunner(
-    Window*& activeWindow, 
-    ModeManager& modeManager, 
-    InsertParser& insertParser,
-    ExParser& exParser,
-    RootStatus& rootStatus
+    Window*& activeWindow
   ): 
-    activeWindow{activeWindow}, 
-    modeManager{modeManager}, 
-    insertParser{insertParser}, 
-    exParser{exParser},
-    rootStatus{rootStatus}
+    activeWindow{activeWindow}
   {}
 };
 

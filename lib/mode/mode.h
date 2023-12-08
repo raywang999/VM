@@ -30,9 +30,6 @@ inline void Mode::consume(const Keystroke& keystroke){
   for (auto consumer: consumers){
     consumer->consume(keystroke);
   }
-  if (keystroke.key == Key::Esc){
-
-  }
 }
 
 #endif

@@ -6,7 +6,7 @@
 #include "parse_args.h"
 #include "init_ncurses.h"
 #include "init_tabs.h"
-#include "init_modes.h"
+#include "init_modes/init_modes.h"
 #include "init_windows.h"
 #include "init_cursor.h"
 #include "init_statusbar.h"

@@ -13,7 +13,7 @@ struct HistoryClosure{
   WindowsClosure& windowsClosure;
   HistoryManager historyManager;
 
-  CursorRecorder cursorRecorder{windowsClosure.activeWindow, historyManager};
+  CursorRecorder cursorRecorder{windowsClosure.activeWindow};
   HistoryRecorder historyRecorder{windowsClosure.activeWindow, historyManager, cursorRecorder};
 
   HistoryClosure(TabsClosure& tabsClosure, WindowsClosure& windowsClosure): 

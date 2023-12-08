@@ -1,6 +1,7 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
+#include <unordered_set>
 #include <cstddef>
 
 inline int min(int a, size_t b){

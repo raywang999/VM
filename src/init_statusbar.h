@@ -2,7 +2,7 @@
 #define INIT_STATUSBAR_H
 
 #include "init_windows.h"
-#include "init_modes.h"
+#include "init_modes/init_modes.h"
 #include "init_cursor.h"
 
 struct StatusBarClosure {

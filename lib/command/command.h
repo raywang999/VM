@@ -15,16 +15,6 @@ struct Command{
 };
 inline Command::~Command(){}
 
-// basic normal mode command 
-// - e.g. 5x, rx, s, i, 3u, 5a, 2p, 2yy, 3dd
-struct Normal: public Command {
-  int count;
-  char type; // one of a,c,d,o,p,r,s,u,x,y,A,I,J,O,P,R,S,X,.
-  char data; // optional e.g. the 'x' in rx
-  Normal(int count=0, char type=0, char data=0): 
-    count{count}, type{type}, data{data} {}
-};
-
 // normal mode movement 
 // - arrow keys will get translated to corresponding hjkl
 // - e.g. 5l, 3fa, 2b, w
@@ -35,6 +25,33 @@ struct Movement: public Command {
   char seek; 
   Movement(int count=0, char type=0, char seek=0): 
     count{count}, type{type}, seek{seek} {}
+};
+
+// basic normal mode command 
+// - e.g. 5x, rx, 3u, 2p, 2yy, 3dd
+// note that cc will be emitted as an S command
+struct Normal: public Command {
+  int count;
+  char type; // one of d,p,r,u,x,y,J,O,P,X,.
+  char data; // used for e.g. the 'x' in rx
+  Normal(int count=0, char type=0, char data=0): 
+    count{count}, type{type}, data{data} {}
+};
+
+// normal command that switches us to another mode
+// - e.g. S, s, cc, A, a, i, I, O, o, R, :
+struct SetMode: public Command {
+  int count;
+  char type; // one of a,c,o,s,A,I,O,R,S,:
+  SetMode(int count=0, char type=0): 
+    count{count}, type{type} {}
+};
+
+// specialization of SetMode for c_, where _ is a movement
+struct CM: public SetMode {
+  Movement movement; // only relevent for c_
+  CM(int count=0, char type='c', Movement movement = {}): 
+    SetMode{count, type}, movement{movement} {}
 };
 
 // ctrl commands. E.g. Ctrl+f 
@@ -73,7 +90,7 @@ struct Ex: public Command {
   }
 };
 
-// Insert mode command. I.e. a chain of partial inserts
+// Insert mode command. Stores the chars typed
 struct Insert: public Command {
   std::string sentence;
   int count;
