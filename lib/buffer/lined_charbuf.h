@@ -33,7 +33,7 @@ class LinedCharbuf {
     iterator& operator--() noexcept;
     auto operator<=>(const iterator& other) const =default;
     char_t operator*() const {return theCharbuf->lines[line][col];}
-    char_t& operator*() {return *(*this);}
+    char_t& operator*() {return theCharbuf->lines[line][col];}
     friend class LinedCharbuf;
   };
   class const_iterator {
@@ -73,6 +73,11 @@ class LinedCharbuf {
   void eraseLines(size_t line, size_t num);
 
   size_t countLines() const noexcept { return lines.size(); }
+  size_t countBytes() const noexcept { 
+    size_t res = 0;
+    for (auto line: lines){ res += line.size(); }
+    return res*sizeof(char_t);
+  }
   const std::basic_string<char_t>& getLine(size_t line) const noexcept { return lines[line]; }
 
   size_t getPosition(size_t line, size_t num) const noexcept; 
@@ -89,11 +94,8 @@ class LinedCharbuf {
   const_iterator end() const {
     return const_iterator{lines.size(),0,getPosition(lines.size(),0),this};
   }
-  virtual ~LinedCharbuf() =0;
+  virtual ~LinedCharbuf(){};
 };
-
-template<typename char_t> 
-inline LinedCharbuf<char_t>::~LinedCharbuf(){}
 
 #include "lined_charbuf_impl.h"
 

@@ -34,6 +34,11 @@ inline void InsertReflector::consume(const Keystroke& keystroke){
     else if (keystroke.value == 'u'){++dr;}
     else {--dr;}
     cursor.translate(cursor.getRow()+dr, cursor.getCol()+dc);
+  } else if (keystroke.key == Key::Backspace){
+    if (cursor.getCol() > 0){
+      cursor.setCol(cursor.getCol()-1);
+      filebuf.erase(cursor.getRow(), cursor.getCol(), 1);
+    }
   }
   activeTab.setCursor(cursor);
 }

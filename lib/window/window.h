@@ -9,7 +9,7 @@
 #include "lib/tab/tabmanager.h"
 
 enum class WindowType{
-  VertSplit, HoriSplit, NoSplit
+  VertSplit, HoriSplit, NoSplit, Closed 
 };
 
 class Window: public RenderableBox {

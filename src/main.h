@@ -6,10 +6,11 @@
 #include "parse_args.h"
 #include "init_ncurses.h"
 #include "init_tabs.h"
-#include "init_modes.h"
+#include "init_modes/init_modes.h"
 #include "init_windows.h"
 #include "init_cursor.h"
 #include "init_statusbar.h"
+#include "init_history.h"
 
 #include "lib/keystroke/uwse_keyboard.h"
 #include "lib/buffer/file_manager.h"
@@ -24,20 +25,22 @@ struct Main{
   // ncurses initialization
   NcursesClosure ncursesClosure{terminalArgs};
 
-  FileManager fileManager;
   StyleManager styleManager;
 
   // CS Student Environment Keyboard
   UWSEKeyboard keyboard;
 
   // initialize Tabs, root TabManager, activeTab with terminal supplied args
-  TabsClosure tabsClosure{terminalArgs, fileManager};
+  TabsClosure tabsClosure{terminalArgs};
 
   // initialize root `Window`
   WindowsClosure windowsClosure{tabsClosure, styleManager};
+
+  // history 
+  HistoryClosure historyClosure{tabsClosure, windowsClosure};
   
   // initialize Modes
-  ModesClosure modesClosure{windowsClosure, keyboard};
+  ModesClosure modesClosure{windowsClosure, keyboard, tabsClosure, historyClosure};
 
   // initialize the screen's cursor and statusbar
   CursorClosure cursorClosure{windowsClosure, modesClosure}; 

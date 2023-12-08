@@ -2,7 +2,7 @@
 
 int Main::main(){
   // loop while we haven't exited from rootWindow
-  while (!modesClosure.exitedFromRoot){
+  while (windowsClosure.rootWindow.getType() != WindowType::Closed){
     windowsClosure.activeWindow->render();
     statusBarClosure.renderStatusBar();
     cursorClosure.renderCursor();

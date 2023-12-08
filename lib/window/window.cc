@@ -2,6 +2,7 @@
 #include "window.h"
 
 void Window::close() {
+  type = WindowType::Closed;
   if (parent){
     parent->closeChild(this);
   } 

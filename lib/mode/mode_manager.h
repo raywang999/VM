@@ -21,7 +21,7 @@ class ModeManager: virtual public KeystrokeConsumer {
   void attach(ModeType modetype, Mode* mode){
     modeMap[modetype]=mode;
   }
-  void setMode(ModeType mode) noexcept {currentMode = mode;}
+  void setMode(ModeType mode) noexcept { currentMode = mode; }
 };
 
 inline void ModeManager::consume(const Keystroke& keystroke) {

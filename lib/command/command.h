@@ -4,6 +4,8 @@
 // Command Hierarchy
 
 #include <string>
+#include <cctype>
+#include <cstddef>
 #include <vector>
 
 #include "lib/mode/modetype.h"
@@ -12,16 +14,6 @@ struct Command{
   virtual ~Command()=0;
 };
 inline Command::~Command(){}
-
-// basic normal mode command 
-// - e.g. 5x, rx, s, i, 3u, 5a, 2p, 2yy, 3dd
-struct Normal: public Command {
-  int count;
-  char type; // one of a,c,d,o,p,r,s,u,x,y,A,I,J,O,P,R,S,X,.
-  char data; // optional e.g. the 'x' in rx
-  Normal(int count=0, char type=0, char data=0): 
-    count{count}, type{type}, data{data} {}
-};
 
 // normal mode movement 
 // - arrow keys will get translated to corresponding hjkl
@@ -33,6 +25,33 @@ struct Movement: public Command {
   char seek; 
   Movement(int count=0, char type=0, char seek=0): 
     count{count}, type{type}, seek{seek} {}
+};
+
+// basic normal mode command 
+// - e.g. 5x, rx, 3u, 2p, 2yy, 3dd
+// note that cc will be emitted as an S command
+struct Normal: public Command {
+  int count;
+  char type; // one of d,p,r,u,x,y,J,O,P,X,.
+  char data; // used for e.g. the 'x' in rx
+  Normal(int count=0, char type=0, char data=0): 
+    count{count}, type{type}, data{data} {}
+};
+
+// normal command that switches us to another mode
+// - e.g. S, s, cc, A, a, i, I, O, o, R, :
+struct SetMode: public Command {
+  int count;
+  char type; // one of a,c,o,s,A,I,O,R,S,:
+  SetMode(int count=0, char type=0): 
+    count{count}, type{type} {}
+};
+
+// specialization of SetMode for c_, where _ is a movement
+struct CM: public SetMode {
+  Movement movement; // only relevent for c_
+  CM(int count=0, char type='c', Movement movement = {}): 
+    SetMode{count, type}, movement{movement} {}
 };
 
 // ctrl commands. E.g. Ctrl+f 
@@ -52,15 +71,31 @@ struct ComboNM: public Command {
 
 // Ex mode commands. I.e. :w, :wq
 struct Ex: public Command {
-  std::string sentence;
-  Ex(const std::string& sentence = ""): sentence{sentence} {};
+  std::vector<std::string> args;
+  // split sentence into args
+  Ex(const std::string& sentence = ""){
+    for (size_t i = 0; i < sentence.size(); ++i){
+      if (std::isspace(sentence[i])) {
+        while (i < sentence.size() && std::isspace(sentence[i])){++i;}
+        if (i >= sentence.size()) { 
+          break;
+        }
+      }
+      if (i < sentence.size()){
+        args.emplace_back();
+        while (i<sentence.size() && !isspace(sentence[i]))
+          args.back().push_back(sentence[i++]);
+      }
+    }
+  }
 };
 
-// Insert mode command. I.e. a chain of partial inserts
+// Insert mode command. Stores the chars typed
 struct Insert: public Command {
   std::string sentence;
   int count;
-  char mode; // mode. I.e. for o, O, i
+  // type of the command that was used to enter insert mode. note 'cc' is equivalent to S
+  char mode; 
   Insert(int count = 0, const std::string& sentence = "", char mode = 'i'): 
     sentence{sentence}, count{count}, mode{mode} {}
 };

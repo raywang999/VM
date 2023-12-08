@@ -6,7 +6,7 @@
 
 // returns true for double operations 
 bool isNormDup(int ch){
-  return ch == 'c' || ch == 'd' || ch == 'y';
+  return ch == 'd' || ch == 'y' || ch == 'r';
 }
 
 
@@ -16,11 +16,11 @@ bool NormalParser::parse(const Keystroke& keystroke) {
   theCommand.count = countedParser.getCount();
   if (keystroke.key == Key::Plain){
     if (parseData){
-      // parse second part of cc, dd, yy
+      // parse second part of r_, dd, yy
       // ignore d[any motion] since those are CombNM, not basic Normal 
       theCommand.data = keystroke.value;
-      if (theCommand.type == theCommand.data){
-        // we have a dd, cc, yy
+      if (theCommand.type == theCommand.data || theCommand.type == 'r'){ 
+        // we have a dd, yy, or r_
         notifyAll();
         return true;
       }
@@ -33,9 +33,9 @@ bool NormalParser::parse(const Keystroke& keystroke) {
       notifyAll();
       return true;
     }
-    // if not terminal type, then must be either c,d,y
+    // if not terminal type, then must be either d, y, r
     parseData = true; // wait for the second part
-    return isNormDup(theCommand.type); // check if command is cc,dd,yy
+    return isNormDup(theCommand.type); // check if command type is d,y,r
   }
   // parsing failed
   return false;

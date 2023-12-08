@@ -11,7 +11,8 @@
 template<typename char_t>
 class LinedFilebuf: public LinedCharbuf<char_t> {
  public: 
-  std::string filename;
+  const std::string filename;
+  const std::string& getFilename() const noexcept {return filename;}
   LinedFilebuf(const std::string& filename): filename{filename} {}
   // write the LinedCharbuf stored in memory to the underlying storage 
   virtual void persist() =0; 

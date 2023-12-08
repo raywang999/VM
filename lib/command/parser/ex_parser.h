@@ -1,19 +1,22 @@
 #ifndef EX_PARSER_H
 #define EX_PARSER_H
 
+#include <cctype>
 #include "lib/command/parser/command_parser.h"
 #include "lib/command/command.h"
 #include "include/utility.h"
 
 class ExParser: public CommandParser<Ex>{
+  // holds the current sentence
+  std::string sentence;
   // holds the currently parsed ex command 
   Ex theCommand{};
   int cursorCol = 0;
   bool parse(const Keystroke& keystroke) override{
-    auto& sentence = theCommand.sentence;
     // only Plain characters should be turned into Ex
     if (keystroke.key == Key::Plain){
       if (keystroke.value == '\n'){
+        theCommand = Ex{sentence};
         notifyAll();
       } else {
         sentence.insert(sentence.begin() + cursorCol, keystroke.value);
@@ -36,9 +39,10 @@ class ExParser: public CommandParser<Ex>{
     } 
     return true;
   }
-  void doReset() override { theCommand = Ex{}; cursorCol = 0; }
+  void doReset() override { theCommand = Ex{}; cursorCol = 0; sentence.clear(); }
  public:
   const Ex* getCommand() const {return &theCommand;};
+  const std::string& getSentence() const {return sentence;};
   int getCol() const noexcept {return cursorCol; }
 };
 

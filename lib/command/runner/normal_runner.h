@@ -13,24 +13,17 @@
 // takes a basic Normal mode Command and runs it
 class NormalRunner: public CommandRunner<Normal>{
   Window*& activeWindow;
-  ModeManager& modeManager;
-  InsertParser& insertParser;
-  ExParser& exParser;
-  MovementRunner movementRunner{activeWindow};
+  // helps with e.g. 
+  //MovementRunner movementRunner{activeWindow};
 
  public:
-  // the command must be one of a,cc,dd,i,o,p,r,s,u,x,yy,A,I,J,O,P,R,S,X,.
+  // the command must be one of dd,p,r,x,yy,J,P,X
+  // note: '.' is handled by DotRepeater
   void run(const Normal* normal); 
   NormalRunner(
-    Window*& activeWindow, 
-    ModeManager& modeManager, 
-    InsertParser& insertParser,
-    ExParser& exParser
+    Window*& activeWindow
   ): 
-    activeWindow{activeWindow}, 
-    modeManager{modeManager}, 
-    insertParser{insertParser}, 
-    exParser{exParser} 
+    activeWindow{activeWindow}
   {}
 };
 

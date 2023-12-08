@@ -2,7 +2,7 @@
 #define INIT_CURSOR_H
 
 #include "init_windows.h"
-#include "init_modes.h"
+#include "init_modes/init_modes.h"
 #include "lib/cursor/nc_cursor.h"
 
 struct CursorClosure {
@@ -17,7 +17,7 @@ struct CursorClosure {
     const auto& filebuf = tab.getFilebuf();
     // calculate which row on the screen our cursor corresponds to
     auto printRow = tab.getRow();
-    for (auto i = tab.getTopLine(); i < cursor.getRow(); ++i){
+    for (int i = tab.getTopLine(); i < cursor.getRow(); ++i){
       printRow += tab.lineSize(i);
     }
     printRow += cursor.getCol()/tab.getWidth();

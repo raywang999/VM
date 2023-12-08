@@ -24,6 +24,7 @@ class FileManager {
     file_p = std::make_unique<FstreamLFB<char>>(filename);
     return file_p;
   }
+  size_t isOpen(const std::string& file) const {return files.count(file);}
 };
 
 #endif
