@@ -40,7 +40,10 @@ void ExRunner::run(const Ex* insert){
     write(args);
   } else if (args[0] == "q"){
     auto& filebuf = activeWindow->getTabManager().curr().getFilebuf();
-    if (historyManager.getSavedEdit(filebuf.getFilename())){
+    const auto& filename = filebuf.getFilename();
+    auto savedEdit = historyManager.getSavedEdit(filename);
+    auto currEdit = historyManager.getTree(filename).getCurr();
+    if (savedEdit != currEdit){
       // warn unsaved changes
       rootStatus.setError(ErrorCode::noWriteSinceLastChange);
     } else {

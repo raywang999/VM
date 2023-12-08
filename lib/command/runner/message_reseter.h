@@ -9,22 +9,19 @@
 // listens to commands repeatable using . 
 // replays the command when we receive a normal command with a '.' type
 class MessageResetter: 
-  public CommandRunner<Normal>,
-  public CommandRunner<Movement>, 
-  public CommandRunner<Command>
+  public CommandRunner<SetMode>,
+  public CommandRunner<Normal>
 {
   RootStatus& rootStatus;
   void clearMessage() {rootStatus.reset(); }
  public:
   MessageResetter(RootStatus& rootStatus): rootStatus{rootStatus} {}
-  // don't reset if basic normal mode Command like x, dd
-  void run(const Normal* cmd) override; 
-  // don't reset
-  void run(const Movement* cmd) override {}; 
-  void run(const Command* cmd) override; 
+  // reset when changing modes
+  void run(const SetMode* cmd) override{clearMessage();}
+  // reset . 
+  void run(const Normal* cmd) override{
+    if (cmd->type == '.') clearMessage();
+  }
 };
-inline void MessageResetter::run(const Normal* cmd){ 
-  if (std::find({}, cmd->type))
-}
 #endif
 

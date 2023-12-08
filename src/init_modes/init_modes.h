@@ -14,6 +14,7 @@
 #include "lib/command/runner/dot_repeater.h"
 #include "lib/command/runner/undo_runner.h"
 #include "lib/command/runner/setmode_runner.h"
+#include "lib/command/runner/message_reseter.h"
 
 #include "lib/command/parser/setmode_parser.h"
 #include "lib/command/parser/macro_parser.h"
@@ -40,7 +41,7 @@ struct ModesClosure{
   NormalModeClosure normalModeClosure{rootModeManager, windowsClosure};
 
   // esc keys will set the rootModeManager to normal mode
-  EscNormal escNormal{rootModeManager, normalModeClosure.normalGroup};
+  EscNormal escNormal{rootModeManager};
   
   // basic insert mode
   InsertModeClosure insertModeClosure{rootModeManager, windowsClosure};
@@ -74,6 +75,7 @@ struct ModesClosure{
   UndoRunner undoRunner{
     activeWindow, rootModeManager, historyManager, windowsClosure.rootStatus};
 
+  MessageResetter messageResetter{windowsClosure.rootStatus};
   // creates a Mode manager, Modes, and links between parsers and runners
   ModesClosure(
     WindowsClosure& windows, 
@@ -121,7 +123,10 @@ struct ModesClosure{
 
     // attach esc normals 
     insertModeClosure.insertMode.attach_consumer(&escNormal);
-    exMode.attach_consumer(&escNormal);
+
+    // attach message resetter to relevant parsers
+    normalModeClosure.normalParser.attach(&messageResetter);
+    setModeParser.attach(&messageResetter);
 
     // attach parsers to notify their ParserGroup last 
     // since the ParserGroup will reset the parsers
@@ -130,6 +135,7 @@ struct ModesClosure{
     normalModeClosure.movementParser.attach(&normalGroup);
     normalModeClosure.normalParser.attach(&normalGroup);
     normalModeClosure.ctrlParser.attach(&normalGroup);
+    setModeParser.attach(&normalGroup);
   }
 
 };
