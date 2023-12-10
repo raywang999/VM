@@ -38,7 +38,7 @@ void Tab::fixCursor(){
   // ensure 0 <= newrow < # of lines in file
   int newrow = fit(0, filebuf->countLines()-1, cursor.getRow());
   // ensure 0 <= newcol < # of characters in the file
-  const auto lineSize = filebuf->getLine(newrow).size();
+  const auto lineSize = filebuf->getLine(newrow).size()-1;
   int newcol = fit(0, lineSize > 0 ? lineSize - 1 : 0, cursor.getCol());
   cursor.translate(newrow, newcol);
 }

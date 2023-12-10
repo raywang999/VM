@@ -15,7 +15,7 @@ struct WindowsClosure{
   // currently active unsplit Window
   Window* activeWindow = &rootWindow;
 
-  // status bar at the bottom of the screen
+  // renderer for status bar at the bottom of the screen
   StatusBar rootStatusBar{};
   
   // data stored in rootStatusBar

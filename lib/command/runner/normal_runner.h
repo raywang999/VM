@@ -10,20 +10,27 @@
 #include "lib/command/runner/movement_runner.h"
 #include "lib/command/parser/ex_parser.h"
 
+#include "lib/registers/clipboard.h"
+#include "lib/statusbar/root_status.h"
+
 // takes a basic Normal mode Command and runs it
 class NormalRunner: public CommandRunner<Normal>{
   Window*& activeWindow;
-  // helps with e.g. 
-  //MovementRunner movementRunner{activeWindow};
+  Clipboard& clipboard;
+  RootStatus& rootStatus;
 
  public:
   // the command must be one of dd,p,r,x,yy,J,P,X
   // note: '.' is handled by DotRepeater
   void run(const Normal* normal); 
   NormalRunner(
-    Window*& activeWindow
+    Window*& activeWindow, 
+    Clipboard& clipboard,
+    RootStatus& rootStatus
   ): 
-    activeWindow{activeWindow}
+    activeWindow{activeWindow}, 
+    clipboard{clipboard}, 
+    rootStatus{rootStatus}
   {}
 };
 

@@ -13,17 +13,21 @@
 #include "lib/command/runner/macro_runner.h"
 #include "lib/command/runner/parser_group.h"
 #include "lib/command/runner/jk_recorder.h"
+#include "lib/cursor/cursor_recorder.h"
 
 #include "lib/command/parser/normal_parser.h"
 #include "lib/command/parser/movement_parser.h"
 #include "lib/command/parser/ctrl_parser.h"
 #include "lib/command/parser/macro_parser.h"
 
+#include "lib/registers/clipboard.h"
+
 // set up parsers and runners for basic normal mode commands
 struct NormalModeClosure{
   WindowsClosure& windowsClosure;
   Window*& activeWindow{windowsClosure.activeWindow};
   ModeManager& rootModeManager;
+  Clipboard& clipboard;
   
   // setup parsers
   NormalParser normalParser;
@@ -34,7 +38,7 @@ struct NormalModeClosure{
   MovementRunner movementRunner{activeWindow};
   JKRecorder jkRecorder{movementRunner};
   CtrlRunner ctrlRunner{activeWindow, movementRunner};
-  NormalRunner normalRunner{ activeWindow };
+  NormalRunner normalRunner{ activeWindow, clipboard, windowsClosure.rootStatus };
   
   // setup the core mode
   ParserGroup normalGroup;
@@ -43,9 +47,12 @@ struct NormalModeClosure{
   // creates a Mode manager, Modes, and links between parsers and runners
   NormalModeClosure(
     ModeManager& rootModeManager, 
-    WindowsClosure& windows
-  ): windowsClosure{windows}, rootModeManager{rootModeManager} {
+    WindowsClosure& windows, 
+    Clipboard& clipboard, 
+    CursorRecorder& cursorRecorder
+  ): windowsClosure{windows}, rootModeManager{rootModeManager}, clipboard{clipboard}{
     movementParser.attach(&movementRunner);
+    normalParser.attach(&cursorRecorder);
     normalParser.attach(&normalRunner);
     ctrlParser.attach(&ctrlRunner);
     // ensure jk remembers its largest column

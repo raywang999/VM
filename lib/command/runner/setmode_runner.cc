@@ -50,4 +50,6 @@ void SetModeRunner::run(const SetMode* cmd){
     insertParser.setMode(cmd->type);
     modeManager.setMode(ModeType::Insert);
   }
+  // clear the rootStatus message 
+  rootStatus.reset();
 }

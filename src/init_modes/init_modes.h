@@ -24,6 +24,8 @@
 #include "lib/keystroke/keystroke_recorder.h"
 #include "lib/keystroke/keystroke_source.h"
 
+#include "lib/registers/clipboard.h"
+
 struct ModesClosure{
   WindowsClosure& windowsClosure;
   Window*& activeWindow{windowsClosure.activeWindow};
@@ -32,13 +34,17 @@ struct ModesClosure{
   HistoryRecorder& historyRecorder = historyClosure.historyRecorder;
   HistoryManager& historyManager = historyClosure.historyManager;
 
+  
   ModeManager rootModeManager;
+  Clipboard rootClipboard;
   
   // setup CommandRecorder for history and macros
   KeystrokeRecorder macroRecorder;
 
   // basic normal mode
-  NormalModeClosure normalModeClosure{rootModeManager, windowsClosure};
+  NormalModeClosure normalModeClosure{
+    rootModeManager, windowsClosure, rootClipboard, historyClosure.cursorRecorder
+  };
 
   // esc keys will set the rootModeManager to normal mode
   EscNormal escNormal{rootModeManager};
@@ -61,7 +67,7 @@ struct ModesClosure{
 
   // add setMode runner and parsers
   SetModeRunner setModeRunner{activeWindow, rootModeManager, 
-    insertModeClosure.insertParser, exParser};
+    insertModeClosure.insertParser, exParser, windowsClosure.rootStatus};
   SetModeParser setModeParser;
   
   // setup DotRepeater for '.' normal commands
@@ -75,7 +81,7 @@ struct ModesClosure{
   UndoRunner undoRunner{
     activeWindow, rootModeManager, historyManager, windowsClosure.rootStatus};
 
-  MessageResetter messageResetter{windowsClosure.rootStatus};
+  //MessageResetter messageResetter{windowsClosure.rootStatus};
   // creates a Mode manager, Modes, and links between parsers and runners
   ModesClosure(
     WindowsClosure& windows, 
@@ -103,6 +109,12 @@ struct ModesClosure{
     exParser.attach(&exRunner);
     rootModeManager.attach(ModeType::Ex, &exMode);
     
+    // setup dot repeater 
+    normalModeClosure.normalParser.attach(&dotRepeater);
+    insertModeClosure.insertParser.attach(&dotRepeater);
+    setModeParser.attach(&dotRepeater);
+    macroParser.attach(&dotRepeater);
+
     // setup history 
     macroParser.attach(&historyRecorder);
     insertModeClosure.insertParser.attach(&historyRecorder);
@@ -110,12 +122,6 @@ struct ModesClosure{
     normalModeClosure.normalParser.attach(&historyRecorder);
     normalModeClosure.normalParser.attach(&undoRunner);
     normalModeClosure.ctrlParser.attach(&undoRunner);
-
-    // setup dot repeater 
-    normalModeClosure.normalParser.attach(&dotRepeater);
-    insertModeClosure.insertParser.attach(&dotRepeater);
-    setModeParser.attach(&dotRepeater);
-    macroParser.attach(&dotRepeater);
 
 
     // attach the root mode manager to the keyboard
@@ -125,8 +131,8 @@ struct ModesClosure{
     insertModeClosure.insertMode.attach_consumer(&escNormal);
 
     // attach message resetter to relevant parsers
-    normalModeClosure.normalParser.attach(&messageResetter);
-    setModeParser.attach(&messageResetter);
+    //normalModeClosure.normalParser.attach(&messageResetter);
+    //setModeParser.attach(&messageResetter);
 
     // attach parsers to notify their ParserGroup last 
     // since the ParserGroup will reset the parsers
