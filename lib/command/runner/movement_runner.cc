@@ -102,5 +102,5 @@ void MovementRunner::run(const Movement* movement){
     // find the start of the Nth word
     auto pos = findNth(count, filebuf.rbegin(row, col), end, matcher);
     setCursor(pos,end);
-  }
+  } 
 }

@@ -104,9 +104,11 @@ struct ModesClosure{
     // setup setMode 
     setModeParser.attach(&setModeRunner);
     normalModeClosure.normalGroup.add(&setModeParser);
+    normalModeClosure.normalGroup.add(&setModeParser);
 
     // setup Ex mode 
     exParser.attach(&exRunner);
+    normalModeClosure.normalGroup.add(&exParser);
     rootModeManager.attach(ModeType::Ex, &exMode);
     
     // setup dot repeater 
@@ -114,6 +116,9 @@ struct ModesClosure{
     insertModeClosure.insertParser.attach(&dotRepeater);
     setModeParser.attach(&dotRepeater);
     macroParser.attach(&dotRepeater);
+
+    // setup macros 
+    normalModeClosure.normalGroup.add(&macroParser);
 
     // setup history 
     macroParser.attach(&historyRecorder);
@@ -141,6 +146,8 @@ struct ModesClosure{
     normalModeClosure.movementParser.attach(&normalGroup);
     normalModeClosure.normalParser.attach(&normalGroup);
     normalModeClosure.ctrlParser.attach(&normalGroup);
+    exParser.attach(&normalGroup);
+    macroParser.attach(&normalGroup);
     setModeParser.attach(&normalGroup);
   }
 

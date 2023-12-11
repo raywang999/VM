@@ -32,7 +32,6 @@ void UndoRunner::run(const Ctrl* cmd){
   if (cmd->type != 'r') return;
   auto& tab = activeWindow->getTabManager().curr();
   auto& filebuf = tab.getFilebuf();
-  int startLineCnt = filebuf.countLines();
   // total number of successful undos
   int cntChanges = 0;
   // aplly count number of undos, maximum by number of undos available in history 
