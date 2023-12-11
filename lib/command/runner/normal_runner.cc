@@ -1,3 +1,5 @@
+#include <cctype>
+
 #include "include/utility.h"
 #include "normal_runner.h"
 
@@ -82,5 +84,28 @@ void NormalRunner::run(const Normal* cmd){
       }
       tab.setCursor(cursor);
     } 
-  } 
+  } else if (cmd->type == 'J'){ // join lines
+    if (count == 1) {count = 2;} // J is 2J
+    auto& curLine = filebuf.getLine(curRow);
+    // join min(count, # of lines in file) together
+    count = std::min(static_cast<size_t>(count), filebuf.countLines()-curRow);
+    // join lines, trimming leading whitespace
+    for (int i = 1; i < count; ++i){
+      const auto& str = filebuf.getLine(curRow+i);
+      if (str.size() == 1) continue; // skip empty lines
+      // trim leading whitespace
+      size_t j = 0; 
+      while (j < str.size()-1 && isspace(str[j])){
+        ++j;
+      }
+      filebuf.append(curRow, ' ');
+      // set cursor to char just before the new line joined
+      cursor.setCol(filebuf.getLine(curRow).size()-1);
+      while (j < str.size()-1){
+        filebuf.append(curRow, str[j++]);
+      }
+    }
+    filebuf.eraseLines(curRow+1,count-1);
+    tab.setCursor(cursor);
+  }
 }
