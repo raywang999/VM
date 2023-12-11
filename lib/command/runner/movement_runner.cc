@@ -1,3 +1,5 @@
+#include <cctype>
+
 #include "movement_runner.h"
 #include "include/utility.h"
 
@@ -41,9 +43,23 @@ void MovementRunner::run(const Movement* movement){
       prevCursorCol = newcol;
       cursor.setCol(newcol);
     }
+  } else if (movement->type == '$'){
+    int size = filebuf.getLine(row).size();
+    cursor.setCol(std::max(0,size-2)); 
+    movementSuccess = true;
+  } else if (movement->type == '^'){
+    const auto& line = filebuf.getLine(row);
+    size_t col = 0;
+    while (col+1 < line.size() && isspace(line[col])){ 
+      ++col;
+    }
+    cursor.setCol(col);
+    movementSuccess= true;
+  } else if (movement->type == '0'){
+    cursor.setCol(0); movementSuccess= true;
+  } else if (movement->type == 'f'){
   }
   if (movementSuccess){ 
     tab.setCursor(cursor);
-    activeWindow->render(); 
   }
 }

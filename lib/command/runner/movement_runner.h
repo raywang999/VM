@@ -16,7 +16,7 @@ class MovementRunner: public CommandRunner<Movement>{
  public:
   // tell next movement not to use the previous cursor col
   void unsetPrev() noexcept {usePrev = false;}
-  // the movement must be one of bfhjklnwFN^$0%;
+  // the movement must be one of hjklbfwFnN^$0%
   void run(const Movement* movement); 
   MovementRunner(Window*& activeWindow): 
     activeWindow{activeWindow}{}
