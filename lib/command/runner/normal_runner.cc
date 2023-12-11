@@ -70,7 +70,7 @@ void NormalRunner::run(const Normal* cmd){
       tab.setCursor(cursor);
     }
   } else if (cmd->type == 'r'){
-    if (count + curCol <= filebuf.getLine(curRow).size()){
+    if (count + curCol <= static_cast<int>(filebuf.getLine(curRow).size())){
       // delete count characters 
       filebuf.erase(curRow,curCol,count);
       // insert the character
@@ -86,22 +86,24 @@ void NormalRunner::run(const Normal* cmd){
     } 
   } else if (cmd->type == 'J'){ // join lines
     if (count == 1) {count = 2;} // J is 2J
-    auto& curLine = filebuf.getLine(curRow);
     // join min(count, # of lines in file) together
     count = std::min(static_cast<size_t>(count), filebuf.countLines()-curRow);
     // join lines, trimming leading whitespace
     for (int i = 1; i < count; ++i){
       const auto& str = filebuf.getLine(curRow+i);
-      if (str.size() == 1) continue; // skip empty lines
       // trim leading whitespace
       size_t j = 0; 
-      while (j < str.size()-1 && isspace(str[j])){
+      while (j+1 < str.size() && isspace(str[j])){
         ++j;
       }
+      if (j >= str.size()){ // do notohing for empty line 
+        continue;
+      }
+      // append the line
       filebuf.append(curRow, ' ');
       // set cursor to char just before the new line joined
       cursor.setCol(filebuf.getLine(curRow).size()-1);
-      while (j < str.size()-1){
+      while (j < str.size()-1){ 
         filebuf.append(curRow, str[j++]);
       }
     }

@@ -3,11 +3,12 @@
 
 #include <vector>
 
+#include "include/loc.h"
 #include "include/ncursespp.h"
 #include "include/renderable_box.h"
 
 struct Style{
-  size_t first, last;
+  Loc first, last;
   ncurses::Attribute attribute;
 };
 
@@ -29,8 +30,8 @@ class TextStyler{
     virtual ~range_t(){}
   };
   
-  // returns a view of all styles applying to `num` characters starting from `start`
-  virtual std::unique_ptr<range_t> getStyles(size_t start, size_t num) const =0;
+  // returns a view of all styles applying to [beg, end]
+  virtual std::unique_ptr<range_t> getStyles(Loc beg, Loc end) const =0;
   virtual ~TextStyler(){};
 };
 

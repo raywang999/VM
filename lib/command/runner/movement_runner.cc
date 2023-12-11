@@ -17,7 +17,6 @@ void MovementRunner::run(const Movement* movement){
     usePrev = true; 
     prevCursorCol = cursor.getCol();
   }
-  bool movementSuccess = true;
   if (movement->type == 'j' || movement->type == 'k'){
     int dr = count; // delta row
     if (movement->type == 'k') {
@@ -28,9 +27,9 @@ void MovementRunner::run(const Movement* movement){
     // ensure 0 <= newcol < # of characters in the file
     int newcol = min(prevCursorCol, filebuf.getLine(newrow).size()-2);
     newcol = max(newcol, 0);
-    if (newrow == row){ movementSuccess = false; } // failed to move
-    else {
+    if (newrow != row){ 
       cursor.translate(newrow, newcol);
+      tab.setCursor(cursor);
     }
   } else if(movement->type == 'l' || movement->type == 'h'){
     int dc = count;
@@ -38,15 +37,15 @@ void MovementRunner::run(const Movement* movement){
     auto newcol =  col + dc;
     newcol = min(newcol, filebuf.getLine(row).size()-2);
     newcol = max(0,newcol); 
-    if (newcol == col){ movementSuccess = false; }
-    else {
+    if (newcol != col){ 
       prevCursorCol = newcol;
       cursor.setCol(newcol);
+      tab.setCursor(cursor);
     }
   } else if (movement->type == '$'){
     int size = filebuf.getLine(row).size();
     cursor.setCol(std::max(0,size-2)); 
-    movementSuccess = true;
+    tab.setCursor(cursor);
   } else if (movement->type == '^'){
     const auto& line = filebuf.getLine(row);
     size_t col = 0;
@@ -54,12 +53,54 @@ void MovementRunner::run(const Movement* movement){
       ++col;
     }
     cursor.setCol(col);
-    movementSuccess= true;
-  } else if (movement->type == '0'){
-    cursor.setCol(0); movementSuccess= true;
-  } else if (movement->type == 'f'){
-  }
-  if (movementSuccess){ 
     tab.setCursor(cursor);
+  } else if (movement->type == '0'){
+    cursor.setCol(0); tab.setCursor(cursor);
+  } else if (movement->type == 'f'){
+    if (movement->seek == '\n') return; // don't seek for newline
+    const auto& str = filebuf.getLine(row); 
+    auto beg = str.begin() + col;
+    auto end = str.end();
+    auto pos = findNth(count, beg+1, end, movement->seek);
+    if (pos != end){
+      ptrdiff_t delta = pos - beg;
+      cursor.setCol(col + delta);
+      tab.setCursor(cursor);
+    }
+  } else if (movement->type == 'F'){
+    const auto& str = filebuf.getLine(row); 
+    auto beg = str.rbegin() + (str.size()-1) - col;
+    auto end = str.rend();
+    auto pos = findNth(count, beg+1, end, movement->seek);
+    if (pos != end){
+      ptrdiff_t delta = pos - beg;
+      cursor.setCol(col - delta);
+      tab.setCursor(cursor);
+    }
+  } else if (movement->type == 'w'){ 
+    Chunkw matcher{}; // use W matcher
+    auto end = filebuf.end();
+    // find the start of the Nth word
+    auto pos = findNth(count, filebuf.begin(row, col), end, matcher);
+    setCursor(pos,end);
+  } else if (movement->type == 'b'){ 
+    Chunkb matcher{}; // use W matcher
+    auto beg = ++filebuf.rbegin(row,col);
+    auto end = filebuf.rend();
+    // find the start of the Nth word
+    auto pos = findNth(count, beg, end, matcher);
+    setCursor(pos,end);
+  } else if (movement->type == 'W'){ 
+    ChunkW matcher{}; // use W matcher
+    auto end = filebuf.end();
+    // find the start of the Nth word
+    auto pos = findNth(count, filebuf.begin(row, col), end, matcher);
+    setCursor(pos,end);
+  } else if (movement->type == 'B'){ 
+    ChunkW matcher{};
+    auto end = filebuf.rend();
+    // find the start of the Nth word
+    auto pos = findNth(count, filebuf.rbegin(row, col), end, matcher);
+    setCursor(pos,end);
   }
 }

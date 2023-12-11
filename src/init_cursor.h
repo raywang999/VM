@@ -14,7 +14,6 @@ struct CursorClosure {
   void getActiveLocation (){
     const auto& tab = windowsClosure.activeWindow->getTabManager().curr();
     auto cursor = tab.getCursor();
-    const auto& filebuf = tab.getFilebuf();
     // calculate which row on the screen our cursor corresponds to
     auto printRow = tab.getRow();
     for (int i = tab.getTopLine(); i < cursor.getRow(); ++i){

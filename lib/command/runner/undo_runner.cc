@@ -40,7 +40,6 @@ void UndoRunner::run(const Ctrl* cmd){
   for (int i=0; i < maxChanges && historyManager.redo(filebuf.getFilename()); ++i){
     ++cntChanges;
   }
-  int lineCntDiff = filebuf.countLines() - startLineCnt;
   if (cntChanges == 0){
     rootStatus.setMessage("Already at newest change");
   } else {

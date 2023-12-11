@@ -41,8 +41,8 @@ class Clipboard {
   ){
     std::string contents;
     // swap beginning cursor with end if beg is after end
-    auto begCol = beg.getCol(), begRow = beg.getRow();
-    auto endCol = end.getCol(), endRow = end.getRow();
+    int begCol = beg.getCol(), begRow = beg.getRow();
+    int endCol = end.getCol(), endRow = end.getRow();
     if (begRow > endRow || (begRow == endRow && begCol >= endCol)){
       std::swap(begCol, endCol);
       std::swap(begRow, endRow);

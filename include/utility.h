@@ -1,7 +1,8 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include <unordered_set>
+#include <compare>
+#include <string>
 #include <cstddef>
 
 inline int min(int a, size_t b){
@@ -25,6 +26,21 @@ inline int cielDiv(int i, int d){
 // returns default if prev == -1, prev otherwise
 inline int normalizeCount(int prev, int def = 1){
   return prev == -1 ? def : prev;
+}
+
+template<typename Iter, typename Pred> 
+// finds the nth occurrence of an element s.t. p == element
+inline Iter findNth(size_t n, Iter beg, Iter end, Pred&& p) {
+  for (size_t i = 0; i < n && beg != end; ){
+    if (p == *beg) {
+      ++i;
+      if (i >= n) return beg;
+      ++beg; 
+    } else {
+      ++beg; 
+    }
+  }
+  return end;
 }
 
 #endif

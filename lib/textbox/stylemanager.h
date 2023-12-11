@@ -14,12 +14,12 @@ class StyleManager {
   map_t filenameStyleMap;
  public: 
   const TextStylerGroup::range getStyles(
-    const std::string& filename, size_t start, size_t num) const
+    const std::string& filename, Loc start, Loc num) const
   {
     if (filenameStyleMap.count(filename))
       return filenameStyleMap.at(filename).getStyles(start, num);
     // return empty range if file doesnt have any stylers
-    return TextStylerGroup::range{};
+    return TextStylerGroup::range{{0,0},{0,0}};
   }
 };
 
