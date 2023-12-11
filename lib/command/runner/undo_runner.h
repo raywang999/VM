@@ -22,7 +22,7 @@ class UndoRunner:
   RootStatus& rootStatus;
   // returns string form to represent number of lines more/less
   static std::string printLineChange(int changes) {
-    std::string res = std::to_string(changes);
+    std::string res = std::to_string(std::abs(changes));
     res += (changes > 0 ? " more " : " less "); 
     res += "line";
     if (changes>1 || changes < -1) {res.push_back('s');}

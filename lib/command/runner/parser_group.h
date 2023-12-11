@@ -32,10 +32,13 @@ class ParserGroup:
   }
   // forward keystroke to parsers
   void consume(const Keystroke& keystroke) override { 
+    bool allbroken = true;
     for (auto parser: parsers){
       if (!continueForwarding) break;
       parser->consume(keystroke);
+      if (parser->isValid()) allbroken = false;
     }
+    if (allbroken) reset();
     continueForwarding = true;
   }
   // reset all sub parsers

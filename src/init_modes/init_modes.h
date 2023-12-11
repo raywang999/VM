@@ -81,7 +81,7 @@ struct ModesClosure{
   UndoRunner undoRunner{
     activeWindow, rootModeManager, historyManager, windowsClosure.rootStatus};
 
-  //MessageResetter messageResetter{windowsClosure.rootStatus};
+  MessageResetter messageResetter{windowsClosure.rootStatus};
   // creates a Mode manager, Modes, and links between parsers and runners
   ModesClosure(
     WindowsClosure& windows, 
@@ -131,8 +131,8 @@ struct ModesClosure{
     insertModeClosure.insertMode.attach_consumer(&escNormal);
 
     // attach message resetter to relevant parsers
-    //normalModeClosure.normalParser.attach(&messageResetter);
-    //setModeParser.attach(&messageResetter);
+    normalModeClosure.normalParser.attach(&messageResetter);
+    setModeParser.attach(&messageResetter);
 
     // attach parsers to notify their ParserGroup last 
     // since the ParserGroup will reset the parsers

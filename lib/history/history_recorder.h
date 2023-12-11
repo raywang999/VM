@@ -39,9 +39,7 @@ class HistoryRecorder:
   }
   void run(const Normal* cmd) override { 
     // note, we don't consider undo and redo as modifications 
-    // since nromalRunner should handle them
-    static const std::unordered_set<char> modifiers{'x','X','d','.','J','p','P'};
-    if (modifiers.count(cmd->type)) save();
+    if (cmd->type != 'u') save();
   }
   void run(const Ex* ex) override { 
     if (ex->args[0] == "r") {save();}

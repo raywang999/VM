@@ -17,12 +17,21 @@ void NormalRunner::run(const Normal* cmd){
     filebuf.erase(curRow,curCol - delCnt, delCnt);
     cursor.setCol(curCol-delCnt);
     tab.setCursor(cursor);
-  } else if (cmd->type == 'y'){ // run yy command
+  } else if (cmd->type == 'y' || cmd->type == 'd'){ // copy line into buffer
     // calculate number of lines to yank
     count = std::min(static_cast<size_t>(count), filebuf.countLines() - curRow);
     clipboard.copyLines(filebuf, curRow, count); // copy lines to register
-    if (count > 1){
-      rootStatus.setMessage(std::to_string(count) + " lines yanked"); // output message
+    if (cmd->type == 'y'){
+      if (count > 1){
+        rootStatus.setMessage(std::to_string(count) + " lines yanked"); // output message
+      }
+    } else if (cmd->type == 'd'){
+      filebuf.eraseLines(curRow,count);
+      cursor.translate(std::max(curRow-1,0),0);
+      tab.setCursor(cursor);
+      if (filebuf.countLines() == 0){ // ensure file isn't empty
+        filebuf.insertLines(0,1);
+      }
     }
   } else if (cmd->type == 'p' || cmd->type == 'P') { 
     const auto& data = clipboard.get();
@@ -36,7 +45,8 @@ void NormalRunner::run(const Normal* cmd){
       if (cmd->type == 'p'){
         filebuf.insertLines(curRow+1,1); // start pasting from line after curRow
         // paste but ommit the last `\n`
-        filebuf.insert(curRow+1,0,data.contents.substr(0,data.contents.size()-1));
+        contents.pop_back();
+        filebuf.insert(curRow+1,0,contents);
         // calculate cursor position
         cursor.translate(curRow+1,0);
       } else {
@@ -57,5 +67,20 @@ void NormalRunner::run(const Normal* cmd){
       }
       tab.setCursor(cursor);
     }
+  } else if (cmd->type == 'r'){
+    if (count + curCol <= filebuf.getLine(curRow).size()){
+      // delete count characters 
+      filebuf.erase(curRow,curCol,count);
+      // insert the character
+      if (cmd->data == '\n'){
+        filebuf.insert(curRow,curCol,'\n');
+        cursor.translate(curRow+1,0);
+        rootStatus.reset();
+      } else {
+        filebuf.insert(curRow,curCol,std::string(count,cmd->data));
+        cursor.setCol(curCol+count-1);
+      }
+      tab.setCursor(cursor);
+    } 
   } 
 }
