@@ -34,7 +34,7 @@ class MovementRunner: public CommandRunner<Movement>{
       auto linesize = filebuf.getLine(linecnt-1).size();
       cursor.translate(linecnt-1,linesize <= 1 ? 0 : linesize-2);
     }
-    tab.setCursor(cursor); 
+    tab.setCursor(cursor, true); 
   }
   //  set cursor to pos, going to the end of the charbuf if pos == end()
   void setCursor(CRI pos, CRI end){
@@ -46,7 +46,7 @@ class MovementRunner: public CommandRunner<Movement>{
     } else { // go to the start of the file
       cursor.translate(0,0);
     }
-    tab.setCursor(cursor); 
+    tab.setCursor(cursor, true); 
   }
 
  public:

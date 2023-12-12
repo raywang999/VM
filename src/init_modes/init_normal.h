@@ -3,6 +3,7 @@
 
 #include "../parse_args.h"
 #include "../init_windows.h"
+#include "../init_history.h"
 
 #include "lib/mode/mode_manager.h"
 #include "lib/mode/normal_mode.h"
@@ -14,7 +15,6 @@
 #include "lib/command/runner/parser_group.h"
 #include "lib/command/runner/jk_recorder.h"
 #include "lib/command/runner/semi_colon_repeater.h"
-#include "lib/cursor/cursor_recorder.h"
 
 #include "lib/command/parser/normal_parser.h"
 #include "lib/command/parser/movement_parser.h"
@@ -27,6 +27,7 @@
 struct NormalModeClosure{
   WindowsClosure& windowsClosure;
   Window*& activeWindow{windowsClosure.activeWindow};
+  HistoryClosure& historyClosure;
   ModeManager& rootModeManager;
   Clipboard& clipboard;
   
@@ -38,7 +39,7 @@ struct NormalModeClosure{
   // setup runners
   MovementRunner movementRunner{activeWindow};
   JKRecorder jkRecorder{movementRunner};
-  CtrlRunner ctrlRunner{activeWindow, movementRunner};
+  CtrlRunner ctrlRunner{activeWindow, windowsClosure.rootStatus, historyClosure.historyManager};
   NormalRunner normalRunner{ activeWindow, clipboard, windowsClosure.rootStatus };
   SemiColonRepeater semiColonRepeater{movementRunner};
 
@@ -51,11 +52,13 @@ struct NormalModeClosure{
   NormalModeClosure(
     ModeManager& rootModeManager, 
     WindowsClosure& windows, 
-    Clipboard& clipboard, 
-    CursorRecorder& cursorRecorder
-  ): windowsClosure{windows}, rootModeManager{rootModeManager}, clipboard{clipboard}{
+    HistoryClosure& history,
+    Clipboard& clipboard
+  ): windowsClosure{windows}, historyClosure{history}, 
+    rootModeManager{rootModeManager}, clipboard{clipboard}
+  {
     movementParser.attach(&movementRunner);
-    normalParser.attach(&cursorRecorder);
+    normalParser.attach(&historyClosure.cursorRecorder);
     normalParser.attach(&normalRunner);
     ctrlParser.attach(&ctrlRunner);
     // ensure jk remembers its largest column

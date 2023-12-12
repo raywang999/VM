@@ -26,7 +26,7 @@ struct WindowsClosure{
   { 
     int screenHeight, screenWidth;
     ncurses::getwindowhw(screenHeight, screenWidth);
-    rootWindow.resize(screenHeight-1, screenWidth);
+    rootWindow.resize(screenHeight, screenWidth);
     rootWindow.translate(0,0);
     rootStatusBar.translate(screenHeight-1,0);
     rootStatusBar.resize(1, screenWidth);

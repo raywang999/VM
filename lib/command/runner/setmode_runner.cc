@@ -31,8 +31,6 @@ void SetModeRunner::run(const SetMode* cmd){
       cursor.setCol(0);
       tab.setCursor(cursor);
     } else if (cmd->type == 'A'){ // turns into running a $ movement, then a
-      Movement toEnd{1,'$'};
-      movementRunner.run(&toEnd);
       cursor.setCol(filebuf.getLine(cursor.getRow()).size()-1);
       tab.setCursor(cursor);
     } else if (cmd->type == 'S'){ // delete line, then i
@@ -41,12 +39,14 @@ void SetModeRunner::run(const SetMode* cmd){
       cursor.setCol(0);
       tab.setCursor(cursor);
     } else if (cmd->type == 'c'){ // CM command. Run DM(M) then enter insert
-      auto cm = dynamic_cast<const CM*>(cmd);
-      movementRunner.run(&cm->movement);
+      auto cm = CM(dynamic_cast<const CM&>(*cmd));
+      cm.movement.count *= count;
+      movementRunner.run(&cm.movement);
+      count = 1; // don't duplicate inserts, instead factor the count into movement
     }
     // enter insert mode
     insertParser.reset();
-    insertParser.setCount(cmd->count);
+    insertParser.setCount(count);
     insertParser.setMode(cmd->type);
     modeManager.setMode(ModeType::Insert);
   }

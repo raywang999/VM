@@ -43,7 +43,7 @@ struct ModesClosure{
 
   // basic normal mode
   NormalModeClosure normalModeClosure{
-    rootModeManager, windowsClosure, rootClipboard, historyClosure.cursorRecorder
+    rootModeManager, windowsClosure, historyClosure, rootClipboard
   };
 
   // esc keys will set the rootModeManager to normal mode

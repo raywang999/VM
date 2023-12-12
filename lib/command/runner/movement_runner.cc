@@ -29,7 +29,7 @@ void MovementRunner::run(const Movement* movement){
     newcol = max(newcol, 0);
     if (newrow != row){ 
       cursor.translate(newrow, newcol);
-      tab.setCursor(cursor);
+      tab.setCursor(cursor, true);
     }
   } else if(movement->type == 'l' || movement->type == 'h'){
     int dc = count;
@@ -75,7 +75,7 @@ void MovementRunner::run(const Movement* movement){
     if (pos != end){
       ptrdiff_t delta = pos - beg;
       cursor.setCol(col - delta);
-      tab.setCursor(cursor);
+      tab.setCursor(cursor, true);
     }
   } else if (movement->type == 'w'){ 
     Chunkw matcher{}; // use W matcher

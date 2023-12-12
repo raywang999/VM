@@ -43,4 +43,13 @@ inline Iter findNth(size_t n, Iter beg, Iter end, Pred&& p) {
   return end;
 }
 
+// appends s to unit if abs(count) != 1
+inline std::string pluralize(int count, const std::string& unit){
+  std::string res = std::to_string(count);
+  res.push_back(' ');
+  res.append(unit); 
+  if (count != 1 && count != -1) res.push_back('s');
+  return res;
+}
+
 #endif
