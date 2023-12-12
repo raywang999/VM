@@ -32,7 +32,7 @@ void NormalRunner::run(const Normal* cmd){
         rootStatus.setMessage(std::to_string(count) + " fewer lines");
       }
       filebuf.eraseLines(curRow,count);
-      cursor.translate(std::max(curRow-1,0),0);
+      cursor.translate(min(curRow,filebuf.countLines()-1),0);
       tab.setCursor(cursor);
       if (filebuf.countLines() == 0){ // ensure file isn't empty
         filebuf.insertLines(0,1);

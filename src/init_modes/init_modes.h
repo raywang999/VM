@@ -111,6 +111,7 @@ struct ModesClosure{
     
     // setup dot repeater 
     normalModeClosure.normalParser.attach(&dotRepeater);
+    normalModeClosure.comboNMParser.attach(&dotRepeater);
     insertModeClosure.insertParser.attach(&dotRepeater);
     setModeParser.attach(&dotRepeater);
     macroParser.attach(&dotRepeater);

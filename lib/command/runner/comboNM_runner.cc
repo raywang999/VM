@@ -21,7 +21,9 @@ void ComboNMRunner::run(const ComboNM* cmd){
   } else if (movement.type == 'k'){
     // calculate topline, and recalculate count
     int curline = cursor.getRow();
-    int topline = std::max(0, curline-count-1);
+    int topline = std::max(0, curline-count);
+    cursor.setRow(topline);
+    tab.setCursor(cursor);
     Normal tmp{curline - topline + 1, normal.type};
     normalRunner.run(&tmp); 
     return;
