@@ -6,13 +6,17 @@
 #include "include/ncursespp.h"
 #include "include/ncolors.h"
 #include "include/renderable_box.h"
+#include "lib/window/window.h"
 
 // status bar on bottom of a window 
-// comprises of 3 sentences on one row 
-// -left, mid (slightly to the right), right 
+// comprises of 2 sentences on one row 
+// - mid (slightly to the right) : shows cursor locatino 
+// - right : shows window location in file (i.e. TOP, BOT, ALL)
 class StatusBar: public RenderableBox{
+  const Window& window; // parent window
+  std::string mid, right;
  public:
-  std::string left, mid, right;
+  StatusBar(const Window& window): window{window} {}
   bool showerror = false;
   void render() override;
 };

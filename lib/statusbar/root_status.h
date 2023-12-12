@@ -1,5 +1,5 @@
-#ifndef ROOT_STATUS_BAR_H
-#define ROOT_STATUS_BAR_H
+#ifndef ROOT_STATUS_H
+#define ROOT_STATUS_H
 
 #include <string>
 

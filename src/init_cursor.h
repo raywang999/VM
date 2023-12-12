@@ -32,7 +32,7 @@ struct CursorClosure {
   void calculateLocation() {
     if (modesClosure.rootModeManager.getMode() == ModeType::Ex){
       ncCursor.translate(
-        windowsClosure.rootStatusBar.getRow(), 
+        windowsClosure.rootStatusRender.getRow(), 
         modesClosure.exParser.getCol()+1
       );
     } else {
