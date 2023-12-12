@@ -7,7 +7,7 @@
 #include "lib/mode/mode_manager.h"
 #include "lib/command/parser/insert_parser.h"
 #include "lib/command/runner/movement_runner.h"
-#include "lib/command/parser/ex_parser.h"
+#include "lib/command/parser/replace_parser.h"
 #include "lib/statusbar/root_status.h"
 
 // takes a basic Normal mode Command and runs it
@@ -16,6 +16,7 @@ class SetModeRunner: public CommandRunner<SetMode>{
   ModeManager& modeManager;
   InsertParser& insertParser;
   RootStatus& rootStatus;
+  ReplaceParser& replaceParser;
   // helps with e.g. S, I
   MovementRunner movementRunner{activeWindow};
 
@@ -26,12 +27,14 @@ class SetModeRunner: public CommandRunner<SetMode>{
     Window*& activeWindow, 
     ModeManager& modeManager, 
     InsertParser& insertParser,
-    RootStatus& rootStatus
+    RootStatus& rootStatus,
+    ReplaceParser& replaceParser
   ): 
     activeWindow{activeWindow}, 
     modeManager{modeManager}, 
     insertParser{insertParser}, 
-    rootStatus{rootStatus}
+    rootStatus{rootStatus},
+    replaceParser{replaceParser}
   {}
 };
 

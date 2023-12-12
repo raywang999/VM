@@ -14,7 +14,7 @@ bool SetModeParser::parse(const Keystroke& keystroke) {
         basicSetMode.type = 'S'; 
         notifyAll();
         return true;
-      } else { // not a cc, but could be a movement
+      } else { // not a cc, but could be a c_movement
         checkCC = false; 
         useCombo = true;
       }

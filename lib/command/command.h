@@ -102,8 +102,10 @@ struct Insert: public Command {
 
 // Replace mode command. I.e. a chain of partial replaces
 struct Replace: public Command {
-  int count;
   std::string sentence;
+  int count;
+  Replace(int count = 0, const std::string& sentence = ""): 
+    sentence{sentence}, count{count} {}
 };
 
 // Command to write/play macro at a register

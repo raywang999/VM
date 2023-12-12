@@ -9,6 +9,7 @@
 #include "lib/command/runner/comboNM_runner.h"
 #include "lib/command/runner/normal_runner.h"
 #include "lib/command/runner/setmode_runner.h"
+#include "lib/command/runner/replace_runner.h"
 
 // listens to commands repeatable using . 
 // replays the command when we receive a normal command with a '.' type
@@ -25,9 +26,11 @@ class DotRepeater:
   MacroRunner& macroRunner;
   SetModeRunner& setModeRunner;
   ComboNMRunner& comboNMRunner;
+  ReplaceRunner& replaceRunner;
   Insert prevInsert;
   Normal prevNormal;
   ComboNM prevComboNM;
+  Replace prevReplace;
   std::unique_ptr<SetMode> prevSetMode;
   Macro prevMacro;
   enum class Type {Insert, Replace, Normal, Macro, ComboNM, None};
@@ -45,13 +48,15 @@ class DotRepeater:
     NormalRunner& normalRunner,
     MacroRunner& macroRunner, 
     SetModeRunner& setModeRunner,
-    ComboNMRunner& comboNMRunner
+    ComboNMRunner& comboNMRunner,
+    ReplaceRunner& replaceRunner
   ): 
     insertRunner{insertRunner},
     normalRunner{normalRunner},
     macroRunner{macroRunner},
     setModeRunner{setModeRunner},
-    comboNMRunner{comboNMRunner}
+    comboNMRunner{comboNMRunner},
+    replaceRunner{replaceRunner}
   {}
 };
 
