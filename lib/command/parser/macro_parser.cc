@@ -20,7 +20,15 @@ bool MacroParser::parse(const Keystroke& keystroke) {
     // otherwise, parse q or @
     theMacro.type = keystroke.value;
     readRegister = true;
-    return keystroke.value == 'q' || keystroke.value == '@';
+    if (keystroke.value == 'q'){
+      // if already recording macro, emit
+      if (isRecording) {
+        notifyAll(); 
+      } 
+      return true;
+    } else {
+      return keystroke.value == '@';
+    }
   }
 
   // parsing failed

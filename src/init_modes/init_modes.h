@@ -16,6 +16,7 @@
 #include "lib/command/runner/undo_runner.h"
 #include "lib/command/runner/setmode_runner.h"
 #include "lib/command/runner/message_reseter.h"
+#include "lib/command/runner/at_runner.h"
 
 #include "lib/command/parser/setmode_parser.h"
 #include "lib/command/parser/macro_parser.h"
@@ -59,8 +60,10 @@ struct ModesClosure{
   // setup Macros
   MacroParser macroParser;
   MacrosRegister macrosRegister;
-  MacroRunner macroRunner{macrosRegister, macroRecorder, rootModeManager};
-  
+  MacroRunner macroRunner{
+    macrosRegister, macroRecorder, rootModeManager, macroParser, 
+    normalModeClosure.normalGroup
+  };
   // setup Ex Mode 
   ExParser exParser;
   ExRunner exRunner{
@@ -72,7 +75,7 @@ struct ModesClosure{
   // add setMode runner and parsers
   SetModeRunner setModeRunner{activeWindow, rootModeManager, 
     insertModeClosure.insertParser, windowsClosure.rootStatus, 
-    replaceModeClosure.replaceParser};
+    replaceModeClosure.replaceParser, normalModeClosure.comboNMRunner};
   SetModeParser setModeParser;
   
   // setup DotRepeater for '.' normal commands
@@ -99,6 +102,10 @@ struct ModesClosure{
     tabsClosure{tabsClosure}, 
     historyClosure{historyClosure}
   {
+    // setup the keyboard
+    keyboard.attach(&macroRecorder);
+    keyboard.attach(&rootModeManager);
+
     // setup cursorRecorder to save cursor state before each command
     macroParser.attach(&historyClosure.cursorRecorder);
     replaceModeClosure.replaceParser.attach(
@@ -127,6 +134,7 @@ struct ModesClosure{
 
     // setup macros 
     normalModeClosure.normalGroup.add(&macroParser);
+    macroParser.attach(&macroRunner);
 
     // setup history 
     macroParser.attach(&historyRecorder);
@@ -139,15 +147,13 @@ struct ModesClosure{
     replaceModeClosure.replaceParser.attach(&historyRecorder);
 
 
-    // attach the root mode manager to the keyboard
-    keyboard.attach(&rootModeManager);
-
     // attach esc normals 
     insertModeClosure.insertMode.attach_consumer(&escNormal);
 
     // attach message resetter to relevant parsers
     normalModeClosure.normalParser.attach(&messageResetter);
     setModeParser.attach(&messageResetter);
+    macroParser.attach(&messageResetter);
 
     // attach parsers to notify their ParserGroup last 
     // since the ParserGroup will reset the parsers
@@ -156,7 +162,6 @@ struct ModesClosure{
     normalModeClosure.movementParser.attach(&normalGroup);
     normalModeClosure.normalParser.attach(&normalGroup);
     normalModeClosure.ctrlParser.attach(&normalGroup);
-    macroParser.attach(&normalGroup);
     setModeParser.attach(&normalGroup);
     normalModeClosure.comboNMParser.attach(&normalGroup);
   }

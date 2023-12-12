@@ -32,20 +32,32 @@ void SetModeRunner::run(const SetMode* cmd){
       filebuf.insertLines(cursor.getRow(),1);
       cursor.setCol(0);
       tab.setCursor(cursor);
+    } else if (cmd->type == 'I'){
+      const auto& line = filebuf.getLine(cursor.getRow());
+      size_t col = 0;
+      while (col+1 < line.size() && isspace(line[col])){ 
+        ++col;
+      }
+      cursor.setCol(col);
+      tab.setCursor(cursor);
     } else if (cmd->type == 'A'){ // turns into running a $ movement, then a
       cursor.setCol(filebuf.getLine(cursor.getRow()).size()-1);
       tab.setCursor(cursor);
-    } else if (cmd->type == 'S'){ // delete line, then i
-      filebuf.eraseLines(cursor.getRow(),1);
-      filebuf.insertLines(cursor.getRow(), 1);
-      cursor.setCol(0);
-      tab.setCursor(cursor);
-    } else if (cmd->type == 'c'){ // CM command. Run DM(M) then enter insert
-      auto cm = CM(dynamic_cast<const CM&>(*cmd));
-      cm.movement.count *= count;
-      movementRunner.run(&cm.movement);
-      count = 1; // don't duplicate inserts, instead factor the count into movement
-    }
+    } else if (cmd->type == 'S' || cmd->type == 'c' || cmd->type == 's'){ 
+      // run ComboNM command to delete into clipboard, then enter insert
+      ComboNM tmp;
+      tmp.normal = {1,'d'};
+      if (cmd->type == 'S'){ // for S, delete count lines
+        tmp.movement = {count,'d'};
+      } else if (cmd->type == 's') { // for s, delete count to right
+        tmp.movement = {count,'l'};
+      } else { // for c_Movement, run the movement
+        tmp.movement = dynamic_cast<const CM&>(*cmd).movement;
+        tmp.normal.count = count;
+      }
+      comboNMRunner.run(&tmp);
+      count = 1; // don't duplicate inserts
+    } 
     // enter insert mode
     insertParser.reset();
     insertParser.setCount(count);

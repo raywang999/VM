@@ -27,7 +27,11 @@ void ComboNMRunner::run(const ComboNM* cmd){
     Normal tmp{curline - topline + 1, normal.type};
     normalRunner.run(&tmp); 
     return;
-  } 
+  }  else if (movement.type == 'd') { // to forward dd commands
+    Normal tmp{count, normal.type};
+    normalRunner.run(&tmp);
+    return;
+  }
   
   // otherwise, execute the movement and calculate cursor positions
   Cursor beg = cursor;

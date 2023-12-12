@@ -10,6 +10,7 @@ class MacroParser: public CommandParser<Macro>{
   // holds the currently parsed macro 
   Macro theMacro;
   bool readRegister = false;
+  bool isRecording = false;
   bool parse(const Keystroke& keystroke) override;
   void doReset() override { 
     countedParser.reset();
@@ -17,6 +18,7 @@ class MacroParser: public CommandParser<Macro>{
   }
  public: 
   const Macro* getCommand() const override {return &theMacro;};
+  void setIsRecording(bool val) noexcept {isRecording = val;}
 };
 
 #endif

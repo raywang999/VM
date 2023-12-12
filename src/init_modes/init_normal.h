@@ -21,11 +21,10 @@
 #include "lib/command/parser/normal_parser.h"
 #include "lib/command/parser/movement_parser.h"
 #include "lib/command/parser/ctrl_parser.h"
-#include "lib/command/parser/macro_parser.h"
 
 #include "lib/registers/clipboard.h"
 
-// set up parsers and runners for basic normal mode commands
+// set up parsers and runners for normal mode commands
 struct NormalModeClosure{
   WindowsClosure& windowsClosure;
   Window*& activeWindow{windowsClosure.activeWindow};
@@ -37,7 +36,6 @@ struct NormalModeClosure{
   NormalParser normalParser;
   MovementParser movementParser;
   CtrlParser ctrlParser;
-  MacroParser macroParser;
   ComboNMParser comboNMParser;
 
   // setup runners
@@ -73,7 +71,6 @@ struct NormalModeClosure{
     normalParser.attach(&jkRecorder);
     rootModeManager.attach(ModeType::Normal, &normalMode);
     
-    normalGroup.add(&macroParser);
     normalGroup.add(&normalParser);
     normalGroup.add(&comboNMParser);
     normalGroup.add(&ctrlParser);
