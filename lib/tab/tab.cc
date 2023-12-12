@@ -8,12 +8,12 @@ void Tab::fitToCursor() {
   auto minTop = maxTop;
   // # of lines required to render the line of the cursor
   int lineCnt = 0;
-  while (minTop >= 0 && lineCnt <= getHeight()){
+  while (minTop >= 0 && lineCnt < getHeight()){
     lineCnt += lineSize(minTop);
     --minTop;
   }
   ++minTop;
-  if (lineCnt > getHeight()) {++minTop;}
+  if (lineCnt >= getHeight()){ ++minTop; }
   topLine = fit(minTop, maxTop, topLine);
 }
 
@@ -23,7 +23,7 @@ void Tab::fitToTopLine(){
   // largest row the cursor can be and still show up in the render
   auto maxCursorRow = topLine;
   int cntlines = 0;
-  while (maxCursorRow < filebuf->countLines() && cntlines < getHeight()){
+  while (maxCursorRow < filebuf->countLines() && cntlines < getHeight()-1){
     cntlines += lineSize(maxCursorRow);
     ++maxCursorRow;
   }

@@ -1,4 +1,4 @@
-#include <ranges>
+#include <cctype>
 
 #include "ex_runner.h"
 
@@ -33,8 +33,8 @@ bool ExRunner::write(const std::vector<std::string>& args){
   return true;
 }
 
-void ExRunner::run(const Ex* insert){
-  const auto&args = insert->args;
+void ExRunner::run(const Ex* cmd){
+  const auto&args = cmd->args;
   if (args.empty()) return; // do nothing
   if (args[0] == "w"){
     write(args);
@@ -53,6 +53,15 @@ void ExRunner::run(const Ex* insert){
     activeWindow->close();
   } else if (args[0] == "wq"){
     if (write(args)) activeWindow->close();
+  } else if (args[0] == "$"){ // go to last line
+    auto& tab = activeWindow->getTabManager().curr();
+    tab.setCursor(Cursor{tab.getFilebuf().countLines()-1,0}, true);
+  } else if (is_natural(args[0])) { // go to line #x
+    int x = std::stoi(args[0]);
+    auto& tab = activeWindow->getTabManager().curr();
+    // fit 1 <= x <= # of lines in file
+    x = fit(1,tab.getFilebuf().countLines(),x);
+    tab.setCursor({x-1,0}, true);
   }
   modeManager.setMode(ModeType::Normal);
 }

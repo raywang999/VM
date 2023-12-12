@@ -42,7 +42,10 @@ class ParserGroup:
     continueForwarding = true;
   }
   // reset all sub parsers
-  void reset() { for (auto parser: parsers){ parser->reset(); } }
+  void reset() { 
+    for (auto parser: parsers){ parser->reset(); } 
+    continueForwarding = true;
+  }
 };
 
 #endif

@@ -29,8 +29,7 @@ class CtrlRunner: public CommandRunner<Ctrl>{
   // the movement must be a Ctrl with letter f,d,u,g,b
   void run(const Ctrl* cmd); 
   CtrlRunner(Window*& activeWindow, RootStatus& rootStatus, HistoryManager& historyManager): 
-    activeWindow{activeWindow}, rootStatus{rootStatus}, historyManager{historyManager}
-  { }
+    activeWindow{activeWindow}, rootStatus{rootStatus}, historyManager{historyManager} { }
 };
 
 #endif

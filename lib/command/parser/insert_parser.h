@@ -17,6 +17,7 @@ class InsertParser: public CommandParser<Insert>{
       doReset();
     } else if (keystroke.key == Key::Esc){
       notifyAll();
+      doReset();
     } else if (keystroke.key == Key::Backspace){
       sentence.pop_back();
     } else {

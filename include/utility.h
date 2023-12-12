@@ -3,7 +3,7 @@
 
 #include <compare>
 #include <string>
-#include <cstddef>
+#include <cctype>
 
 inline int min(int a, size_t b){
   return a < static_cast<int>(b) ? a : b;
@@ -50,6 +50,12 @@ inline std::string pluralize(int count, const std::string& unit){
   res.append(unit); 
   if (count != 1 && count != -1) res.push_back('s');
   return res;
+}
+
+// check if str is a natural number
+inline bool is_natural(const std::string& str){
+  for (auto ch: str) { if (!isdigit(ch)) return false; }
+  return true;
 }
 
 #endif

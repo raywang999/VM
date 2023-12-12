@@ -29,6 +29,7 @@ class SetModeParser:
 
   bool parse(const Keystroke& keystroke) override;
   void doReset() override { 
+    movementParser.reset();
     basicSetMode = SetMode{}; 
     comboSetMode = CM{}; 
     countedParser.reset();

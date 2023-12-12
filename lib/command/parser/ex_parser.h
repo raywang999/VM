@@ -18,6 +18,7 @@ class ExParser: public CommandParser<Ex>{
       if (keystroke.value == '\n'){
         theCommand = Ex{sentence};
         notifyAll();
+        reset();
       } else {
         sentence.insert(sentence.begin() + cursorCol, keystroke.value);
         ++cursorCol;

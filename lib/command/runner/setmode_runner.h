@@ -15,7 +15,6 @@ class SetModeRunner: public CommandRunner<SetMode>{
   Window*& activeWindow;
   ModeManager& modeManager;
   InsertParser& insertParser;
-  ExParser& exParser;
   RootStatus& rootStatus;
   // helps with e.g. S, I
   MovementRunner movementRunner{activeWindow};
@@ -27,13 +26,11 @@ class SetModeRunner: public CommandRunner<SetMode>{
     Window*& activeWindow, 
     ModeManager& modeManager, 
     InsertParser& insertParser,
-    ExParser& exParser,
     RootStatus& rootStatus
   ): 
     activeWindow{activeWindow}, 
     modeManager{modeManager}, 
     insertParser{insertParser}, 
-    exParser{exParser},
     rootStatus{rootStatus}
   {}
 };

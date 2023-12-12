@@ -11,7 +11,6 @@ void SetModeRunner::run(const SetMode* cmd){
     filebuf.insertLines(0,1);
   } 
   if (cmd->type == ':'){ // enter ex mode
-    exParser.reset();
     modeManager.setMode(ModeType::Ex);
   } else if (cmd->type == 'R') { // enter Replace mode
   } else { // enter insert mode
