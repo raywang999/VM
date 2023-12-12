@@ -1,6 +1,8 @@
 #ifndef TRANSLATEABLE_H
 #define TRANSLATEABLE_H
 
+#include "loc.h"
+
 class Translateable{
   // anchor point is the top left corner of the object
   int toprow; // row of the anchor point
@@ -12,6 +14,7 @@ class Translateable{
   void setCol(int newcol) noexcept { leftcol = newcol; }
   int getRow() const noexcept {return toprow; }
   int getCol() const noexcept {return leftcol; }
+  Loc getLoc() const {return Loc{toprow, leftcol};}
   virtual ~Translateable(){}
 };
 

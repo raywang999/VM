@@ -15,7 +15,9 @@
 #include "lib/command/runner/parser_group.h"
 #include "lib/command/runner/jk_recorder.h"
 #include "lib/command/runner/semi_colon_repeater.h"
+#include "lib/command/runner/comboNM_runner.h"
 
+#include "lib/command/parser/comboNM_parser.h"
 #include "lib/command/parser/normal_parser.h"
 #include "lib/command/parser/movement_parser.h"
 #include "lib/command/parser/ctrl_parser.h"
@@ -36,12 +38,15 @@ struct NormalModeClosure{
   MovementParser movementParser;
   CtrlParser ctrlParser;
   MacroParser macroParser;
+  ComboNMParser comboNMParser;
+
   // setup runners
   MovementRunner movementRunner{activeWindow};
   JKRecorder jkRecorder{movementRunner};
   CtrlRunner ctrlRunner{activeWindow, windowsClosure.rootStatus, historyClosure.historyManager};
   NormalRunner normalRunner{ activeWindow, clipboard, windowsClosure.rootStatus };
   SemiColonRepeater semiColonRepeater{movementRunner};
+  ComboNMRunner comboNMRunner{activeWindow, clipboard, windowsClosure.rootStatus};
 
   
   // setup the core mode
@@ -61,6 +66,7 @@ struct NormalModeClosure{
     normalParser.attach(&historyClosure.cursorRecorder);
     normalParser.attach(&normalRunner);
     ctrlParser.attach(&ctrlRunner);
+    comboNMParser.attach(&comboNMRunner);
     // ensure jk remembers its largest column
     movementParser.attach(static_cast<CommandRunner<Movement>*>(&jkRecorder));
     movementParser.attach(&semiColonRepeater);
@@ -69,6 +75,7 @@ struct NormalModeClosure{
     
     normalGroup.add(&macroParser);
     normalGroup.add(&normalParser);
+    normalGroup.add(&comboNMParser);
     normalGroup.add(&ctrlParser);
     normalGroup.add(&movementParser);
 

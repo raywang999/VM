@@ -34,6 +34,10 @@ void DotRepeater::run(const Normal* cmd){
       }
       // then play the insert
       insertRunner.run(&tmp);
+    } else if (type == Type::ComboNM){
+      ComboNM tmp = prevComboNM;
+      tmp.normal.count *= normalizeCount(cmd->count);
+      comboNMRunner.run(&prevComboNM);
     }
   } else {
     // otherwise, record the command if it should be repeatable
@@ -44,3 +48,9 @@ void DotRepeater::run(const Normal* cmd){
   }
 }
 
+void DotRepeater::run(const ComboNM* cmd){
+  if (cmd->normal.type != 'y'){
+    type = Type::ComboNM; 
+    prevComboNM = *cmd;
+  }
+}

@@ -74,7 +74,7 @@ struct ModesClosure{
   DotRepeater dotRepeater{
     insertModeClosure.insertRunner, 
     normalModeClosure.normalRunner, 
-    macroRunner, setModeRunner
+    macroRunner, setModeRunner, normalModeClosure.comboNMRunner
   };
 
   // add undo runner
@@ -125,6 +125,7 @@ struct ModesClosure{
     normalModeClosure.normalParser.attach(&historyRecorder);
     normalModeClosure.normalParser.attach(&undoRunner);
     normalModeClosure.ctrlParser.attach(&undoRunner);
+    normalModeClosure.comboNMParser.attach(&historyRecorder);
 
 
     // attach the root mode manager to the keyboard
@@ -146,6 +147,7 @@ struct ModesClosure{
     normalModeClosure.ctrlParser.attach(&normalGroup);
     macroParser.attach(&normalGroup);
     setModeParser.attach(&normalGroup);
+    normalModeClosure.comboNMParser.attach(&normalGroup);
   }
 
 };

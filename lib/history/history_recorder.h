@@ -15,6 +15,7 @@ class HistoryRecorder:
   public CommandRunner<Ex>,
   public CommandRunner<Insert>,
   public CommandRunner<Replace>,
+  public CommandRunner<ComboNM>,
   public CommandRunner<Macro>,
   public CommandRunner<Normal>
 {
@@ -34,6 +35,9 @@ class HistoryRecorder:
   }
   void run(const Insert* cmd) override { save(); }
   void run(const Replace* cmd) override { save(); }
+  void run(const ComboNM* cmd) override {
+    if (cmd->normal.type != 'y') save();
+  }
   void run(const Macro* cmd) override { 
     if (cmd->type == '@') save();
   }

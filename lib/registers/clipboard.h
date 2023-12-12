@@ -31,32 +31,6 @@ class Clipboard {
   void set(bool startNewLine, const std::string& contents, char reg = '\0'){
     registers[reg] = {startNewLine, contents};
   }
-  // copy from linedcharbuf all contents between two cursor locations
-  // - cursors can be any order, but should be valid locations in charbuf 
-  void copyChars(
-    const LinedCharbuf<char>& charbuf, 
-    const Cursor& beg, 
-    const Cursor& end, 
-    char reg = '\0'
-  ){
-    std::string contents;
-    // swap beginning cursor with end if beg is after end
-    int begCol = beg.getCol(), begRow = beg.getRow();
-    int endCol = end.getCol(), endRow = end.getRow();
-    if (begRow > endRow || (begRow == endRow && begCol >= endCol)){
-      std::swap(begCol, endCol);
-      std::swap(begRow, endRow);
-    }
-    // iterate through charbuf
-    for (
-      auto it = charbuf.begin(begRow, begCol); 
-      it.getLine() <= endRow && it.getCol() <= endCol; 
-      ++it
-    ){
-      contents.push_back(*it);
-    }
-    registers[reg] = {false, std::move(contents)}; // add contents
-  }
   // copy num lines from beg from charbuf
   // precondition: beg and num are valid locations in charbuf
   void copyLines(const LinedCharbuf<char>& charbuf, size_t beg, size_t num, char reg = '\0'){
@@ -74,7 +48,7 @@ class Clipboard {
     }
   }
 
-  const auto& get(char reg = '\0'){ return registers[reg]; }
+  auto& get(char reg = '\0'){ return registers[reg]; }
 };
 
 #endif

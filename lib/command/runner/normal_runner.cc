@@ -28,6 +28,9 @@ void NormalRunner::run(const Normal* cmd){
         rootStatus.setMessage(std::to_string(count) + " lines yanked"); // output message
       }
     } else if (cmd->type == 'd'){
+      if (count > 1){
+        rootStatus.setMessage(std::to_string(count) + " fewer lines");
+      }
       filebuf.eraseLines(curRow,count);
       cursor.translate(std::max(curRow-1,0),0);
       tab.setCursor(cursor);
