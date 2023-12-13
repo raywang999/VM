@@ -7,6 +7,7 @@ enum class ErrorCode {
   nothing = 0,
   noFileName = 32,
   noWriteSinceLastChange = 37, 
+  cantOpenFile = 484,
   patternNotFound = 486
 };
 
@@ -19,9 +20,12 @@ class RootStatus{
   void setError(ErrorCode error) noexcept {
     errorCode = error;
   }
-  void setMessage(const std::string& msg) noexcept {
+  // set message. resets error code if clear == true
+  void setMessage(const std::string& msg, bool clear = true) noexcept {
     exMessage = msg;
-    errorCode = ErrorCode::nothing;
+    if (clear){
+      errorCode = ErrorCode::nothing;
+    }
   }
   void reset() noexcept {exMessage.clear(); errorCode = ErrorCode::nothing;}
   ErrorCode getError() const noexcept {return errorCode;}

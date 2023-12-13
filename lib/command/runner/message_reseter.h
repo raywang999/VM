@@ -17,9 +17,9 @@ class MessageResetter:
   void clearMessage() {rootStatus.reset(); }
  public:
   MessageResetter(RootStatus& rootStatus): rootStatus{rootStatus} {}
-  void run(const Macro* cmd) override{clearMessage();}
+  void run(const Macro*) override{clearMessage();}
   // reset when changing modes
-  void run(const SetMode* cmd) override{clearMessage();}
+  void run(const SetMode*) override{clearMessage();}
   // reset . 
   void run(const Normal* cmd) override{
     if (cmd->type == '.') clearMessage();

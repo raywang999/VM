@@ -78,14 +78,17 @@ void MovementRunner::run(const Movement* movement){
       tab.setCursor(cursor, true);
     }
   } else if (movement->type == 'w'){ 
-    Chunkw matcher{}; // use W matcher
+    // use w matcher
+    auto beg = filebuf.begin(row,col);
+    Chunkw matcher{*beg}; 
     auto end = filebuf.end();
     // find the start of the Nth word
-    auto pos = findNth(count, filebuf.begin(row, col), end, matcher);
+    auto pos = findNth(count, beg, end, matcher);
     setCursor(pos,end);
   } else if (movement->type == 'b'){ 
-    Chunkb matcher{}; // use W matcher
+    // use b matcher
     auto beg = ++filebuf.rbegin(row,col);
+    Chunkb matcher{*beg}; 
     auto end = filebuf.rend();
     // find the start of the Nth word
     auto pos = findNth(count, beg, end, matcher);

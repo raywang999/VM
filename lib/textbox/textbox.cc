@@ -5,9 +5,10 @@
 #include "include/ncursespp.h"
 
 void Textbox::printEmptylineStart(int row, int col){
-  attron(ncurses::attribute::ColorPair(ncurses::colorset::PairLineStart));
-  ncurses::print(row, col, '~');
-  attroff(ncurses::attribute::ColorPair(ncurses::colorset::PairLineStart));
+  using namespace ncurses;
+  onAttributes(attribute::ColorPair(colorset::PairLineStart));
+  print(row, col, '~');
+  setAttributes(attribute::ColorPair(colorset::PairDefault));
 }
 
 void Textbox::render() {
@@ -20,13 +21,11 @@ void Textbox::render() {
   const auto height = getHeight();
   const auto width = getWidth();
   auto iter = currFilebuf.begin(topLine,0);
-  auto begLoc = iter.getLoc();
-  auto styles = styleManager.getStyles(
-    currFilebuf.filename, begLoc, {begLoc.line+height,0});
   // top row of the area we should render to
   const auto anchorRow = getRow();
   // left col of the area we should render to 
   const auto anchorCol = getCol();
+
   for (int i = 0, j = 0; i < height;){
     const auto printRow = anchorRow + i;
     const auto printCol = anchorCol + j;
@@ -47,6 +46,5 @@ void Textbox::render() {
       }
     }
   }
-  // apply the styles
 }
 

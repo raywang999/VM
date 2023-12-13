@@ -43,7 +43,6 @@ std::string CtrlRunner::printLineCount() const {
 
 void CtrlRunner::run(const Ctrl* cmd){
   auto& tab = activeWindow->getTabManager().curr();
-  const auto& filebuf = tab.getFilebuf();
   if (cmd->type == 'b' || cmd->type == 'f'){ 
     // scroll count 'page's back/forwards
     auto count = normalizeCount(cmd->count);

@@ -19,7 +19,7 @@ class JKRecorder:
       movementRunner.unsetPrev();
     }
   }
-  void run(const Command* cmd) override { 
+  void run(const Command*) override { 
     movementRunner.unsetPrev();
   }
 };

@@ -53,8 +53,6 @@ class SearchRunner:
     rootStatus{rootStatus},
     rootModeManager{rootModeManager}
   { }
-
-  const std::string& getNeedle() const noexcept {return matcher.getNeedle(); }
 };
 
 #endif

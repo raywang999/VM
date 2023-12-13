@@ -26,6 +26,7 @@ struct NcursesClosure{
       auto it = terminalArgs.find(TerminalArgs::SetColorset{});
       auto colorset = std::get<TerminalArgs::SetColorset>(*(it));
       ncurses::colorset::colorsetmaps[colorset.colorset]();
+      ncurses::onAttributes(ncurses::attribute::ColorPair(ncurses::colorset::PairDefault));
     }
   }
 

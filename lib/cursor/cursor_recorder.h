@@ -17,11 +17,11 @@ class CursorRecorder:
   CursorRecorder(Window*& activeWindow): activeWindow{activeWindow} {}
 
   // if Insert, the cursor should return to how it was before the insert
-  void run(const Insert* cmd) override { }
+  void run(const Insert*) override { }
   // if Replace, the cursor should return to how it was before the replace
-  void run(const Replace* cmd) override { }
+  void run(const Replace*) override { }
   // otherwise, save cursor
-  void run(const Command* cmd) override { update(); }
+  void run(const Command*) override { update(); }
   const Cursor& getCursor() const noexcept {return cursor; }
 };
 

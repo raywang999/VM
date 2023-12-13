@@ -2,6 +2,7 @@
 #define TEXT_STYLER_H
 
 #include <vector>
+#include <compare>
 
 #include "include/loc.h"
 #include "include/ncursespp.h"
@@ -10,6 +11,8 @@
 struct Style{
   Loc first, last;
   ncurses::Attribute attribute;
+  // use filedwise compare for ordering
+  auto operator<=>(const Style& other) const = default;
 };
 
 class TextStyler{

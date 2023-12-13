@@ -1,4 +1,6 @@
 #include <cctype>
+#include <fstream>
+
 
 #include "ex_runner.h"
 
@@ -56,13 +58,30 @@ void ExRunner::run(const Ex* cmd){
   } else if (args[0] == "$"){ // go to last line
     auto& tab = activeWindow->getTabManager().curr();
     tab.setCursor(Cursor{static_cast<int>(tab.getFilebuf().countLines())-1,0}, true);
+  } else if (args[0] == "r"){ // paste contents of file after current line
+    std::ifstream infile{args[1]};
+    if (!infile) {
+      rootStatus.setError(ErrorCode::cantOpenFile);
+      rootStatus.setMessage(args[1],false);
+    } else{
+      auto& tab = activeWindow->getTabManager().curr();
+      auto& filebuf = tab.getFilebuf();
+      auto line = tab.getCursor().getLine()+1;
+      char ch; int col = 0;
+      while (infile.get(ch)){
+        filebuf.insert(line,col++,ch);
+        if (ch == '\n') {
+          col = 0; ++line;
+        }
+      }
+    }
   } else if (is_natural(args[0])) { // go to line #x
     int x = std::stoi(args[0]);
     auto& tab = activeWindow->getTabManager().curr();
     // fit 1 <= x <= # of lines in file
     x = fit(1,tab.getFilebuf().countLines(),x);
     tab.setCursor({x-1,0}, true);
-  }
+  } 
   modeManager.setMode(ModeType::Normal);
 }
 
