@@ -16,6 +16,7 @@
 #include "lib/command/runner/jk_recorder.h"
 #include "lib/command/runner/semi_colon_repeater.h"
 #include "lib/command/runner/comboNM_runner.h"
+#include "lib/matcher/matcher_runner.h"
 
 #include "lib/command/parser/comboNM_parser.h"
 #include "lib/command/parser/normal_parser.h"
@@ -45,6 +46,7 @@ struct NormalModeClosure{
   NormalRunner normalRunner{ activeWindow, clipboard, windowsClosure.rootStatus };
   SemiColonRepeater semiColonRepeater{movementRunner};
   ComboNMRunner comboNMRunner{activeWindow, clipboard, windowsClosure.rootStatus};
+  MatcherRunner matcherRunner{activeWindow, historyClosure.historyManager};
 
   
   // setup the core mode
@@ -61,6 +63,7 @@ struct NormalModeClosure{
     rootModeManager{rootModeManager}, clipboard{clipboard}
   {
     movementParser.attach(&movementRunner);
+    movementParser.attach(&matcherRunner);
     normalParser.attach(&historyClosure.cursorRecorder);
     normalParser.attach(&normalRunner);
     ctrlParser.attach(&ctrlRunner);

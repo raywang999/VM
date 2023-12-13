@@ -19,7 +19,8 @@ class InsertParser: public CommandParser<Insert>{
       notifyAll();
       doReset();
     } else if (keystroke.key == Key::Backspace){
-      sentence.pop_back();
+      if (sentence.size())
+        sentence.pop_back();
     } else {
       return false;
     }
