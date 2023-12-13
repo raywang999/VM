@@ -78,7 +78,7 @@ class MovementRunner: public CommandRunner<Movement>{
   // - prev == punctuation, ch == alphanum
   class Chunkw: public Chunk<Chunkw> {
    public: 
-    Chunkw(): Chunk{'a'} {} // set initial prev with non-blank 
+    using Chunk<Chunkw>::Chunk; // forward constructors
     bool doCheck(char ch){ 
       return 
         (isspace(prev) && !isspace(ch)) ||
@@ -92,7 +92,7 @@ class MovementRunner: public CommandRunner<Movement>{
   // - prev == punctuation, ch == alphanum
   class Chunkb: public Chunk<Chunkb> {
    public: 
-    Chunkb(): Chunk{' '} {} // set initial prev with blank 
+    using Chunk<Chunkb>::Chunk; // forward constructors
     bool doCheck(char ch){ 
       return 
         (isspace(ch) && !isspace(prev)) ||
