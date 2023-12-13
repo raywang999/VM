@@ -14,7 +14,6 @@ struct CursorClosure {
   void getActiveLocation (){
     const auto& tab = windowsClosure.activeWindow->getTabManager().curr();
     auto cursor = tab.getCursor();
-    const auto& filebuf = tab.getFilebuf();
     // calculate which row on the screen our cursor corresponds to
     auto printRow = tab.getRow();
     for (int i = tab.getTopLine(); i < cursor.getRow(); ++i){
@@ -31,14 +30,20 @@ struct CursorClosure {
   
   // sets location of the cursor based on whether we are Ex mode, or not
   void calculateLocation() {
-    if (modesClosure.rootModeManager.getMode() == ModeType::Ex){
-      ncCursor.translate(
-        windowsClosure.rootStatusBar.getRow(), 
-        modesClosure.exParser.getCol()+1
-      );
-    } else {
-      getActiveLocation();
-    } 
+    switch (modesClosure.rootModeManager.getMode()){
+      case ModeType::Ex: 
+        return ncCursor.translate(
+          windowsClosure.rootStatusRender.getRow(), 
+          modesClosure.exParser.getCol()+1
+        );
+      case ModeType::Search:
+        return ncCursor.translate(
+          windowsClosure.rootStatusRender.getRow(), 
+          modesClosure.searchModeClosure.searchParser.getCol()+1
+        );
+      default: 
+        getActiveLocation();
+    }
   }
 
   // calculate location and render

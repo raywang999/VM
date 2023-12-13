@@ -14,7 +14,7 @@ bool SetModeParser::parse(const Keystroke& keystroke) {
         basicSetMode.type = 'S'; 
         notifyAll();
         return true;
-      } else { // not a cc, but could be a movement
+      } else { // not a cc, but could be a c_movement
         checkCC = false; 
         useCombo = true;
       }
@@ -22,6 +22,7 @@ bool SetModeParser::parse(const Keystroke& keystroke) {
     if (useCombo){ // parse the movemnt 
       // note: if movementParser finishes, it will notify us, and call our run
       movementParser.consume(keystroke);
+      return movementParser.isValid();
     } else { // otherwise, check if terminal
       basicSetMode.type = keystroke.value;
       if (terminalTypes.count(keystroke.value)){ // we are done
@@ -41,6 +42,7 @@ bool SetModeParser::parse(const Keystroke& keystroke) {
 
 void SetModeParser::run(const Movement* cmd) {
   comboSetMode.movement = *cmd;
+  comboSetMode.count = countedParser.getCount();
   notifyAll();
 }
 

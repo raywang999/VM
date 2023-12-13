@@ -8,7 +8,7 @@
 class NCWindow: public Window {
   const StyleManager& styleManager;
   Textbox textbox;
-  StatusBar statusBar;
+  StatusBar statusBar{*this};
   Window_p doClone(){
     return std::make_unique<NCWindow>(getTabManager(), styleManager);
   }

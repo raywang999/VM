@@ -10,12 +10,14 @@
 // replays the command when we receive a normal command with a '.' type
 class MessageResetter: 
   public CommandRunner<SetMode>,
+  public CommandRunner<Macro>,
   public CommandRunner<Normal>
 {
   RootStatus& rootStatus;
   void clearMessage() {rootStatus.reset(); }
  public:
   MessageResetter(RootStatus& rootStatus): rootStatus{rootStatus} {}
+  void run(const Macro* cmd) override{clearMessage();}
   // reset when changing modes
   void run(const SetMode* cmd) override{clearMessage();}
   // reset . 

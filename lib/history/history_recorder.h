@@ -15,6 +15,7 @@ class HistoryRecorder:
   public CommandRunner<Ex>,
   public CommandRunner<Insert>,
   public CommandRunner<Replace>,
+  public CommandRunner<ComboNM>,
   public CommandRunner<Macro>,
   public CommandRunner<Normal>
 {
@@ -34,14 +35,15 @@ class HistoryRecorder:
   }
   void run(const Insert* cmd) override { save(); }
   void run(const Replace* cmd) override { save(); }
+  void run(const ComboNM* cmd) override {
+    if (cmd->normal.type != 'y') save();
+  }
   void run(const Macro* cmd) override { 
     if (cmd->type == '@') save();
   }
   void run(const Normal* cmd) override { 
     // note, we don't consider undo and redo as modifications 
-    // since nromalRunner should handle them
-    static const std::unordered_set<char> modifiers{'x','X','d','.','J','p','P'};
-    if (modifiers.count(cmd->type)) save();
+    if (cmd->type != 'u') save();
   }
   void run(const Ex* ex) override { 
     if (ex->args[0] == "r") {save();}

@@ -19,10 +19,10 @@ void Textbox::render() {
   const auto topLine = currTab.getTopLine();
   const auto height = getHeight();
   const auto width = getWidth();
-  const auto botLine = topLine + height;
   auto iter = currFilebuf.begin(topLine,0);
+  auto begLoc = iter.getLoc();
   auto styles = styleManager.getStyles(
-    currFilebuf.filename, iter.getPosition(), height*width);
+    currFilebuf.filename, begLoc, {begLoc.line+height,0});
   // top row of the area we should render to
   const auto anchorRow = getRow();
   // left col of the area we should render to 

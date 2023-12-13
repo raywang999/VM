@@ -1,8 +1,9 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include <unordered_set>
-#include <cstddef>
+#include <compare>
+#include <string>
+#include <cctype>
 
 inline int min(int a, size_t b){
   return a < static_cast<int>(b) ? a : b;
@@ -25,6 +26,36 @@ inline int cielDiv(int i, int d){
 // returns default if prev == -1, prev otherwise
 inline int normalizeCount(int prev, int def = 1){
   return prev == -1 ? def : prev;
+}
+
+template<typename Iter, typename Pred> 
+// finds the nth occurrence of an element s.t. p == element
+inline Iter findNth(size_t n, Iter beg, Iter end, Pred&& p) {
+  for (size_t i = 0; i < n && beg != end; ){
+    if (p == *beg) {
+      ++i;
+      if (i >= n) return beg;
+      ++beg; 
+    } else {
+      ++beg; 
+    }
+  }
+  return end;
+}
+
+// appends s to unit if abs(count) != 1
+inline std::string pluralize(int count, const std::string& unit){
+  std::string res = std::to_string(count);
+  res.push_back(' ');
+  res.append(unit); 
+  if (count != 1 && count != -1) res.push_back('s');
+  return res;
+}
+
+// check if str is a natural number
+inline bool is_natural(const std::string& str){
+  for (auto ch: str) { if (!isdigit(ch)) return false; }
+  return true;
 }
 
 #endif

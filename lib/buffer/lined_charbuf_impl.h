@@ -12,12 +12,11 @@
 template<typename char_t>
 template<typename Iter> 
 inline void LinedCharbuf<char_t>::inc_helper(Iter &iter) noexcept{
-  auto& col = iter.col;
-  auto& position = iter.position;
+  auto& line = iter.loc.line;
+  auto& col = iter.loc.col;
   auto& theCharbuf = iter.theCharbuf;
-  auto& line = iter.line;
-  ++col; ++position;
-  if (col >= theCharbuf->lines[line].size()){
+  ++col;
+  if (static_cast<size_t>(col) >= theCharbuf->lines[line].size()){
     ++line; col=0;
   }
 }
@@ -25,24 +24,26 @@ inline void LinedCharbuf<char_t>::inc_helper(Iter &iter) noexcept{
 template<typename char_t>
 template<typename Iter> 
 inline void LinedCharbuf<char_t>::dec_helper(Iter &iter) noexcept{
-  auto& col = iter.col;
-  auto& position = iter.position;
+  auto& line = iter.loc.line;
+  auto& col = iter.loc.col;
+  //auto& position = iter.position;
   auto& theCharbuf = iter.theCharbuf;
-  auto& line = iter.line;
   if (col == 0){
     --line; col = theCharbuf->lines[line].size();
   }
-  --col; --position;
+  --col;
 }
 
 template<typename char_t> 
-inline typename LinedCharbuf<char_t>::iterator& LinedCharbuf<char_t>::iterator::operator++() noexcept{
+inline typename LinedCharbuf<char_t>::iterator& 
+LinedCharbuf<char_t>::iterator::operator++() noexcept{
   inc_helper(*this);
   return *this;
 }
 
 template<typename char_t> 
-inline typename LinedCharbuf<char_t>::iterator& LinedCharbuf<char_t>::iterator::operator--() noexcept{
+inline typename LinedCharbuf<char_t>::iterator& 
+LinedCharbuf<char_t>::iterator::operator--() noexcept{
   dec_helper(*this);
   return *this;
 }
@@ -58,6 +59,26 @@ template<typename char_t>
 inline typename LinedCharbuf<char_t>::const_iterator& 
 LinedCharbuf<char_t>::const_iterator::operator--() noexcept{
   dec_helper(*this);
+  return *this;
+}
+
+template<typename char_t> 
+inline typename LinedCharbuf<char_t>::const_reverse_iterator& 
+LinedCharbuf<char_t>::const_reverse_iterator::operator++() noexcept {
+  auto& line = loc.line;
+  auto& col = loc.col;
+  if (line == 0 && col == 0){
+    line = -1; col = -1; // set ourselvse to rend iterator
+    return *this;
+  }
+  dec_helper(*this);
+  return *this;
+}
+
+template<typename char_t> 
+inline typename LinedCharbuf<char_t>::const_reverse_iterator& 
+LinedCharbuf<char_t>::const_reverse_iterator::operator--() noexcept {
+  inc_helper(*this);
   return *this;
 }
 
@@ -108,11 +129,3 @@ inline void LinedCharbuf<char_t>::eraseLines(size_t line, size_t num){
   lines.erase(lines.begin()+line, lines.begin()+line+num);
 }
 
-template<typename char_t>
-inline size_t LinedCharbuf<char_t>::getPosition(size_t line, size_t col) const noexcept {
-  size_t res = 0;
-  for (size_t i = 0; i < line; ++i){
-    res += lines[i].size();
-  }
-  return res + col;
-}

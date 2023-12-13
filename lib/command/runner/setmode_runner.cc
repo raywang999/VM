@@ -11,9 +11,13 @@ void SetModeRunner::run(const SetMode* cmd){
     filebuf.insertLines(0,1);
   } 
   if (cmd->type == ':'){ // enter ex mode
-    exParser.reset();
     modeManager.setMode(ModeType::Ex);
   } else if (cmd->type == 'R') { // enter Replace mode
+    replaceParser.reset();
+    replaceParser.setCount(count);
+    modeManager.setMode(ModeType::Replace);
+  } else if (cmd->type == '?' || cmd->type == '/'){
+    modeManager.setMode(ModeType::Search);
   } else { // enter insert mode
     if (cmd->type == 'i'){ /*enter insert mode without doing anything*/ }
     else if (cmd->type == 'a'){
@@ -30,24 +34,38 @@ void SetModeRunner::run(const SetMode* cmd){
       filebuf.insertLines(cursor.getRow(),1);
       cursor.setCol(0);
       tab.setCursor(cursor);
+    } else if (cmd->type == 'I'){
+      const auto& line = filebuf.getLine(cursor.getRow());
+      size_t col = 0;
+      while (col+1 < line.size() && isspace(line[col])){ 
+        ++col;
+      }
+      cursor.setCol(col);
+      tab.setCursor(cursor);
     } else if (cmd->type == 'A'){ // turns into running a $ movement, then a
-      Movement toEnd{1,'$'};
-      movementRunner.run(&toEnd);
       cursor.setCol(filebuf.getLine(cursor.getRow()).size()-1);
       tab.setCursor(cursor);
-    } else if (cmd->type == 'S'){ // delete line, then i
-      filebuf.eraseLines(cursor.getRow(),1);
-      filebuf.insertLines(cursor.getRow(), 1);
-      cursor.setCol(0);
-      tab.setCursor(cursor);
-    } else if (cmd->type == 'c'){ // CM command. Run DM(M) then enter insert
-      auto cm = dynamic_cast<const CM*>(cmd);
-      movementRunner.run(&cm->movement);
-    }
+    } else if (cmd->type == 'S' || cmd->type == 'c' || cmd->type == 's'){ 
+      // run ComboNM command to delete into clipboard, then enter insert
+      ComboNM tmp;
+      tmp.normal = {1,'d'};
+      if (cmd->type == 'S'){ // for S, delete count lines
+        tmp.movement = {count,'d'};
+      } else if (cmd->type == 's') { // for s, delete count to right
+        tmp.movement = {count,'l'};
+      } else { // for c_Movement, run the movement
+        tmp.movement = dynamic_cast<const CM&>(*cmd).movement;
+        tmp.normal.count = count;
+      }
+      comboNMRunner.run(&tmp);
+      count = 1; // don't duplicate inserts
+    } 
     // enter insert mode
     insertParser.reset();
-    insertParser.setCount(cmd->count);
+    insertParser.setCount(count);
     insertParser.setMode(cmd->type);
     modeManager.setMode(ModeType::Insert);
   }
+  // clear the rootStatus message 
+  rootStatus.reset();
 }

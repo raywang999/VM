@@ -15,22 +15,31 @@ struct StatusBarClosure {
   // set the required text for the root StatusBar and render
   void renderStatusBar(){ 
     auto mode = modesClosure.rootModeManager.getMode();
-    auto& message = windowsClosure.rootStatusBar.left;
+    auto& message = windowsClosure.rootStatusRender.content;
     auto& rootStatus = windowsClosure.rootStatus;
     auto error = rootStatus.getError();
     const auto& exMessage = rootStatus.getMessage();
-    windowsClosure.rootStatusBar.showerror = false;
+    windowsClosure.rootStatusRender.showerror = false;
     if (mode == ModeType::Ex){
       // show the currently parsed Ex Command
       rootStatus.reset();
       message = ":" + modesClosure.exParser.getSentence();
+    } else if (mode == ModeType::Search){
+      // show the current search needle
+      const auto& parser = modesClosure.searchModeClosure.searchParser;
+      auto command = parser.getCommand();
+      rootStatus.reset();
+      message = command->type + command->needle;
     } else if (error != ErrorCode::nothing){
       if (error == ErrorCode::noWriteSinceLastChange){
         message = "E37: No write since last change (add ! to override)";
       } else if (error == ErrorCode::noFileName){
         message = "E32: No file name";
+      } else if (error == ErrorCode::patternNotFound){
+        message = "E486: Pattern not found: " + 
+          modesClosure.searchModeClosure.searchRunner.getNeedle();
       }
-      windowsClosure.rootStatusBar.showerror=true;
+      windowsClosure.rootStatusRender.showerror = true;
     } else if (exMessage.size()) { 
       // show the exMessage 
       message = exMessage;
@@ -48,7 +57,7 @@ struct StatusBarClosure {
         message.push_back(modesClosure.macroRunner.getCurrReg());
       }
     }
-    windowsClosure.rootStatusBar.render();
+    windowsClosure.rootStatusRender.render();
   }
 };
 

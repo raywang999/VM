@@ -17,7 +17,9 @@ class KeystrokeRecorder:
   void doReset() override {active = false; keystrokes.clear(); }
  public:
   void consume(const Keystroke& key) override {
-    if (active){ keystrokes.push_back(key); }
+    if (active){ 
+      keystrokes.push_back(key); 
+    }
   }
   void setActive(bool type) noexcept {active = type;}
   bool isActive() const noexcept {return active;}

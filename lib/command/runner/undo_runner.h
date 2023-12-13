@@ -22,7 +22,7 @@ class UndoRunner:
   RootStatus& rootStatus;
   // returns string form to represent number of lines more/less
   static std::string printLineChange(int changes) {
-    std::string res = std::to_string(changes);
+    std::string res = std::to_string(std::abs(changes));
     res += (changes > 0 ? " more " : " less "); 
     res += "line";
     if (changes>1 || changes < -1) {res.push_back('s');}
@@ -30,8 +30,7 @@ class UndoRunner:
   }
   // returns string form to represent number of changes
   static std::string printChanges(int changes) {
-    if (changes == 1){return "1 change";}
-    return std::to_string(changes) + " changes";
+    return pluralize(changes, "change");
   }
 
   // returns x seconds ago, or timestamp, as relevant
@@ -46,10 +45,7 @@ class UndoRunner:
       oss << std::put_time(&tm, "%H-%M-%S");
       return oss.str();
     } else { // use seconds ago
-      return 
-        std::to_string(secondsInt)
-        + (secondsInt > 1 ? " second" : " seconds")
-        + " ago";
+      return pluralize(secondsInt,"second") + " ago";
     }
   }
 

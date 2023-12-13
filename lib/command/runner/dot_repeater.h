@@ -6,8 +6,10 @@
 #include "include/utility.h"
 #include "lib/command/runner/insert_runner.h"
 #include "lib/command/runner/macro_runner.h"
+#include "lib/command/runner/comboNM_runner.h"
 #include "lib/command/runner/normal_runner.h"
 #include "lib/command/runner/setmode_runner.h"
+#include "lib/command/runner/replace_runner.h"
 
 // listens to commands repeatable using . 
 // replays the command when we receive a normal command with a '.' type
@@ -15,6 +17,7 @@ class DotRepeater:
   public CommandRunner<Normal>,
   public CommandRunner<SetMode>,
   public CommandRunner<Insert>,
+  public CommandRunner<ComboNM>,
   public CommandRunner<Macro>,
   public CommandRunner<Replace>
 {
@@ -22,11 +25,15 @@ class DotRepeater:
   NormalRunner& normalRunner;
   MacroRunner& macroRunner;
   SetModeRunner& setModeRunner;
+  ComboNMRunner& comboNMRunner;
+  ReplaceRunner& replaceRunner;
   Insert prevInsert;
   Normal prevNormal;
+  ComboNM prevComboNM;
+  Replace prevReplace;
   std::unique_ptr<SetMode> prevSetMode;
   Macro prevMacro;
-  enum class Type {Insert, Replace, Normal, Macro, None};
+  enum class Type {Insert, Replace, Normal, Macro, ComboNM, None};
   Type type{Type::None};
 
  public:
@@ -35,16 +42,21 @@ class DotRepeater:
   void run(const Macro* cmd) override; 
   void run(const Replace* cmd) override; 
   void run(const SetMode* cmd) override; 
+  void run(const ComboNM* cmd) override; 
   DotRepeater(
     InsertRunner& insertRunner,
     NormalRunner& normalRunner,
     MacroRunner& macroRunner, 
-    SetModeRunner& setModeRunner
+    SetModeRunner& setModeRunner,
+    ComboNMRunner& comboNMRunner,
+    ReplaceRunner& replaceRunner
   ): 
     insertRunner{insertRunner},
     normalRunner{normalRunner},
     macroRunner{macroRunner},
-    setModeRunner{setModeRunner}
+    setModeRunner{setModeRunner},
+    comboNMRunner{comboNMRunner},
+    replaceRunner{replaceRunner}
   {}
 };
 

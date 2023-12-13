@@ -4,11 +4,6 @@
 #include "lib/command/parser/normal_parser.h"
 #include "lib/command/command.h"
 
-// returns true for double operations 
-bool isNormDup(int ch){
-  return ch == 'd' || ch == 'y' || ch == 'r';
-}
-
 
 bool NormalParser::parse(const Keystroke& keystroke) {
   if (countedParser.parse(keystroke)) return true;

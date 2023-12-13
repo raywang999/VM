@@ -11,7 +11,7 @@ class TextStylerGroup {
   vector_t textstyles;
  public: 
   class iterator {
-    size_t start, num;
+    Loc start, num;
     // the textstyle ranges of the group used to generate this iterator
     // nullptr for end sentinel
     const vector_t* textstyles = nullptr;
@@ -25,7 +25,7 @@ class TextStylerGroup {
     // create end sentinel
     iterator() = default;
     // create begin() using textsyles
-    iterator(size_t start, size_t num, const vector_t* textstyles): 
+    iterator(Loc start, Loc num, const vector_t* textstyles): 
       start{start}, num{num},
       textstyles{textstyles}, 
       subrange{(*textstyles)[0]->getStyles(start, num)},
@@ -35,16 +35,16 @@ class TextStylerGroup {
     iterator& operator++();
   };
   class range {
-    size_t start, num;
+    Loc start, num;
     const vector_t* textstyles;
    public: 
-    range(size_t start=0, size_t num=0, const vector_t* ts = nullptr):
+    range(Loc start, Loc num, const vector_t* ts = nullptr):
       start{start}, num{num}, textstyles{ts} {} 
     iterator begin() const noexcept { return iterator{start, num, textstyles}; }
     iterator end() const noexcept {return iterator{};}
   };
   // joins all styles into one range
-  const range getStyles(size_t start, size_t num) const { 
+  const range getStyles(Loc start, Loc num) const { 
     return range{start, num, &textstyles};
   }
 };

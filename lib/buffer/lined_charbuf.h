@@ -6,6 +6,8 @@
 #include <compare> 
 #include <deque> 
 
+#include "include/loc.h"
+
 // Manages an in-memory buffer to simplify line-based operations 
 // template over type of the character to allow extension to e.g. Unicode
 template<typename char_t> 
@@ -18,40 +20,52 @@ class LinedCharbuf {
   static void dec_helper(Iter &it) noexcept;
  public:
   class iterator {
-    size_t line;
-    size_t col; 
-    size_t position; // number of characaters from beginning of file
+    Loc loc; 
     // LinedCharbuf from which I was created
-    LinedCharbuf* const theCharbuf=nullptr; 
-    iterator(size_t line, size_t col, size_t position, LinedCharbuf* const cb):
-      line{line}, col{col}, position{position}, theCharbuf{cb} {}
+    LinedCharbuf* theCharbuf; 
+    iterator(int line, int col, LinedCharbuf* const cb):
+      loc{line,col}, theCharbuf{cb} {}
    public: 
-    size_t getLine() const noexcept {return line;}
-    size_t getCol() const noexcept {return col;}
-    size_t getPosition() const noexcept {return position;}
+    Loc getLoc() const noexcept {return loc;}
+    int getLine() const noexcept {return loc.line;}
+    int getCol() const noexcept {return loc.col;}
     iterator& operator++() noexcept;
     iterator& operator--() noexcept;
     auto operator<=>(const iterator& other) const =default;
-    char_t operator*() const {return theCharbuf->lines[line][col];}
-    char_t& operator*() {return theCharbuf->lines[line][col];}
+    char_t operator*() const {return theCharbuf->lines[loc.line][loc.col];}
+    char_t& operator*() {return theCharbuf->lines[loc.line][loc.col];}
     friend class LinedCharbuf;
   };
   class const_iterator {
-    size_t line;
-    size_t col; 
-    size_t position; // number of characaters from beginning of file
+    Loc loc;
     // LinedCharbuf from which I was created
-    const LinedCharbuf* const theCharbuf=nullptr; 
-    const_iterator(size_t line, size_t col, size_t position, const LinedCharbuf* const cb):
-      line{line}, col{col}, position{position}, theCharbuf{cb} {}
+    const LinedCharbuf* theCharbuf; 
+    const_iterator(int line, int col, const LinedCharbuf* const cb):
+      loc{line,col}, theCharbuf{cb} {}
    public: 
-    size_t getLine() const noexcept {return line;}
-    size_t getCol() const noexcept {return col;}
-    size_t getPosition() const noexcept {return position;}
+    Loc getLoc() const noexcept {return loc;}
+    int getLine() const noexcept {return loc.line;}
+    int getCol() const noexcept {return loc.col;}
     const_iterator& operator++() noexcept;
     const_iterator& operator--() noexcept;
     auto operator<=>(const const_iterator& other) const =default;
-    char_t operator*() const {return theCharbuf->lines[line][col];}
+    char_t operator*() const {return theCharbuf->lines[loc.line][loc.col];}
+    friend class LinedCharbuf;
+  };
+  class const_reverse_iterator {
+    Loc loc;
+    // LinedCharbuf from which I was created
+    const LinedCharbuf* theCharbuf; 
+   public:
+    const_reverse_iterator(int line, int col, const LinedCharbuf* const cb):
+      loc{line,col}, theCharbuf{cb} {}
+    Loc getLoc() const noexcept {return loc;}
+    int getLine() const noexcept {return loc.line;}
+    int getCol() const noexcept {return loc.col;}
+    const_reverse_iterator& operator++() noexcept;
+    const_reverse_iterator& operator--() noexcept;
+    auto operator<=>(const const_reverse_iterator& other) const =default;
+    char_t operator*() const {return theCharbuf->lines[loc.line][loc.col];}
     friend class LinedCharbuf;
   };
 
@@ -80,19 +94,24 @@ class LinedCharbuf {
   }
   const std::basic_string<char_t>& getLine(size_t line) const noexcept { return lines[line]; }
 
-  size_t getPosition(size_t line, size_t num) const noexcept; 
-
   // LinedFilebuf should be a bidirectional range over all characters in the file
   // LinedFilebuf should also return iterators starting from valid line,col positions
-  iterator begin(size_t line = 0, size_t col = 0){
-    return iterator{line,col,getPosition(line,col),this};
+  iterator begin(int line = 0, int col = 0){
+    return iterator{line,col,this};
   }
-  iterator end(){return iterator{lines.size(),0,getPosition(lines.size(),0),this};}
-  const_iterator begin(size_t line = 0, size_t col = 0) const {
-    return const_iterator{line,col,getPosition(line, col),this};
+  iterator end(){return iterator{static_cast<int>(lines.size()),0,this};}
+  const_iterator begin(int line = 0, int col = 0) const {
+    return const_iterator{line,col,this};
   }
   const_iterator end() const {
-    return const_iterator{lines.size(),0,getPosition(lines.size(),0),this};
+    return const_iterator{static_cast<int>(lines.size()),0,this};
+  }
+  const_reverse_iterator rbegin(int line = -1, int col = 0) const {
+    if (line == -1){ line = countLines()-1; col = getLine(line).size()-1; }
+    return const_reverse_iterator(line,col,this);
+  }
+  const_reverse_iterator rend() const {
+    return const_reverse_iterator(-1,-1,this);
   }
   virtual ~LinedCharbuf(){};
 };

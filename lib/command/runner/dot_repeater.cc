@@ -12,7 +12,10 @@ void DotRepeater::run(const Macro* cmd){
   prevMacro = *cmd;
   type = Type::Macro;
 }
-void DotRepeater::run(const Replace* cmd){}
+void DotRepeater::run(const Replace* cmd){
+  prevReplace = *cmd;
+  type = Type::Replace;
+}
 
 void DotRepeater::run(const Normal* cmd){
   if (cmd->type == '.'){
@@ -34,6 +37,14 @@ void DotRepeater::run(const Normal* cmd){
       }
       // then play the insert
       insertRunner.run(&tmp);
+    } else if (type == Type::ComboNM){
+      ComboNM tmp = prevComboNM;
+      tmp.normal.count *= normalizeCount(cmd->count);
+      comboNMRunner.run(&prevComboNM);
+    } else if (type == Type::Replace){
+      Replace tmp = prevReplace;
+      tmp.count = normalizeCount(cmd->count, prevReplace.count);
+      replaceRunner.run(&tmp);
     }
   } else {
     // otherwise, record the command if it should be repeatable
@@ -44,3 +55,9 @@ void DotRepeater::run(const Normal* cmd){
   }
 }
 
+void DotRepeater::run(const ComboNM* cmd){
+  if (cmd->normal.type != 'y'){
+    type = Type::ComboNM; 
+    prevComboNM = *cmd;
+  }
+}

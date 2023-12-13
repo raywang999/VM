@@ -9,7 +9,7 @@
 #include "lib/command/runner/insert_runner.h"
 #include "lib/command/runner/insert_reflector.h"
 
-// set up parsers and runners for basic normal mode commands
+// set up parsers and runners for insert mode 
 struct InsertModeClosure{
   WindowsClosure& windowsClosure;
   Window*& activeWindow{windowsClosure.activeWindow};

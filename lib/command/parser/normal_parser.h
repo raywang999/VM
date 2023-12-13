@@ -22,6 +22,11 @@ class NormalParser: public CommandParser<Normal>{
     'p', 'u', 'x', 'J', 'P', 'X', '.'
   };
 
+  // returns true for double operations 
+  bool isNormDup(int ch){
+    return ch == 'd' || ch == 'y' || ch == 'r';
+  }
+
   bool parse(const Keystroke& keystroke) override;
   void doReset() override { theCommand = Normal{}; parseData = false; countedParser.reset();}
  public: 

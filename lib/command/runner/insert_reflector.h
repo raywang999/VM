@@ -1,8 +1,6 @@
 #ifndef INSERT_REFLECTOR_H
 #define INSERT_REFLECTOR_H
 
-#include <vector>
-
 #include "lib/window/window.h"
 #include "lib/keystroke/keystroke_consumer.h"
 #include "lib/buffer/file_manager.h"
