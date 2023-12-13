@@ -5,9 +5,10 @@
 #include "include/ncursespp.h"
 
 void Textbox::printEmptylineStart(int row, int col){
-  attron(ncurses::attribute::ColorPair(ncurses::colorset::PairLineStart));
-  ncurses::print(row, col, '~');
-  attroff(ncurses::attribute::ColorPair(ncurses::colorset::PairLineStart));
+  using namespace ncurses;
+  onAttributes(attribute::ColorPair(colorset::PairLineStart));
+  print(row, col, '~');
+  setAttributes(attribute::ColorPair(colorset::PairDefault));
 }
 
 void Textbox::render() {

@@ -19,7 +19,7 @@ class RootStatusRender: public RenderableBox{
     ncurses::clearLine(printRow, printCol, width);
     ncurses::print(printRow, printCol, content);
     if (showerror){  // highlight error 
-      ncurses::setAttributes(printRow, printCol, width, 
+      ncurses::setAttributes(printRow, printCol, content.size(), 
       ncurses::attribute::Void, 
       ncurses::colorset::PairStatusError); 
     }

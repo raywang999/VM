@@ -36,8 +36,9 @@ struct StatusBarClosure {
       } else if (error == ErrorCode::noFileName){
         message = "E32: No file name";
       } else if (error == ErrorCode::patternNotFound){
-        message = "E486: Pattern not found: " + 
-          modesClosure.searchModeClosure.searchRunner.getNeedle();
+        message = "E486: Pattern not found: " + rootStatus.getMessage();
+      } else if (error == ErrorCode::cantOpenFile){
+        message = "E484: Can't open file " + rootStatus.getMessage();
       }
       windowsClosure.rootStatusRender.showerror = true;
     } else if (exMessage.size()) { 

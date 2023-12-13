@@ -67,7 +67,9 @@ void SearchRunner::run(const Movement* cmd) {
       auto beg = filebuf.rbegin();
       pos = findNth(count, beg, end, rmatcher);
       if (pos == end) { // needle not matches anything
-        return rootStatus.setError(ErrorCode::patternNotFound);
+        rootStatus.setMessage(matcher.getNeedle());
+        rootStatus.setError(ErrorCode::patternNotFound);
+        return;
       }
     } else {
       rootStatus.setMessage('?' + matcher.getNeedle());
@@ -85,7 +87,9 @@ void SearchRunner::run(const Movement* cmd) {
       auto beg = filebuf.begin();
       pos = findNth(count, beg, end, matcher);
       if (pos == end) { // needle not matches anything
-        return rootStatus.setError(ErrorCode::patternNotFound);
+        rootStatus.setMessage(matcher.getNeedle());
+        rootStatus.setError(ErrorCode::patternNotFound);
+        return;
       }
     } else{
       rootStatus.setMessage('/' + matcher.getNeedle());
