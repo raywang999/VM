@@ -24,11 +24,20 @@ struct StatusBarClosure {
       // show the currently parsed Ex Command
       rootStatus.reset();
       message = ":" + modesClosure.exParser.getSentence();
+    } else if (mode == ModeType::Search){
+      // show the current search needle
+      const auto& parser = modesClosure.searchModeClosure.searchParser;
+      auto command = parser.getCommand();
+      rootStatus.reset();
+      message = command->type + command->needle;
     } else if (error != ErrorCode::nothing){
       if (error == ErrorCode::noWriteSinceLastChange){
         message = "E37: No write since last change (add ! to override)";
       } else if (error == ErrorCode::noFileName){
         message = "E32: No file name";
+      } else if (error == ErrorCode::patternNotFound){
+        message = "E486: Pattern not found: " + 
+          modesClosure.searchModeClosure.searchRunner.getNeedle();
       }
       windowsClosure.rootStatusRender.showerror = true;
     } else if (exMessage.size()) { 

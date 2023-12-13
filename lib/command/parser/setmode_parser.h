@@ -24,7 +24,8 @@ class SetModeParser:
 
   // set of all basic setMode types
   inline static const std::unordered_set<char> terminalTypes{
-    'i', 'a', 'A', 'R', ':', 'S', 's', 'I', 'O', 'o'
+    'i', 'a', 'A', 'R', ':', 'S', 's', 'I', 'O', 'o', 
+    '/', '?' // to enter search "mode"
   };
 
   bool parse(const Keystroke& keystroke) override;

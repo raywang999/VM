@@ -16,6 +16,8 @@ void SetModeRunner::run(const SetMode* cmd){
     replaceParser.reset();
     replaceParser.setCount(count);
     modeManager.setMode(ModeType::Replace);
+  } else if (cmd->type == '?' || cmd->type == '/'){
+    modeManager.setMode(ModeType::Search);
   } else { // enter insert mode
     if (cmd->type == 'i'){ /*enter insert mode without doing anything*/ }
     else if (cmd->type == 'a'){

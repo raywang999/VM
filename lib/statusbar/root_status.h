@@ -6,7 +6,8 @@
 enum class ErrorCode {
   nothing = 0,
   noFileName = 32,
-  noWriteSinceLastChange = 37
+  noWriteSinceLastChange = 37, 
+  patternNotFound = 486
 };
 
 // status bar on bottom left of the screen

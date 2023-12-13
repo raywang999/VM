@@ -1,7 +1,6 @@
 #ifndef MACRO_RUNNER_H
 #define MACRO_RUNNER_H
 
-#include <vector>
 #include "lib/command/runner/command_runner.h"
 #include "lib/command/runner/parser_group.h"
 #include "lib/command/parser/macro_parser.h"

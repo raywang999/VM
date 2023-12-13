@@ -55,7 +55,7 @@ void ExRunner::run(const Ex* cmd){
     if (write(args)) activeWindow->close();
   } else if (args[0] == "$"){ // go to last line
     auto& tab = activeWindow->getTabManager().curr();
-    tab.setCursor(Cursor{tab.getFilebuf().countLines()-1,0}, true);
+    tab.setCursor(Cursor{static_cast<int>(tab.getFilebuf().countLines())-1,0}, true);
   } else if (is_natural(args[0])) { // go to line #x
     int x = std::stoi(args[0]);
     auto& tab = activeWindow->getTabManager().curr();

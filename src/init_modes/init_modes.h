@@ -5,6 +5,7 @@
 #include "init_normal.h"
 #include "init_insert.h"
 #include "init_replace.h"
+#include "init_search.h"
 
 #include "lib/command/command_source.h"
 
@@ -56,6 +57,8 @@ struct ModesClosure{
   
   // replace mode
   ReplaceModeClosure replaceModeClosure{rootModeManager, windowsClosure};
+
+  SearchModeClosure searchModeClosure{rootModeManager, windowsClosure, normalModeClosure};
 
   // setup Macros
   MacroParser macroParser;
@@ -119,6 +122,7 @@ struct ModesClosure{
     // setup setMode 
     setModeParser.attach(&setModeRunner);
     normalModeClosure.normalGroup.add(&setModeParser);
+    setModeParser.attach(&searchModeClosure.searchParser);
 
     // setup Ex mode 
     exParser.attach(&exRunner);
@@ -149,6 +153,7 @@ struct ModesClosure{
 
     // attach esc normals 
     insertModeClosure.insertMode.attach_consumer(&escNormal);
+    searchModeClosure.searchMode.attach_consumer(&escNormal);
 
     // attach message resetter to relevant parsers
     normalModeClosure.normalParser.attach(&messageResetter);

@@ -22,7 +22,7 @@ class LinedCharbuf {
   class iterator {
     Loc loc; 
     // LinedCharbuf from which I was created
-    LinedCharbuf* const theCharbuf; 
+    LinedCharbuf* theCharbuf; 
     iterator(int line, int col, LinedCharbuf* const cb):
       loc{line,col}, theCharbuf{cb} {}
    public: 
@@ -39,7 +39,7 @@ class LinedCharbuf {
   class const_iterator {
     Loc loc;
     // LinedCharbuf from which I was created
-    const LinedCharbuf* const theCharbuf; 
+    const LinedCharbuf* theCharbuf; 
     const_iterator(int line, int col, const LinedCharbuf* const cb):
       loc{line,col}, theCharbuf{cb} {}
    public: 
@@ -55,7 +55,7 @@ class LinedCharbuf {
   class const_reverse_iterator {
     Loc loc;
     // LinedCharbuf from which I was created
-    const LinedCharbuf* const theCharbuf; 
+    const LinedCharbuf* theCharbuf; 
    public:
     const_reverse_iterator(int line, int col, const LinedCharbuf* const cb):
       loc{line,col}, theCharbuf{cb} {}
@@ -106,7 +106,8 @@ class LinedCharbuf {
   const_iterator end() const {
     return const_iterator{static_cast<int>(lines.size()),0,this};
   }
-  const_reverse_iterator rbegin(int line = 0, int col = 0) const {
+  const_reverse_iterator rbegin(int line = -1, int col = 0) const {
+    if (line == -1){ line = countLines()-1; col = getLine(line).size()-1; }
     return const_reverse_iterator(line,col,this);
   }
   const_reverse_iterator rend() const {

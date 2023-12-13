@@ -90,6 +90,13 @@ struct Ex: public Command {
   }
 };
 
+// Search commands. I.e. `?int`, `/ l`
+struct Search: public Command {
+  std::string needle;
+  char type; // one of '?', '/'
+  // split sentence into args
+  Search(const std::string& needle = ""): needle{needle} { }
+};
 // Insert mode command. Stores the chars typed
 struct Insert: public Command {
   std::string sentence;
