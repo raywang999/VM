@@ -33,8 +33,8 @@ class HistoryRecorder:
   void save() { 
     historyManager.save(activeWindow->getTabManager().curr(), cursorRecorder.getCursor()); 
   }
-  void run(const Insert* cmd) override { save(); }
-  void run(const Replace* cmd) override { save(); }
+  void run(const Insert* ) override { save(); }
+  void run(const Replace* ) override { save(); }
   void run(const ComboNM* cmd) override {
     if (cmd->normal.type != 'y') save();
   }

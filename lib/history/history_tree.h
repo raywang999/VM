@@ -33,8 +33,8 @@ class HistoryTree {
   std::vector<Node> store;
   // currently active edit number
   int curr = 0;
-  // check if filecontents and the string have same contents
-  bool same(const std::string& str, const LinedFilebuf<char>& file){
+  // check if filecontents and the current contents of the store are same
+  bool same(const LinedFilebuf<char>& file){
     if (file.countBytes() != store[curr].contents.size()) return false;
     size_t i = 0;
     for (auto ch: file){  
@@ -64,7 +64,7 @@ class HistoryTree {
   // if tab's file contents changed, create a new edit
   // with cursor's beginnning poosition set to beg
   void push(const Tab& tab, const Cursor& beg) {
-    if (same(store[curr].contents, tab.getFilebuf())){
+    if (same(tab.getFilebuf())){
       return; // do nothing if no change was made
     }
     // create a copy
@@ -77,7 +77,7 @@ class HistoryTree {
 
 
   // get current edit 
-  const int getCurr() const noexcept {return curr; }
+  int getCurr() const noexcept { return curr; }
   const Node& getCurrNode() const noexcept {return store[curr]; }
 
 };
