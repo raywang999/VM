@@ -57,7 +57,10 @@ void SearchRunner::run(const Movement* cmd) {
   // seek next
   if (useRI){
     rmatcher.reset();
-    auto beg = ++filebuf.rbegin(curRow, curCol);
+    // start searching so that first possible match is one col to left of curCol
+    int startCol = curCol - 2 + static_cast<int>(rmatcher.getNeedle().size());
+    startCol = fit(0,filebuf.getLine(curRow).size()-1, startCol);
+    auto beg = filebuf.rbegin(curRow, startCol);
     auto end = filebuf.rend();
     auto pos = findNth(count, beg, end, rmatcher);
     // check if hit top
