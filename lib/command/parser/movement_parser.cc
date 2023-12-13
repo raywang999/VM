@@ -34,6 +34,25 @@ bool MovementParser::parse(const Keystroke& keystroke) {
     // we need to parse a second part later
     parseSeek = true;
     return theCommand.type == 'f' || theCommand.type == 'F';
+  } else if (keystroke.key == Key::Arrow){
+    // arrow key movements 
+    theCommand.count = 1;
+    switch (keystroke.value){
+      case 'l': 
+        theCommand.type = 'h';
+        break;
+      case 'r': 
+        theCommand.type = 'l';
+        break;
+      case 'u': 
+        theCommand.type = 'k';
+        break;
+      case 'd': 
+        theCommand.type = 'j';
+        break;
+    }
+    notifyAll();
+    return true;
   }
 
   // parsing failed
