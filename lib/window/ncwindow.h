@@ -17,12 +17,12 @@ class NCWindow: public Window {
   NCWindow(Window* parent, const TabManager& tabManager, const StyleManager& styleManager): 
     Window(parent, tabManager), 
     styleManager{styleManager},
-    textbox(this, styleManager) 
+    textbox(*this, styleManager) 
   {}
   NCWindow(const TabManager& tabManager, const StyleManager& styleManager): 
     Window(tabManager), 
     styleManager{styleManager},
-    textbox(this, styleManager) 
+    textbox(*this, styleManager) 
   {}
   void render() override;
 };

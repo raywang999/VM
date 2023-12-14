@@ -52,7 +52,7 @@ class HistoryRecorder:
     if (cmd->type != 'u') save();
   }
   void run(const Ex* ex) override { 
-    if (ex->args[0] == "r") {save();}
+    if (ex->args.size() && ex->args[0] == "r") {save();}
   }
   void setActive(bool state) noexcept {
     cursorRecorder.active = state;

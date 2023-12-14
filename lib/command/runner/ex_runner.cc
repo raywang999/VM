@@ -37,8 +37,8 @@ bool ExRunner::write(const std::vector<std::string>& args){
 
 void ExRunner::run(const Ex* cmd){
   const auto&args = cmd->args;
-  if (args.empty()) return; // do nothing
-  if (args[0] == "w"){
+  if (args.empty()) { // do nothing
+  } else if (args[0] == "w"){
     write(args);
   } else if (args[0] == "q"){
     auto& filebuf = activeWindow->getTabManager().curr().getFilebuf();

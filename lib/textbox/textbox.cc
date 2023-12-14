@@ -12,7 +12,7 @@ void Textbox::printEmptylineStart(int row, int col){
 }
 
 void Textbox::render() {
-  Tab& currTab = window->getTabManager().curr();
+  Tab& currTab = window.getTabManager().curr();
   if (currTab.getWidth() != getWidth() || currTab.getHeight() != getHeight()){
     currTab.resize(getHeight(), getWidth());
   }
