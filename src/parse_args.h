@@ -22,6 +22,7 @@ class TerminalArgs {
   }
   struct HighlightSyntax {};
   struct SplitScreen {};
+  struct ShowHelp {};
   struct ShowColor{};
   struct EnableMacros{};
   struct EnableMultifile{};
@@ -34,7 +35,8 @@ class TerminalArgs {
     ShowColor, 
     SetColorset, 
     EnableMacros, 
-    EnableMultifile
+    EnableMultifile,
+    ShowHelp
   >;
   std::vector<Option> options;
   

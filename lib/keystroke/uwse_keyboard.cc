@@ -22,7 +22,8 @@ static std::unordered_map<int, Keystroke> toKS{
   {6, Keystroke{Key::Ctrl, 'f'}},
   {7, Keystroke{Key::Ctrl, 'g'}},
   {21, Keystroke{Key::Ctrl, 'u'}},
-  {23, Keystroke{Key::Ctrl, 'w'}}
+  {23, Keystroke{Key::Ctrl, 'w'}},
+  {18, Keystroke{Key::Ctrl, 'r'}}
 };
 
 Keystroke UWSEKeyboard::getKeystroke() const {

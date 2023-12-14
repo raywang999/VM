@@ -2,7 +2,7 @@
 #include "include/utility.h"
 
 void DotRepeater::run(const SetMode* cmd){ 
-  prevSetMode = std::make_unique<SetMode>(*cmd);
+  prevSetMode = cmd->clone();
 }
 void DotRepeater::run(const Insert* cmd){ 
   prevInsert = *cmd;

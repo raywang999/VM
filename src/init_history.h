@@ -15,12 +15,18 @@ struct HistoryClosure{
 
   CursorRecorder cursorRecorder{windowsClosure.activeWindow};
   HistoryRecorder historyRecorder{windowsClosure.activeWindow, historyManager, cursorRecorder};
+  // recorders for running macros
+  HistoryRecorder macroRecorder{windowsClosure.activeWindow, historyManager, cursorRecorder};
+  CursorRecorder macroCursor{windowsClosure.activeWindow};
 
   HistoryClosure(TabsClosure& tabsClosure, WindowsClosure& windowsClosure): 
     tabsClosure{tabsClosure}, windowsClosure{windowsClosure} {
     for (const auto& tab: tabsClosure.rootTabManager.items){
       historyManager.save(tab, Cursor{0,0});
     }
+    macroRecorder.setActive(false); // keep deactivated until macro runner needs it
+    macroCursor.active = true; // listen initially, until the macro runs
+    historyRecorder.setActive(true);
   }
 };
 

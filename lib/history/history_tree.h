@@ -1,8 +1,8 @@
-#ifndef HISTORY_TREE_H
-#define HISTORY_TREE_H
+#ifndef HISTORY_TREE_H_F
+#define HISTORY_TREE_H_F
 
 #include <chrono>
-#include <memory>
+#include <vector>
 #include <string>
 
 #include "lib/tab/tab.h"
@@ -19,11 +19,7 @@ class HistoryTree {
     Cursor beg; // cursor location before the change
     Cursor end; // cursor location after the change
     int parent;
-    Node(int edit, const Tab& tab): edit{edit}, beg{tab.getCursor()} {
-      for (auto ch: tab.getFilebuf()){ // write all chars into contents
-        contents.push_back(ch);
-      }
-    }
+    Node(int edit, const Tab& tab); 
   };
  private:
   int edit = 0;
@@ -34,51 +30,21 @@ class HistoryTree {
   // currently active edit number
   int curr = 0;
   // check if filecontents and the current contents of the store are same
-  bool same(const LinedFilebuf<char>& file){
-    if (file.countBytes() != store[curr].contents.size()) return false;
-    size_t i = 0;
-    for (auto ch: file){  
-      if (store[curr].contents[i] != ch) return false;
-      ++i;
-    }
-    return true;
-  }
+  bool same(const LinedFilebuf<char>& file);
  public:
-  HistoryTree(const Tab& tab): store{Node{0,tab}}{}
+  HistoryTree(const Tab& tab); 
   // undo most recent command. REturns true if successfully undo 
-  bool undo() { 
-    if (curr) { // not the 0th change (i.e. root), so valid
-      future.push_back(curr);
-      curr = store[curr].parent;
-      return true;
-    }
-    return false;
-  }
+  bool undo(); 
   // redo most recent command. return true iff successful
-  bool redo() { 
-    if (future.empty()) return false;
-    curr = future.back();
-    future.pop_back();
-    return true;
-  }
+  bool redo();
   // if tab's file contents changed, create a new edit
   // with cursor's beginnning poosition set to beg
-  void push(const Tab& tab, const Cursor& beg) {
-    if (same(tab.getFilebuf())){
-      return; // do nothing if no change was made
-    }
-    // create a copy
-    auto& newNode = store.emplace_back(++edit, tab);
-    future.clear(); // clear redo chain
-    newNode.parent = curr;
-    newNode.beg = beg;
-    curr = edit;
-  }
-
+  void push(const Tab& tab, const Cursor& beg);
 
   // get current edit 
   int getCurr() const noexcept { return curr; }
   const Node& getCurrNode() const noexcept {return store[curr]; }
+  const Node& getNode(int edit) const noexcept {return store[edit]; }
 
 };
 

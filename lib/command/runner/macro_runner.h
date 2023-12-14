@@ -7,6 +7,7 @@
 #include "lib/registers/macros.h"
 #include "lib/window/window.h"
 #include "lib/keystroke/keystroke_recorder.h"
+#include "lib/history/history_recorder.h"
 #include "lib/mode/mode_manager.h"
 
 // takes a basic Macro command and runs it 
@@ -18,6 +19,8 @@ class MacroRunner: public CommandRunner<Macro>{
   ModeManager& modeManager;
   MacroParser& macroParser;
   ParserGroup& normalGroup;
+  HistoryRecorder& macroRecorder; // recorder for us
+  HistoryRecorder& otherRecorder; // recorder for other commands
 
   // null for not recording anything, otherwise should be a-zA-Z0-9
   char currReg = 0; 
@@ -27,13 +30,17 @@ class MacroRunner: public CommandRunner<Macro>{
     KeystrokeRecorder& recorder, 
     ModeManager& modeManager,
     MacroParser& macroParser,
-    ParserGroup& normalGroup
+    ParserGroup& normalGroup,
+    HistoryRecorder& macroRecorder, 
+    HistoryRecorder& otherRecorder 
   ): 
     reg{reg}, 
     recorder{recorder}, 
     modeManager{modeManager}, 
     macroParser{macroParser},
-    normalGroup{normalGroup}
+    normalGroup{normalGroup},
+    macroRecorder{macroRecorder},
+    otherRecorder{otherRecorder}
   {}
   void run(const Macro* macro) {
     if (macro->type == 'q'){
@@ -55,12 +62,17 @@ class MacroRunner: public CommandRunner<Macro>{
       auto count = normalizeCount(macro->count);
 
       normalGroup.reset();
+      // activate and decativate recorders
+      macroRecorder.setActive(true);
+      otherRecorder.setActive(false);
       // replay the macro count times
       for (int i=0;i < count; ++i){
         for (auto key: reg[currReg]){
           modeManager.consume(key);
         }
       }
+      macroRecorder.setActive(false);
+      otherRecorder.setActive(true);
       currReg = 0;
     }
   }

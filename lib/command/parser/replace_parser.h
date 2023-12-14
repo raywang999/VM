@@ -19,7 +19,9 @@ class ReplaceParser: public CommandParser<Replace>{
       notifyAll();
       doReset();
     } else if (keystroke.key == Key::Backspace){
-      sentence.pop_back();
+      if (sentence.size()){
+        sentence.pop_back();
+      }
     } else {
       return false;
     }
@@ -33,3 +35,4 @@ class ReplaceParser: public CommandParser<Replace>{
 
 #endif
 
+  

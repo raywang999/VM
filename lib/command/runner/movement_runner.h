@@ -5,7 +5,7 @@
 #include "lib/command/runner/command_runner.h"
 #include "lib/window/window.h"
 
-// takes a basic Movement mode Command and runs it
+// takes a basic Movement Command and runs it
 class MovementRunner: public CommandRunner<Movement>{
   Window*& activeWindow;
   // the previous position of the cursor's column 

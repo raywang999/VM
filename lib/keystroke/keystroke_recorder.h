@@ -13,7 +13,7 @@ class KeystrokeRecorder:
   public Resetable
 {
   std::vector<Keystroke> keystrokes;
-  bool active = false; // whether we listen for commands
+  bool active = false; // whether we listen for keystrokes 
   void doReset() override {active = false; keystrokes.clear(); }
  public:
   void consume(const Keystroke& key) override {

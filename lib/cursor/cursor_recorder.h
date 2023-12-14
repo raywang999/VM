@@ -12,8 +12,13 @@ class CursorRecorder:
 {
   Window*& activeWindow;
   Cursor cursor;
-  void update() { cursor = activeWindow->getTabManager().curr().getCursor(); }
+  void update() { 
+    if (active){
+      cursor = activeWindow->getTabManager().curr().getCursor(); 
+    }
+  }
  public:
+  bool active;
   CursorRecorder(Window*& activeWindow): activeWindow{activeWindow} {}
 
   // if Insert, the cursor should return to how it was before the insert

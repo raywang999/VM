@@ -6,6 +6,8 @@ void TerminalArgs::parseFlag(size_t& i){
   const auto& flag = TerminalArgs::args[i];
   if (flag == "--highlight-syntax"){
     TerminalArgs::options.push_back(TerminalArgs::HighlightSyntax{});
+  } else if (flag == "--help" || flag == "-h"){
+    TerminalArgs::options.push_back(TerminalArgs::ShowHelp{});
   } else if (flag == "--enable-macros"){
     TerminalArgs::options.push_back(TerminalArgs::EnableMacros{});
   } else if (flag == "--multi-file"){
@@ -35,3 +37,4 @@ void TerminalArgs::parseArgs(){
     parse(i);
   }
 }
+
