@@ -44,6 +44,6 @@ void Tab::fixCursor(){
 }
 
 void Tab::setTopLine(int topLine, bool fitCursor) noexcept { 
-  this->topLine = fit(0, filebuf->countLines(), topLine); 
+  this->topLine = fit(0, filebuf->countLines()-1, topLine); 
   if (fitCursor) fitToTopLine();
 }

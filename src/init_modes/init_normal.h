@@ -45,8 +45,15 @@ struct NormalModeClosure{
   CtrlRunner ctrlRunner{activeWindow, windowsClosure.rootStatus, historyClosure.historyManager};
   NormalRunner normalRunner{ activeWindow, clipboard, windowsClosure.rootStatus };
   SemiColonRepeater semiColonRepeater{movementRunner};
-  ComboNMRunner comboNMRunner{activeWindow, clipboard, windowsClosure.rootStatus};
   MatcherRunner matcherRunner{activeWindow, historyClosure.historyManager};
+  ComboNMRunner comboNMRunner{
+    activeWindow, 
+    clipboard, 
+    windowsClosure.rootStatus, 
+    movementRunner, 
+    semiColonRepeater, 
+    matcherRunner
+  };
 
   
   // setup the core mode

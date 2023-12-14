@@ -12,10 +12,14 @@ void NormalRunner::run(const Normal* cmd){
   int count = normalizeCount(cmd->count);
 
   if (cmd->type == 'x'){
+    const auto& str = filebuf.getLine(curRow);
+    auto delCnt = min(count,str.size()-1-curCol);
+    clipboard.set(false,str.substr(curCol,delCnt));
     filebuf.erase(curRow,curCol,count);
     tab.fixCursor();
   } else if (cmd->type == 'X'){
     auto delCnt = min(count,curCol);
+    clipboard.set(false,filebuf.getLine(curRow).substr(curCol-delCnt,delCnt));
     filebuf.erase(curRow,curCol - delCnt, delCnt);
     cursor.setCol(curCol-delCnt);
     tab.setCursor(cursor);
@@ -32,13 +36,14 @@ void NormalRunner::run(const Normal* cmd){
         rootStatus.setMessage(std::to_string(count) + " fewer lines");
       }
       filebuf.eraseLines(curRow,count);
-      cursor.translate(min(curRow,filebuf.countLines()-1),0);
-      tab.setCursor(cursor);
       if (filebuf.countLines() == 0){ // ensure file isn't empty
         filebuf.insertLines(0,1);
       }
+      cursor.translate(min(curRow,filebuf.countLines()-1),0);
+      tab.setCursor(cursor, true);
     }
   } else if (cmd->type == 'p' || cmd->type == 'P') { 
+    auto begLineCnt = filebuf.countLines();
     const auto& data = clipboard.get();
     // generate what to insert based on count
     std::string contents;
@@ -58,7 +63,6 @@ void NormalRunner::run(const Normal* cmd){
         // note that contents will end with required '\n's 
         filebuf.insert(curRow,0,contents);
         cursor.setCol(0); // reset cursor
-        tab.setCursor(cursor);
       }
       tab.setCursor(cursor);
     } else { // print without new line
@@ -71,6 +75,10 @@ void NormalRunner::run(const Normal* cmd){
         cursor.setCol(curCol+contents.size()-1);
       }
       tab.setCursor(cursor);
+    }
+    int lineDiff = filebuf.countLines() - begLineCnt;
+    if (lineDiff >= 2) {
+      rootStatus.setMessage(std::to_string(lineDiff) + " more lines");
     }
   } else if (cmd->type == 'r'){
     if (count + curCol <= static_cast<int>(filebuf.getLine(curRow).size())){

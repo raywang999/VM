@@ -26,12 +26,18 @@ class HistoryRecorder:
   // number of modifications from last persist
   std::unordered_map<std::string, int> diffCnt; 
 
+  bool active = true; // whether we listen for commands
  public:
   HistoryRecorder(Window*& activeWindow, HistoryManager& historyManager, CursorRecorder& cursorRecorder): 
     activeWindow{activeWindow}, historyManager{historyManager}, cursorRecorder{cursorRecorder} {}
   // save change into tree of currently active file
   void save() { 
-    historyManager.save(activeWindow->getTabManager().curr(), cursorRecorder.getCursor()); 
+    if (active){
+      historyManager.save(
+        activeWindow->getTabManager().curr(), 
+        cursorRecorder.getCursor()
+      ); 
+    }
   }
   void run(const Insert* ) override { save(); }
   void run(const Replace* ) override { save(); }
@@ -47,6 +53,10 @@ class HistoryRecorder:
   }
   void run(const Ex* ex) override { 
     if (ex->args[0] == "r") {save();}
+  }
+  void setActive(bool state) noexcept {
+    cursorRecorder.active = state;
+    active = state;
   }
 };
 

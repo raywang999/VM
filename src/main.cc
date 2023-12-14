@@ -1,4 +1,17 @@
+#include <iostream>
+
 #include "main.h"
+
+void printHelp(std::ostream& ostream){
+  ostream << "usage: ./vm [options] files\n\n";
+  ostream << "--- options ---\n";
+  ostream << "--show-color\n";
+  ostream << "shows colors. Note: doesn't work unless a color-set is specified\n\n";
+  ostream << "--color-set \"colorset\" \n";
+  ostream << "Specify a colorset. Options include:\n";
+  ostream << "standard\n";
+  ostream << '\n';
+}
 
 int Main::main(){
   // loop while we haven't exited from rootWindow
@@ -15,12 +28,19 @@ int Main::main(){
 }
 
 int main(int argc, const char* argv[]){
-    // Main mainData(argc,argv);
-    // return mainData.main();
+  bool showHelp = false;
   try {
     Main mainData(argc,argv);
-    return mainData.main();
+    if (mainData.terminalArgs.hasOption(TerminalArgs::ShowHelp{})){
+      showHelp = true;
+    } else {
+      return mainData.main();
+    }
   } catch(...){
     return 1;
   }
+  if (showHelp){
+    printHelp(std::cout);
+  }
+  return 0;
 }

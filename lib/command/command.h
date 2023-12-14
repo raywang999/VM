@@ -6,6 +6,7 @@
 #include <string>
 #include <cctype>
 #include <cstddef>
+#include <memory>
 #include <vector>
 
 #include "lib/mode/modetype.h"
@@ -45,6 +46,9 @@ struct SetMode: public Command {
   char type; // one of a,c,o,s,A,I,O,R,S,:
   SetMode(int count=0, char type=0): 
     count{count}, type{type} {}
+  virtual std::unique_ptr<SetMode> clone() const {
+    return std::make_unique<SetMode>(count,type);
+  }
 };
 
 // specialization of SetMode for c_, where _ is a movement
@@ -52,6 +56,9 @@ struct CM: public SetMode {
   Movement movement; // only relevent for c_
   CM(int count=0, char type='c', Movement movement = {}): 
     SetMode{count, type}, movement{movement} {}
+  virtual std::unique_ptr<SetMode> clone() const {
+    return std::make_unique<CM>(count,type,movement);
+  }
 };
 
 // ctrl commands. E.g. Ctrl+f 

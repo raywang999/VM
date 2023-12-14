@@ -65,7 +65,9 @@ struct ModesClosure{
   MacrosRegister macrosRegister;
   MacroRunner macroRunner{
     macrosRegister, macroRecorder, rootModeManager, macroParser, 
-    normalModeClosure.normalGroup
+    normalModeClosure.normalGroup, 
+    historyClosure.macroRecorder, 
+    historyClosure.historyRecorder
   };
   // setup Ex Mode 
   ExParser exParser;
@@ -118,6 +120,16 @@ struct ModesClosure{
     exParser.attach(&historyClosure.cursorRecorder);
     normalModeClosure.normalParser.attach(&historyClosure.cursorRecorder);
     normalModeClosure.movementParser.attach(&historyClosure.cursorRecorder);
+
+    // same for macro Cursor
+    macroParser.attach(&historyClosure.macroCursor);
+    replaceModeClosure.replaceParser.attach(
+      static_cast<CommandRunner<Replace>*>(&historyClosure.macroCursor));
+    insertModeClosure.insertParser.attach(
+      static_cast<CommandRunner<Insert>*>(&historyClosure.macroCursor));
+    exParser.attach(&historyClosure.macroCursor);
+    normalModeClosure.normalParser.attach(&historyClosure.macroCursor);
+    normalModeClosure.movementParser.attach(&historyClosure.macroCursor);
 
     // setup setMode 
     setModeParser.attach(&setModeRunner);
