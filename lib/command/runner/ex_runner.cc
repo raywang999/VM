@@ -76,7 +76,9 @@ void ExRunner::run(const Ex* cmd){
       }
     }
   } else if (args[0] == "multifile") {
-    multifile = (args[1] == "on");
+    if (args.size() >= 2){
+      multifile = (args[1] == "on");
+    }
   } else if (args[0] == "n" || args[0] == "N") { // go to next/prev file
     if (multifile){
       auto& tabManager = activeWindow->getTabManager();
