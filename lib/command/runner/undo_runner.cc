@@ -12,16 +12,15 @@ void UndoRunner::run(const Normal* normal){
   // aplly count number of undos, maximum by number of undos available in history 
   const auto maxChanges = normalizeCount(normal->count);
   auto& tree = historyManager.getTree(filename);
-  // last undone command
-  const HistoryTree::Node* currNode = &tree.getCurrNode(), *prev = nullptr;
+  int currEdit = tree.getCurr(), prevEdit = currEdit;
   for (int i=0; i < maxChanges && historyManager.undo(filename); ++i){
-    prev = currNode; currNode = &tree.getCurrNode();
-    ++cntChanges;
+    ++cntChanges; prevEdit = currEdit; currEdit = tree.getCurr();
   }
   if (cntChanges == 0){
     rootStatus.setMessage("Already at oldest change");
   } else {
     persistChange();
+    auto prev = &tree.getNode(prevEdit);
     setChangeMessage(cntChanges, startLineCnt, prev, true);
     tab.setCursor(prev->beg);
   }
@@ -32,16 +31,23 @@ void UndoRunner::run(const Ctrl* cmd){
   if (cmd->type != 'r') return;
   auto& tab = activeWindow->getTabManager().curr();
   auto& filebuf = tab.getFilebuf();
-  // total number of successful undos
+  const auto& filename = filebuf.getFilename();
+  int startLineCnt = filebuf.countLines();
+  // total number of successful redos
   int cntChanges = 0;
-  // aplly count number of undos, maximum by number of undos available in history 
+  // aplly count number of undos, maximum by number of redos available in history 
   const auto maxChanges = normalizeCount(cmd->count);
-  for (int i=0; i < maxChanges && historyManager.redo(filebuf.getFilename()); ++i){
+  auto& tree = historyManager.getTree(filename);
+  // last undone command
+  for (int i=0; i < maxChanges && historyManager.redo(filename); ++i){
     ++cntChanges;
   }
   if (cntChanges == 0){
     rootStatus.setMessage("Already at newest change");
   } else {
     persistChange();
+    auto currNode = tree.getCurrNode();
+    setChangeMessage(cntChanges, startLineCnt, &currNode, false);
+    tab.setCursor(currNode.end);
   }
 }

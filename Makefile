@@ -11,7 +11,7 @@ INCLUDE=$(shell pwd)
 INCLUDE_PARAMS=$(INCLUDE:%=-I%)
 
 CPPFLAGS = -MMD ${INCLUDE_PARAMS}
-CXXFLAGS = -std=c++20 -g -Wall -O2
+CXXFLAGS = -std=c++20 -g -Wall
 
 ${EXEC}: ${OBJECTS}
 	${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LIB_INCLUDE} ${OBJECTS} ${LDLIBS} -o ${EXEC}
