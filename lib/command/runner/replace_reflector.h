@@ -27,18 +27,6 @@ inline void ReplaceReflector::consume(const Keystroke& keystroke){
     if (keystroke.value == '\n') {
       cursor.translate(curRow+1,0);
     }
-  } else if (keystroke.key == Key::Arrow){
-    int dr=0,dc=0;
-    if (keystroke.value == 'l'){--dc;}
-    else if (keystroke.value == 'r'){++dc;}
-    else if (keystroke.value == 'u'){++dr;}
-    else {--dr;}
-    cursor.translate(cursor.getRow()+dr, cursor.getCol()+dc);
-  } else if (keystroke.key == Key::Backspace){
-    if (cursor.getCol() > 0){
-      cursor.setCol(cursor.getCol()-1);
-      filebuf.erase(cursor.getRow(), cursor.getCol(), 1);
-    }
   }
   activeTab.setCursor(cursor);
 }
