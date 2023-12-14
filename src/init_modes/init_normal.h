@@ -4,6 +4,7 @@
 #include "../parse_args.h"
 #include "../init_windows.h"
 #include "../init_history.h"
+#include "init_search.h"
 
 #include "lib/mode/mode_manager.h"
 #include "lib/mode/normal_mode.h"
@@ -32,6 +33,7 @@ struct NormalModeClosure{
   HistoryClosure& historyClosure;
   ModeManager& rootModeManager;
   Clipboard& clipboard;
+  SearchModeClosure& searchModeClosure;
   
   // setup parsers
   NormalParser normalParser;
@@ -52,7 +54,8 @@ struct NormalModeClosure{
     windowsClosure.rootStatus, 
     movementRunner, 
     semiColonRepeater, 
-    matcherRunner
+    matcherRunner, 
+    searchModeClosure.searchRunner
   };
 
   
@@ -65,9 +68,11 @@ struct NormalModeClosure{
     ModeManager& rootModeManager, 
     WindowsClosure& windows, 
     HistoryClosure& history,
-    Clipboard& clipboard
+    Clipboard& clipboard, 
+    SearchModeClosure& searchModeClosure
   ): windowsClosure{windows}, historyClosure{history}, 
-    rootModeManager{rootModeManager}, clipboard{clipboard}
+    rootModeManager{rootModeManager}, clipboard{clipboard}, 
+    searchModeClosure{searchModeClosure}
   {
     movementParser.attach(&movementRunner);
     movementParser.attach(&matcherRunner);
@@ -80,6 +85,7 @@ struct NormalModeClosure{
     movementParser.attach(&semiColonRepeater);
     normalParser.attach(&jkRecorder);
     rootModeManager.attach(ModeType::Normal, &normalMode);
+    movementParser.attach(&searchModeClosure.searchRunner);
     
     normalGroup.add(&normalParser);
     normalGroup.add(&comboNMParser);

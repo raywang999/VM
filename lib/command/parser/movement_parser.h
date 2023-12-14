@@ -23,7 +23,7 @@ class MovementParser: public CommandParser<Movement>{
   // set storing which command types are terminals, i.e. don't need extra seek
   static inline const std::unordered_set<int> terminalTypes{
     'b', 'h', 'j', 'k', 'l', 'n', 'w', 
-    'N', '^', '$', '0', '%', ';'
+    'N', '^', '$', '0', '%', ';', 'W','B'
   };
 
   bool parse(const Keystroke& keystroke) override;

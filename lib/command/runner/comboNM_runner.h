@@ -8,6 +8,7 @@
 #include "lib/command/runner/normal_runner.h"
 #include "lib/statusbar/root_status.h"
 #include "lib/matcher/matcher_runner.h"
+#include "lib/command/runner/search_runner.h"
 #include "lib/command/runner/semi_colon_repeater.h"
 
 // takes a basic Normal mode Command and runs it
@@ -20,6 +21,7 @@ class ComboNMRunner: public CommandRunner<ComboNM>{
   MovementRunner& movementRunner;
   SemiColonRepeater& semiRunner;
   MatcherRunner& matcherRunner;
+  SearchRunner& searchRunner;
   NormalRunner normalRunner{activeWindow, clipboard, rootStatus};
 
  public:
@@ -31,14 +33,16 @@ class ComboNMRunner: public CommandRunner<ComboNM>{
     RootStatus& rootStatus,
     MovementRunner& movementRunner,
     SemiColonRepeater& semiRunner,
-    MatcherRunner& matcherRunner
+    MatcherRunner& matcherRunner, 
+    SearchRunner& searchRunner
   ): 
     activeWindow{activeWindow}, 
     clipboard{clipboard}, 
     rootStatus{rootStatus},
     movementRunner{movementRunner},
     semiRunner{semiRunner},
-    matcherRunner{matcherRunner}
+    matcherRunner{matcherRunner},
+    searchRunner{searchRunner}
   {}
 };
 

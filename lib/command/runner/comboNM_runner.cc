@@ -40,6 +40,7 @@ void ComboNMRunner::run(const ComboNM* cmd){
   movementRunner.run(&tmp);
   semiRunner.run(&tmp);
   matcherRunner.run(&tmp);
+  searchRunner.run(&tmp);
   
   Cursor end = tab.getCursor();
 

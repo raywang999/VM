@@ -28,12 +28,10 @@ struct SearchModeClosure{
 
   
   Mode searchMode;
-
-  // creates a Mode manager, Modes, and links between parsers and runners
+  // creates a search Mode manager, Modes, and links between parsers and runners
   SearchModeClosure(
     ModeManager& rootModeManager, 
-    WindowsClosure& windows,
-    NormalModeClosure& normalModeClosure
+    WindowsClosure& windows
   ): windowsClosure{windows}, 
     rootModeManager{rootModeManager}
   {
@@ -41,7 +39,6 @@ struct SearchModeClosure{
     searchMode.attach_consumer(&searchParser);
     
     searchParser.attach(&searchRunner);
-    normalModeClosure.movementParser.attach(&searchRunner);
   }
 
 };

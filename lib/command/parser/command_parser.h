@@ -8,13 +8,8 @@
 
 class CommandParserBase:
   virtual public KeystrokeConsumer, 
-  virtual public Resetable {};
-template<typename CommandType>
-  requires std::derived_from<CommandType, Command>
-class CommandParser: 
-  virtual public CommandParserBase,
-  virtual public CommandSource<CommandType>
-{
+  virtual public Resetable {
+ protected:
   // subclasses should override this to control how it parses inputs
   // - returns true if and only if the keystroke was valid 
   virtual bool parse(const Keystroke& ks) =0;
@@ -22,11 +17,16 @@ class CommandParser:
   // consume a keystroke if parser is valid 
   // - if not, do nothing 
   // - if fail to parse, set state to invalid 
-  void consume(const Keystroke& ks) override;
+  void consume(const Keystroke& ks) final override;
 };
-
 template<typename CommandType>
-inline void CommandParser<CommandType>::consume(const Keystroke& ks){
+  requires std::derived_from<CommandType, Command>
+class CommandParser: 
+  virtual public CommandParserBase,
+  virtual public CommandSource<CommandType>
+{ };
+
+inline void CommandParserBase::consume(const Keystroke& ks){
   if (isValid()){
     set(parse(ks));
   }

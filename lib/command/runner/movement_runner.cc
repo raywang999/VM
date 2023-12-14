@@ -86,6 +86,7 @@ void MovementRunner::run(const Movement* movement){
     auto pos = findNth(count, beg, end, matcher);
     setCursor(pos,end);
   } else if (movement->type == 'b'){ 
+    if (row == 0 && col == 0) return; // do nothing at beginning
     // use b matcher
     auto beg = ++filebuf.rbegin(row,col);
     Chunkb matcher{*beg}; 
@@ -100,10 +101,13 @@ void MovementRunner::run(const Movement* movement){
     auto pos = findNth(count, filebuf.begin(row, col), end, matcher);
     setCursor(pos,end);
   } else if (movement->type == 'B'){ 
+    if (row == 0 && col == 0) return; // do nothing at beginning
+    // use W matcher
     ChunkW matcher{};
+    auto beg = ++filebuf.rbegin(row,col);
     auto end = filebuf.rend();
     // find the start of the Nth word
-    auto pos = findNth(count, filebuf.rbegin(row, col), end, matcher);
+    auto pos = findNth(count, beg, end, matcher);
     setCursor(pos,end);
   } 
 }

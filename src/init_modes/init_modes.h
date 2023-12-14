@@ -44,9 +44,12 @@ struct ModesClosure{
   // setup CommandRecorder for history and macros
   KeystrokeRecorder macroRecorder;
 
+  SearchModeClosure searchModeClosure{rootModeManager, windowsClosure};
+
   // basic normal mode
   NormalModeClosure normalModeClosure{
-    rootModeManager, windowsClosure, historyClosure, rootClipboard
+    rootModeManager, windowsClosure, historyClosure, rootClipboard, 
+    searchModeClosure
   };
 
   // esc keys will set the rootModeManager to normal mode
@@ -57,8 +60,6 @@ struct ModesClosure{
   
   // replace mode
   ReplaceModeClosure replaceModeClosure{rootModeManager, windowsClosure};
-
-  SearchModeClosure searchModeClosure{rootModeManager, windowsClosure, normalModeClosure};
 
   // setup Macros
   MacroParser macroParser;

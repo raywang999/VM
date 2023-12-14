@@ -134,11 +134,5 @@ struct Macro: public Command {
     count{count}, reg{reg}, type{type} {}
 };
 
-// a sequence of commands
-struct Sequence: public Command {
-  // the sequence of commands in chronological order
-  std::vector<Command*> theSequence;
-};
-
 #endif
 
