@@ -15,7 +15,7 @@ std::string CtrlRunner::printCursor() const {
   const auto& filebuf = tab.getFilebuf();
   auto cursor = tab.getCursor();
   double linecnt = static_cast<double>(filebuf.countLines());
-  int position = static_cast<int>(std::floor(cursor.getRow()*100/linecnt));
+  int position = static_cast<int>(std::round((cursor.getRow()+1)*100/linecnt));
   return "--" + std::to_string(position) + "%--";
 }
 
