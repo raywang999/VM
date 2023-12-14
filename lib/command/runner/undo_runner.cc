@@ -11,7 +11,7 @@ void UndoRunner::run(const Normal* normal){
   int cntChanges = 0;
   // aplly count number of undos, maximum by number of undos available in history 
   const auto maxChanges = normalizeCount(normal->count);
-  auto tree = historyManager.getTree(filename);
+  auto& tree = historyManager.getTree(filename);
   // last undone command
   const HistoryTree::Node* currNode = &tree.getCurrNode(), *prev = nullptr;
   for (int i=0; i < maxChanges && historyManager.undo(filename); ++i){
