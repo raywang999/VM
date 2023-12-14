@@ -1,4 +1,5 @@
 #include <stack>
+#include <string>
 
 #include "include/utility.h"
 #include "matcher_runner.h"
@@ -30,6 +31,8 @@ void MatcherRunner::Matcher::genLocations(int edit){
   auto curr = prev; // current location
   auto end = charbuf.end();
   Loc prevIfBlock; // location of previous If block
+  // index of first char in previous left comment in fileLoc
+  size_t prevLCOM = std::string::npos; 
   prevIfBlockInds.clear(); // clear previous block indices
   fileLoc.clear(); pairLoc.clear();
   std::stack<size_t> leftParens; // index of previous left paren in fileLoc
@@ -38,6 +41,13 @@ void MatcherRunner::Matcher::genLocations(int edit){
   while (curr != end){
     auto ch = *curr; ++curr;
     switch(trie.step(ch)){ // fill in locations based on what we parsed
+      case Type::Invalid:
+        prev = curr;
+        trie.reset();
+        break;
+      case Type::Parsing: // do nothing
+        curr = curr;
+        break;
       case Type::LPP: 
       case Type::LRP: 
       case Type::LSP:  
@@ -65,9 +75,34 @@ void MatcherRunner::Matcher::genLocations(int edit){
         prev = curr;
         trie.reset();
         break;
-      case Type::Invalid:
+      case Type::LCOM: // start comment 
+        prevLCOM = fileLoc.size(); // update location
+        // add two locations in the file for "/*"
+        fileLoc.push_back(prev.getLoc());
+        ++prev; 
+        fileLoc.push_back(prev.getLoc());
+        // add two pairs to pair for
+        pairLoc.emplace_back(0,0);
+        pairLoc.emplace_back(0,0);
         prev = curr;
         trie.reset();
+        break;
+      case Type::RCOM: // match comments
+        if (prevLCOM != std::string::npos){ //check lcom exists
+          // add two locations in the file for "*/"
+          fileLoc.push_back(prev.getLoc());
+          ++prev; 
+          fileLoc.push_back(prev.getLoc());
+          // pair RCOM with LCOM index
+          auto LLoc = fileLoc[prevLCOM];
+          pairLoc.push_back(LLoc);
+          pairLoc.push_back(LLoc);
+          // pair LCOM with RCOM
+          pairLoc[prevLCOM] = prev.getLoc();
+          pairLoc[prevLCOM+1] = prev.getLoc();
+        }
+        trie.reset();
+        prev = curr;
         break;
       case Type::IF: // start lineLocs
         prevIfBlock = prev.getLoc();
@@ -92,9 +127,6 @@ void MatcherRunner::Matcher::genLocations(int edit){
         fillPair(prevIfBlock);
         curr = ++prev;
         trie.reset();
-        break;
-      case Type::Parsing: // do nothing
-        curr = curr;
         break;
       default: 
         prev = curr;

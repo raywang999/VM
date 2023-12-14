@@ -21,7 +21,8 @@ class Trie: public Resetable{
     // parsing - not yet known, need more characters
     enum class Type: char{
       Parsing, Invalid, 
-      IF, ELIF, ELSE, ENDIF, DEFINE,
+      IF, ELIF, ELSE, ENDIF, DEFINE, 
+      LCOM, RCOM, // left and right comments
       LRP='(', RRP=')', LSP='[', RSP=']', LPP='{', RPP='}'
     };
     std::unordered_map<char,std::unique_ptr<Node>> next;
@@ -57,6 +58,8 @@ class Trie: public Resetable{
     rootNode.add(")",Type::RRP);
     rootNode.add("[",Type::LSP);
     rootNode.add("]",Type::RSP);
+    rootNode.add("/*",Type::LCOM);
+    rootNode.add("*/",Type::RCOM);
   }
   // add a string to the dfa
   void add(const std::string& str, Node::Type type){
