@@ -9,7 +9,6 @@
 class CommandParserBase:
   virtual public KeystrokeConsumer, 
   virtual public Resetable {
- protected:
   // subclasses should override this to control how it parses inputs
   // - returns true if and only if the keystroke was valid 
   virtual bool parse(const Keystroke& ks) =0;
