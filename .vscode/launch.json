@@ -9,7 +9,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/vm",
-      "args": ["test/test.txt"],
+      "args": ["test/test.txt", "test/calculators.h"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],

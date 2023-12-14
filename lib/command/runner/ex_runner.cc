@@ -75,13 +75,45 @@ void ExRunner::run(const Ex* cmd){
         }
       }
     }
+  } else if (args[0] == "multifile") {
+    multifile = (args[1] == "on");
+  } else if (args[0] == "n" || args[0] == "N") { // go to next/prev file
+    if (multifile){
+      auto& tabManager = activeWindow->getTabManager();
+      if (tabManager.getItems().size() <=1){
+        rootStatus.setError(ErrorCode::onlyOneFile);
+      } else {
+        bool success = false;
+        if (args[0] == "n"){
+          if (!tabManager.next()){
+            rootStatus.setError(ErrorCode::cannotGoPastLastFile);
+          } else {
+            success = true;
+          }
+        } else {
+          if (!tabManager.prev()){
+            rootStatus.setError(ErrorCode::cannotGoPastFirstFile);
+          } else {
+            success = true;
+          }
+        }
+        if (success){ // show message
+          const auto& filebuf = tabManager.curr().getFilebuf();
+          rootStatus.setMessage(
+            '"' + filebuf.getFilename() + "\" " +
+            std::to_string(filebuf.countLines()) + "L, " + 
+            std::to_string(filebuf.countBytes()) + "B " 
+          );
+        }
+      }
+    }
   } else if (is_natural(args[0])) { // go to line #x
     int x = std::stoi(args[0]);
     auto& tab = activeWindow->getTabManager().curr();
     // fit 1 <= x <= # of lines in file
     x = fit(1,tab.getFilebuf().countLines(),x);
     tab.setCursor({x-1,0}, true);
-  } 
+  }
   modeManager.setMode(ModeType::Normal);
 }
 

@@ -9,11 +9,11 @@
 #include "lib/tab/tab.h"
 
 class TabManager{
- public: 
   std::vector<Tab> items;
+ public: 
   // index of current item
   size_t ind=0;
-  // return true iff there is a next element
+  // return true iff succesfully set to next element
   bool next() noexcept {
     if (ind+1 >= items.size()) return false;
     ++ind; return true;
@@ -33,6 +33,8 @@ class TabManager{
   void emplace_back(Args&&... args){
     items.emplace_back(std::forward<Args>(args)...);
   }
+
+  const std::vector<Tab>& getItems() const noexcept {return items;}
 };
 
 #endif

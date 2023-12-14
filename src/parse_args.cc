@@ -10,8 +10,6 @@ void TerminalArgs::parseFlag(size_t& i){
     TerminalArgs::options.push_back(TerminalArgs::ShowHelp{});
   } else if (flag == "--enable-macros"){
     TerminalArgs::options.push_back(TerminalArgs::EnableMacros{});
-  } else if (flag == "--multi-file"){
-    TerminalArgs::options.push_back(TerminalArgs::EnableMultifile{});
   } else if (flag == "--show-color"){
     TerminalArgs::options.push_back(TerminalArgs::ShowColor{});
   } else if (flag == "--color-set"){
@@ -22,11 +20,10 @@ void TerminalArgs::parseFlag(size_t& i){
 
 
 void TerminalArgs::parse(size_t& i){
-  //static DfaStep next[256];
   if (args[i][0] == '-'){
     parseFlag(i);
   } else {
-    files.push_back(args[i++]);
+    files.push_back(args[i]);
   }
 }
 

@@ -35,6 +35,12 @@ struct StatusBarClosure {
         message = "E37: No write since last change (add ! to override)";
       } else if (error == ErrorCode::noFileName){
         message = "E32: No file name";
+      } else if (error == ErrorCode::onlyOneFile){
+        message = "E163: There is only one file to edit";
+      } else if (error == ErrorCode::cannotGoPastFirstFile){
+        message = "E164: Cannot go before first file";
+      } else if (error == ErrorCode::cannotGoPastLastFile){
+        message = "E165: Cannot go beyond last file";
       } else if (error == ErrorCode::patternNotFound){
         message = "E486: Pattern not found: " + rootStatus.getMessage();
       } else if (error == ErrorCode::cantOpenFile){

@@ -7,6 +7,9 @@ enum class ErrorCode {
   nothing = 0,
   noFileName = 32,
   noWriteSinceLastChange = 37, 
+  onlyOneFile = 163,
+  cannotGoPastFirstFile = 164,
+  cannotGoPastLastFile = 165,
   cantOpenFile = 484,
   patternNotFound = 486
 };

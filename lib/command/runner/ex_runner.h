@@ -19,6 +19,9 @@ class ExRunner: public CommandRunner<Ex>{
 
   bool write(const std::vector<std::string>& args);
 
+  // whether to enable or disable multifile
+  bool multifile = false;
+
  public:
   void run(const Ex*) override;
   ExRunner(Window*& activeWindow, ModeManager& modeManager, 

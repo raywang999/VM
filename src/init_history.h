@@ -21,7 +21,7 @@ struct HistoryClosure{
 
   HistoryClosure(TabsClosure& tabsClosure, WindowsClosure& windowsClosure): 
     tabsClosure{tabsClosure}, windowsClosure{windowsClosure} {
-    for (const auto& tab: tabsClosure.rootTabManager.items){
+    for (const auto& tab: tabsClosure.rootTabManager.getItems()){
       historyManager.save(tab, Cursor{0,0});
     }
     macroRecorder.setActive(false); // keep deactivated until macro runner needs it
