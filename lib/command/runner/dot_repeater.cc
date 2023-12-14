@@ -40,7 +40,7 @@ void DotRepeater::run(const Normal* cmd){
     } else if (type == Type::ComboNM){
       ComboNM tmp = prevComboNM;
       tmp.normal.count *= normalizeCount(cmd->count);
-      comboNMRunner.run(&prevComboNM);
+      comboNMRunner.run(&tmp);
     } else if (type == Type::Replace){
       Replace tmp = prevReplace;
       tmp.count = normalizeCount(cmd->count, prevReplace.count);
