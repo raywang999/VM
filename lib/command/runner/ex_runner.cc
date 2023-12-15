@@ -59,6 +59,7 @@ void ExRunner::run(const Ex* cmd){
     auto& tab = activeWindow->getTabManager().curr();
     tab.setCursor(Cursor{static_cast<int>(tab.getFilebuf().countLines())-1,0}, true);
   } else if (args[0] == "r"){ // paste contents of file after current line
+    if (args.size() >= 2) {
     std::ifstream infile{args[1]};
     if (!infile) {
       rootStatus.setError(ErrorCode::cantOpenFile);
@@ -66,7 +67,9 @@ void ExRunner::run(const Ex* cmd){
     } else{
       auto& tab = activeWindow->getTabManager().curr();
       auto& filebuf = tab.getFilebuf();
-      auto line = tab.getCursor().getLine()+1;
+      auto cursor = tab.getCursor();
+      filebuf.insertLines(cursor.getRow(),1);
+      auto line = cursor.getLine()+1;
       char ch; int col = 0;
       while (infile.get(ch)){
         filebuf.insert(line,col++,ch);
@@ -74,6 +77,7 @@ void ExRunner::run(const Ex* cmd){
           col = 0; ++line;
         }
       }
+    }
     }
   } else if (args[0] == "multifile") {
     if (args.size() >= 2){
