@@ -23,8 +23,6 @@ class HistoryRecorder:
   HistoryManager& historyManager;
   CursorRecorder& cursorRecorder;
   std::unordered_map<std::string, HistoryTree> trees;
-  // number of modifications from last persist
-  std::unordered_map<std::string, int> diffCnt; 
 
   bool active = true; // whether we listen for commands
  public:
