@@ -5,51 +5,85 @@ abstract Command{}
 class Normal{
   +count: Integer
   +type: Character
+  +data: Character
 }
 class Movement{
   +count: Integer
   +type: Character
+  +seek: Character
 }
 class ComboNM{
   +normal: Normal
   +movement: Movement
 }
 class Ex{
-  +sentence: String
+  +sentence: String[0..*]
 }
 class Insert{
   +count: Integer
+  +mode: Character
   +sentence: String
 }
 class Replace{
   +count: Integer
   +sentence: String
 }
-Command <|-- Normal
-Command <|-- Movement
+class SetMode {
+  +count: Integer 
+  +type: Character
+  +clone(): SetMode
+}
+class CM {
+  +movement: Movement
+  +clone(): SetMode
+}
+class Ctrl {
+  +count: Integer
+  +type: Character
+}
+class Search {
+  +needle: String
+  +type: Character
+}
+class Macro {
+  +count: Integer 
+  +reg: Character 
+  +type: Character
+}
+SetMode -|> Command
+SetMode <|-- CM
+Command <|- Normal
+Command <|--- Movement
 Command <|-- ComboNM
-Ex --|> Command 
-Insert --|> Command 
+Ctrl ---|> Command
 Replace --|> Command 
+Insert ---|> Command 
+Command <|-- Search
+Macro --|> Command
+Command <|--- Ex
 ```
 ```plantuml 
-abstract Window
 class Keyboard{
   +next(): void
   +getKeystroke(): Keystroke
+}
+class Resetable {
+  -doReset(): void 
+  +reset(): void
 }
 left to right direction
 enum KeyType {
   Esc, Plain, Ctrl, Del, Backspace
 }
 class Keystroke {
-  +count: Integer
   +data: Character
 }
-abstract KeystrokeSource{
+abstract "Subject<KeyStroke, KeystrokeSource>"{
   +attach(consumer: KeystrokeConsumer*): void
-  {abstract}+getKeystroke(): Keystroke
   +notifyAll(): void
+}
+abstract KeystrokeSource{
+  {abstract}+getKeystroke(): Keystroke
 }
 Keystroke "1" *-- KeyType
 Keyboard "1" *-- Keystroke
@@ -60,22 +94,13 @@ abstract KeystrokeConsumer{
 }
 KeystrokeSource "0..*" o---|> KeystrokeConsumer
 abstract Mode{}
-abstract CommandParser{
-  {abstract}-doReset(): void
-  +reset(): void
-}
-class NormalParser {
-  -doReset(): void
-  +getNormal(): Normal
-}
-class MovementParser {
-  -doReset(): void
-  +getMovement(): Movement
-}
+abstract "CommandParser<CT>"{ }
 class ModeManager{
   +consume(key: Keystroke): void
   +notify(source: KeystrokeSource*): void
 }
+class InsertReflector
+KeystrokeConsumer <|- InsertReflector
 enum ModeType{
   Normal, Insert, Replace, Ex
 }
@@ -83,87 +108,269 @@ ModeType "1" -* ModeManager
 class Mode {
   +consume(key: Keystroke): void
 }
-KeystrokeConsumer <|- CommandParser 
 ModeManager "0..*" o- Mode 
 KeystrokeConsumer <|-- ModeManager
-abstract CommandSource{
+abstract BaseCommandParser
+abstract "CommandSource<CT>"{
+}
+KeystrokeConsumer --o "0..*" Mode 
+abstract "CommandRunner<CT>"{
+  {abstract}+run(command: Command*): void
+  +notify(source: "CommandSource<CT>"*): void
+}
+KeystrokeSource -|> "Subject<KeyStroke, KeystrokeSource>"
+"CommandSource<CT>" <|--"CommandParser<CT>"  
+Resetable <|-- BaseCommandParser
+BaseCommandParser <|-"CommandParser<CT>"
+KeystrokeConsumer <|- BaseCommandParser
+"CommandRunner<CT>" --o "0..*""CommandSource<CT>" 
+abstract "Subject<CT,CommandSource<CT>>" {
   +notifyAll(): void
   +attach(runner: CommandRunner*): void
 }
-KeystrokeConsumer --o "0..*" Mode 
-CommandParser -|> CommandSource 
-abstract CommandRunner{
-  {abstract}+run(command: Command*): void
-  +notify(source: CommandSource*): void
-}
-CommandSource "0..*" o- CommandRunner
-MovementParser --|> CommandParser
-CommandRunner <|- NormalRunner 
-MovementRunner --|> CommandRunner 
-MovementRunner "1" o- Window
-Window --o "1" NormalRunner 
-MovementParser --o "1" MovementRunner 
-class InsertReflector {
-  +consume(key: Keystroke): void
-}
-KeystrokeConsumer <|-- InsertReflector 
-CommandParser <|-- NormalParser
-NormalRunner "1" o-- NormalParser 
+"Subject<CT,CommandSource<CT>>" <|- "CommandSource<CT>"
 ```
 ```plantuml 
 left to right direction
 abstract Window{}
-abstract CommandParser{
+struct Data{
+  +contents: String
+  +addNewline: Boolean
+}
+class Clipboard{
+}
+class RootStatus{
+  -message: String
+  -errorCode: Integer
+}
+abstract "CommandParser<ComboNM>"{
   {abstract}-doReset(): void
   {abstract}-parse(key: Keystroke): Boolean
   +reset(): void
   +consume(key: Keystroke): void
 }
-abstract CommandRunner {
+abstract "CommandRunner<ComboNM>" {
   +{abstract}run(command: Command*): void
   +notify(source: CommandSource*): void
 }
-CommandParser "0..*" o-- CommandRunner
+class ComboNMParser {
+  -doReset(): void
+  +getComboNM(): ComboNM
+}
+class ComboNMParser {
+  -doReset(): void
+  -parse(key: Keystroke): Boolean
+  +getComboNM(): ComboNM
+}
+class ComboNMRunner {
+  -dotRepeater: DotRepeater*
+  -semiColonRepeater: SemiColonRepeater*
+  -movementRunner: MovementRunner*
+  -matcherRunner: MatcherRunner*
+  -normalRunner: NormalRunner
+  +run(command: ComboNM*): void
+}
+Data --o "0..*" Clipboard 
+"CommandRunner<ComboNM>" <|-- ComboNMRunner 
+ComboNMParser --|> "CommandParser<ComboNM>" 
+ComboNMRunner "1" o-- Window 
+ComboNMRunner o-- RootStatus
+Clipboard -o ComboNMRunner 
+"CommandParser<ComboNM>" "0..*" o-- "CommandRunner<ComboNM>"
+```
+```plantuml
+left to right direction
+class MovementParser {
+  -doReset(): void
+  -parse(key: Keystroke): Boolean
+  +getMovement(): Movement
+}
+abstract "CommandParser<Movement>"{ }
+abstract "CommandRunner<Movement>" { }
+class MovementRunner {
+  -window: Window**
+  +run(command: Movement*): void
+}
+abstract "CommandRunner<Search>"{}
+class SemiColonRepeater{}
+class SearchRunner {
+  -movementRunner: MovementRunner*
+}
+class MatcherRunner{
+  -window: Window**
+  -historyManager: HistoryManager*
+  -matcherManager: map<String,Matcher>
+}
+class Matcher {
+  -charbuf: LinedCharbuf*
+  -lineLoc: Loc[n]
+  -pairLoc: Loc[n]
+}
+class Trie {
+  +add(dfa: String, type: NodeType): void
+  +getType(): NodeType
+  +step(ch: Character): void
+}
+"CommandRunner<Movement>" <|-- MovementRunner 
+MovementParser --|> "CommandParser<Movement>" 
+"CommandParser<Movement>" "0..*" o-- "CommandRunner<Movement>"
+"CommandRunner<Search>" <|-- SearchRunner
+"CommandRunner<Movement>" <|-- SearchRunner
+"CommandRunner<Movement>" <|-- SemiColonRepeater
+MatcherRunner -|> "CommandRunner<Movement>"
+Matcher -- "manages" MatcherRunner
+Trie --o "1" Matcher
+```
+```plantuml
+left to right direction
+class MacroParser {
+  -doReset(): void
+  -parse(key: Keystroke): Boolean
+  +getMacro(): Macro
+}
+abstract Window{}
+abstract "CommandParser<Macro>"{
+  {abstract}-doReset(): void
+  {abstract}-parse(key: Keystroke): Boolean
+  +reset(): void
+  +consume(key: Keystroke): void
+}
+abstract "CommandRunner<Macro>" {
+  +{abstract}run(command: Command*): void
+  +notify(source: CommandSource*): void
+}
+class MacroRunner {
+  -registers: map<Character, KeyStroke[0..*]>
+  -modeManager: ModeManger*
+  +run(command: Macro*): void
+}
+abstract "CommandRunner<Command>"{}
+abstract KeystrokeConsumer
+class ParserGroup{ 
+  +add(parser: BaseCommandParser*): void
+}
+class HistoryRecorder {
+  -activeWindow: Window**
+  -historyManager: HistoryManager*
+}
+class CursorRecorder{ }
+"CommandRunner<Macro>" <|-- MacroRunner 
+MacroParser --|> "CommandParser<Macro>" 
+MacroRunner "1" o-- Window 
+MacroRunner o-- RootStatus
+ParserGroup -o MacroRunner 
+BaseCommandParser --o "0..*" ParserGroup
+"CommandRunner<Command>" <|- ParserGroup
+"CommandParser<Macro>" "0..*" o-- "CommandRunner<Macro>"
+ParserGroup --|> KeystrokeConsumer
+MacroRunner "2" o- HistoryRecorder
+CursorRecorder --o "1" HistoryRecorder
+```
+```plantuml 
+left to right direction
+abstract Window{}
+struct Data{
+  +contents: String
+  +addNewline: Boolean
+}
+class Clipboard{
+}
+class RootStatus{
+  -message: String
+  -errorCode: Integer
+}
+abstract "CommandParser<Normal>"{
+  {abstract}-doReset(): void
+  {abstract}-parse(key: Keystroke): Boolean
+  +reset(): void
+  +consume(key: Keystroke): void
+}
+abstract "CommandRunner<Normal>" {
+  +{abstract}run(command: Command*): void
+  +notify(source: CommandSource*): void
+}
+class NormalParser {
+  -doReset(): void
+  +getNormal(): Normal
+}
 class NormalParser {
   -doReset(): void
   -parse(key: Keystroke): Boolean
   +getNormal(): Normal
 }
+class NormalRunner {
+  +run(command: Normal*): void
+}
+class HistoryManager {
+  -map<String, HistoryTree> trees
+}
+class HistoryTree {
+  +push(tab: Tab*): void
+  +undo(): bool
+  +redo(): bool
+}
+class RootStatus{
+  -message: String
+  -errorCode: Integer
+}
+class UndoRunner {
+  +run(command: Normal*): void
+}
+"CommandRunner<Normal>" <|-- UndoRunner 
+UndoRunner "1" o-- Window 
+UndoRunner o-- RootStatus
+HistoryManager -o UndoRunner 
+"CommandParser<Normal>" "0..*" o-- "CommandRunner<Normal>"
+HistoryTree "manages" <-- HistoryManager
+Data --o "0..*" Clipboard 
+"CommandRunner<Normal>" <|-- NormalRunner 
+NormalParser --|> "CommandParser<Normal>" 
+NormalRunner "1" o-- Window 
+NormalRunner o-- RootStatus
+NormalRunner o- Clipboard 
+"CommandParser<Normal>" "0..*" o-- "CommandRunner<Normal>"
+```
+```plantuml
 class MacroParser {
   -doReset(): void
   -parse(key: Keystroke): Boolean
   +getMacro(): Macro
 }
 class MacroRunner {
-  -registers: map<Character, CommandChain>
+  -registers: map<Character, KeyStroke[0..*]>
   +run(command: Command*): void
 }
-class NormalRunner {
-  +run(command: Command*): void
+class MovementRunner{}
+ExRunner --|> CommandRunner
+RootStatus "1"--o ExRunner
+class ComboNMRunner{}
+MovementRunner --|> CommandRunner
+MovementRunner -o ComboNMRunner 
+CommandRunner <|-- SetModeRunner
+MacroParser --|> CommandParser 
+MovementRunner "1" o-- Window
+InsertParser -"resets" SetModeRunner 
+SetModeRunner "resets" -- ReplaceParser
+SetModeRunner "resets" -- ExParser
+CommandParser <|-- InsertParser
+CommandParser <|-- ExParser
+CommandParser <|-- ReplaceParser
+MacroRunner --|> CommandRunner
+ModeManager --o MacroRunner 
+ComboNMRunner --|> CommandRunner
+class MovementParser {
+  -doReset(): void
+  +getMovement(): Movement
 }
-MacroRunner -|> CommandRunner
-CommandRunner <|- NormalRunner 
-CommandParser <|- NormalParser
-MacroParser -|> CommandParser 
-NormalParser --o "1" NormalRunner
-MacroParser --o "1" MacroRunner 
-class CommandChain{
-  +run(command: Command*): void 
-  +runChain(): void
-}
-abstract Command{}
-Command "0..*" -* CommandChain 
-CommandRunner <|-- CommandChain
-NormalRunner "1" o- Window
-CommandChain "1" o- Window 
+class SetModeRunner{}
 ```
 ```plantuml
 left to right direction
 abstract LinedFilebuf{}
 class TabManager {
-  +nextTab(): void
-  +currTab(): Tab
-  +prevTab(): void
+  +next(): void
+  +curr(): Tab
+  +prev(): void
 }
 Window "1" *--> TabManager
 abstract Window{
@@ -178,6 +385,9 @@ enum WindowType{
 }
 class Tab{
   +getTopLine(): Integer
+  +fixCursor(): void 
+  +fitToCursor(): void 
+  +fitToTopline(): void 
 }
 Tab "1" o-- LinedFilebuf
 Tab "1" *- Cursor
@@ -203,29 +413,18 @@ NCWindow "1" *-- StatusBar
 class StatusBar{
   +render(): void
 }
-struct Style{
-  first: Integer, 
-  last: Integer, 
-  attribute: Integer
+class LinedCharbuf{
+  +erase(line: Integer, start: Integer, len: Integer): void
+  +insert(line: Integer, start: Integer, chars: String): void
+  +eraseLines(line: Integer, len: Integer): void
+  +insertLines(line: Integer, len: Integer): void
+  +begin(): Iterator
+  +end(): Iterator
 }
-class RainbowBrackets {
-  +getStyles(first: Integer, last: Integer): Style[0..*]
-}
-class CppHighlight {
-  +getStyles(first: Integer, last: Integer): Style[0..*]
-}
-CppHighlight --|> TextStyler 
-RainbowBrackets "reads" -> LinedFilebuf
-CppHighlight "reads" -> LinedFilebuf
-TextStyler <|- RainbowBrackets 
-Style "0..*"-* TextStyler 
+LinedCharbuf <|- LinedFilebuf
 abstract class LinedFilebuf{
-  {abstract}+erase(line: Integer, start: Integer, len: Integer): void
-  {abstract}+insert(line: Integer, start: Integer, chars: String): void
-  {abstract}+eraseLines(line: Integer, len: Integer): void
-  {abstract}+insertLines(line: Integer, len: Integer): void
-  {abstract}+begin(): Iterator
-  {abstract}+end(): Iterator
+  +{abstract} persist(): void
+  +{abstract} getPermissions(): Permissions
 }
 StatusBar "reads" --> ModeManager
 StatusBar "reads" -> TabManager
@@ -238,7 +437,7 @@ LinedFilebuf "0..*" -* FileManager
 left to right direction
 abstract Window{ }
 class Tab{
-  +getTopLine(): Integer
+  -doResize(): void
 }
 abstract Renderable{
   {abstract}+render(): void
@@ -255,7 +454,8 @@ class StatusBar{}
 abstract Resizeable{
   -height: Integer 
   -width: Integer
-  +resize(h: Integer, w: Integer)
+  -{abstract}doResize(): void
+  +resize(h: Integer, w: Integer): void
 }
 abstract Translateable{
   -toprow: Integer
@@ -268,121 +468,11 @@ class StatusBar{
 class Textbox{
   +render(): void
 }
-abstract Box{}
-Box --|> Resizeable 
-Translateable <|- Box
-abstract RenderableBox {}
-Box <|- RenderableBox 
+abstract RenderableBox{}
+RenderableBox --|> Resizeable 
+Translateable <|- RenderableBox
 RenderableBox -|> Renderable
 Window <|-- NCWindow 
 RenderableBox <|-- Window 
 Resizeable <|-- Tab
 ```
-# Plan of Attack 
-## Get something showing 
-- Implement `Cursor` with getters, setters 
-- Implement `LinedFileBuf`
-  - Implement a `Placeholder` concrete LinedFileBuf 
-- Implement `Tab`
-  - getters, setters
-- implement `Window`'s getters, setters
-- implement `Textbox`, `StatusBar`
-  - basic rendering, no styles  
-- implement `NCWindow`
-  - call render on textbox, statusbar
-- write a `main` file that instantiates a `NCWindow` with our `Placeholder` 
-- test basic features 
-  - cursor position is correct 
-  - status bar is on bottom of screen
-  - text in textbox appears line by line
-
-## Work on Controller 
-- implement Subject Observer templates (copy from a4)
-- implement KeystrokeSource, KeystrokeConsumer 
-- implement a concrete `Keyboard`
-  - adapt Ncurses keyboard api to `Keystrokes` 
-  - unit test our `Keyboard`
-
-## Work on Basic Model 
-- implement `Command` variants 
-- implement `CommandSource`, `CommandParser`, `CommandRunner`
-- implement an `InsertParser`, `MacroParser`
-- implement `Mode`
-  - implement concrete `InsertMode`
-- implement `ModeManager` for `ModeType::Insert` 
-- implement `InsertRunner`
-- extend `main` to instantiate 
-  - `NCWindow`, `Placeholder`, `Keyboard`, 
-  - `ModeManager` with an `InsertMode` that links an `InsertParser` to the `InsertRunner`
-  - attach the objects so that typing appends to the rendered textbox 
-
-## Add basic VM commands
-- Implement a proper `LinedFileBuf`
-  - manages a `fstream` 
-  - maintains `vector<string|> lines` 
-  - syncs `fstream` with `lines`
-  - give returns of begin and end efficient `random_access_iterator`
-- implement `NormalParser`, `NormalMode`
-- extend `ModeManager` to work with `NormalMode`
-  - add `Esc` handler 
-- Implement a `NormalRunner` 
-- test simple commands (`x, i, esc`)
-- Implement `Cmdline` mode 
-  - Implement `ExRunner`
-- Implement search-related commands (`f,I,%`)
-
-## Extend Model
-- Implement `/, ?`
-- Implement Combo commands (`2d3fa`) 
-- Implement `Replace` mode 
-- Implement `Ctrl` commands 
-- Implement Undo 
-  - Implement a tuple that can store forward and backwards information
-  - Implement a `CommandChain`
-  - Implement a `CommandInverter` helper
-- Implement `MacroParser, MacroMode`
-- Implement `MacroRunner` 
-  - Implement a `MacroManager` 
-  - Implement `@` Macro playback 
-
-## Improve View 
-- Extend `StatusBar` to reflect required info 
-- Extend `Tab` to sync Cursor and Window Movements
-
-# Extras
-## Multiwindow & Multifile 
-- Implement `FileManager`
-- Implement `Window` fully 
-  - Implement `resize()`s
-  - Implement `splitVert(), splitHori(), delete()`
-
-## Add Syntax Highlighting
-- Implement `TextStyler`
-- Implement `BracketStyler: public TextStyler` 
-  - Identify Nesting level 
-  - Match pairs of brackets 
-  - Identify mismatching brackets
-- Implement `CppHighlighter`
-  - Implement a Tokenizer
-  - Implement a no-lookahead Parse Graph
-    - For Keywords, Numerics, Preprocessor Directives
-    - Can extend to a more extended parse graph
-  - Implement a `Stylizer` structure that implements `TextStyler::getStyles(...)`
-
-
-## Improve Controls  
-- Add support for arrow keys 
-- Add support for mouse scrolling
-
-
-- I initially had `Command` as an abstract class because
-  - I wanted to have an `undo` interface for `Commands` to inherit 
-    - e.g. a `Movement` command could have an `undo()` method 
-that returns the inverse movement 
-- Ultimately decided to use a variant 
-  - most consumers of `Command`s would always `dynamic_cast` them 
-to get their types
-  - managing history should be separate from storing `Command` 
-info 
-  - a solution using `Memento` pattern or by storing 
-  `stack past; stack future;` is better
